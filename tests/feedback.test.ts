@@ -66,4 +66,25 @@ describe("feedback system", () => {
     expect(entry.comment).toBe("Need more detail");
     expect(entry.citation_ids).toEqual(["cite-1", "cite-2"]);
   });
+
+  it("stores optional planner context for tuning artifacts", () => {
+    const entry = submitFeedback(
+      "query",
+      "response",
+      "missing",
+      null,
+      [],
+      "client-1",
+      {
+        strategy: "live_research",
+        answerability: "partial",
+        answerability_reason: "external scope",
+        suggestions: ["Scope to ORGAN-I"],
+      }
+    );
+
+    expect(entry.client_id).toBe("client-1");
+    expect(entry.context?.strategy).toBe("live_research");
+    expect(entry.context?.suggestions).toEqual(["Scope to ORGAN-I"]);
+  });
 });

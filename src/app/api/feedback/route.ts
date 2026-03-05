@@ -1,9 +1,24 @@
-import { submitFeedback, isValidSignal, getFeedbackStats } from "@/lib/feedback";
+import {
+  submitFeedback,
+  isValidSignal,
+  getFeedbackStats,
+  type FeedbackAnswerability,
+  type FeedbackContext,
+} from "@/lib/feedback";
 
 const MAX_QUERY_CHARS = 2000;
 const MAX_RESPONSE_CHARS = 4000;
 const MAX_COMMENT_CHARS = 1000;
 const MAX_CITATION_IDS = 50;
+const MAX_REASON_CHARS = 500;
+const MAX_SUGGESTIONS = 10;
+const MAX_SUGGESTION_CHARS = 200;
+
+const ANSWERABILITY_VALUES = new Set<FeedbackAnswerability>([
+  "answerable",
+  "partial",
+  "unanswerable",
+]);
 
 export async function POST(request: Request) {
   let body: unknown;
@@ -23,7 +38,18 @@ export async function POST(request: Request) {
     );
   }
 
-  const { query, response_text, signal, comment, citation_ids } = body as Record<string, unknown>;
+  const {
+    query,
+    response_text,
+    signal,
+    comment,
+    citation_ids,
+    strategy,
+    answerability,
+    answerability_reason,
+    suggestions,
+    client_id,
+  } = body as Record<string, unknown>;
 
   if (typeof query !== "string" || !query.trim()) {
     return new Response(
@@ -74,12 +100,45 @@ export async function POST(request: Request) {
         .slice(0, MAX_CITATION_IDS)
     : [];
 
+  const normalizedStrategy = typeof strategy === "string" ? strategy.trim().slice(0, 100) : null;
+  const normalizedAnswerability =
+    typeof answerability === "string" && ANSWERABILITY_VALUES.has(answerability as FeedbackAnswerability)
+      ? (answerability as FeedbackAnswerability)
+      : null;
+  const normalizedReason =
+    typeof answerability_reason === "string"
+      ? answerability_reason.trim().slice(0, MAX_REASON_CHARS)
+      : null;
+  const normalizedSuggestions = Array.isArray(suggestions)
+    ? suggestions
+        .filter((s): s is string => typeof s === "string")
+        .map((s) => s.trim())
+        .filter(Boolean)
+        .slice(0, MAX_SUGGESTIONS)
+        .map((s) => s.slice(0, MAX_SUGGESTION_CHARS))
+    : [];
+  const normalizedClientId = typeof client_id === "string" && client_id.trim()
+    ? client_id.trim().slice(0, 128)
+    : "anonymous";
+
+  const context: FeedbackContext | null =
+    normalizedStrategy || normalizedAnswerability || normalizedReason || normalizedSuggestions.length > 0
+      ? {
+          strategy: normalizedStrategy,
+          answerability: normalizedAnswerability,
+          answerability_reason: normalizedReason,
+          suggestions: normalizedSuggestions,
+        }
+      : null;
+
   const entry = submitFeedback(
     query.trim().slice(0, MAX_QUERY_CHARS),
     response_text.trim().slice(0, MAX_RESPONSE_CHARS),
     signal,
     normalizedComment,
-    normalizedCitationIds
+    normalizedCitationIds,
+    normalizedClientId,
+    context
   );
 
   return new Response(

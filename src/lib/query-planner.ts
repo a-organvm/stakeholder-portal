@@ -19,6 +19,7 @@ export type QueryStrategy =
   | "cross_organ"      // spans multiple organs
   | "system_wide"      // system-level metrics/overview
   | "graph_traversal"  // needs knowledge graph
+  | "live_research"    // needs real-time external/tool info
   | "exploratory";     // open-ended, needs broad retrieval
 
 export interface QueryPlan {
@@ -38,6 +39,8 @@ export interface QueryPlan {
   estimated_cost: number;
   /** Suggested max tokens for response. */
   suggested_max_tokens: number;
+  /** Suggested follow-up prompts to improve answerability/relevance. */
+  suggested_followups: string[];
 }
 
 // ---------------------------------------------------------------------------
@@ -118,6 +121,12 @@ const PATTERNS: QueryPattern[] = [
     pattern: /(?:status|health|overview|summary|progress)/i,
     strategy: "system_wide",
   },
+
+  // Live research / External queries
+  {
+    pattern: /(?:market|news|competitor|latest|recent|current|today|real-time|search|find\s+out)/i,
+    strategy: "live_research",
+  },
 ];
 
 // ---------------------------------------------------------------------------
@@ -185,6 +194,7 @@ export function planQuery(query: string): QueryPlan {
     answerability_reason: "Query can be answered from available data",
     estimated_cost: 5,
     suggested_max_tokens: 1200,
+    suggested_followups: [],
   };
 
   // Check patterns
@@ -238,6 +248,7 @@ export function planQuery(query: string): QueryPlan {
     case "system_wide":
     case "cross_organ":
     case "graph_traversal":
+    case "live_research":
       plan.suggested_max_tokens = 1500;
       break;
     case "exploratory":
@@ -261,6 +272,8 @@ export function planQuery(query: string): QueryPlan {
       }
     }
   }
+
+  plan.suggested_followups = buildFollowups(plan, manifest);
 
   return plan;
 }
@@ -294,6 +307,7 @@ function estimateCost(plan: QueryPlan): number {
     case "system_wide": cost = 5; break;
     case "cross_organ": cost = 6; break;
     case "graph_traversal": cost = 7; break;
+    case "live_research": cost = 9; break;
     case "exploratory": cost = 8; break;
   }
 
@@ -301,4 +315,39 @@ function estimateCost(plan: QueryPlan): number {
   cost += plan.sub_queries.length;
 
   return Math.min(10, cost);
+}
+
+function buildFollowups(plan: QueryPlan, manifest: Manifest): string[] {
+  const followups: string[] = [];
+
+  if (plan.strategy === "live_research") {
+    followups.push("Which ORGANVM repo or organ should I scope this to?");
+    followups.push("Ask for the latest internal sprint or deployment status.");
+  }
+
+  if (plan.strategy === "single_repo" && plan.target_repos.length === 0) {
+    const examples = manifest.repos
+      .slice(0, 3)
+      .map((repo) => repo.display_name);
+    if (examples.length > 0) {
+      followups.push(
+        `Name a repo explicitly (for example: ${examples.map((e) => `"${e}"`).join(", ")}).`
+      );
+    }
+  }
+
+  if (plan.strategy === "graph_traversal") {
+    followups.push("Name the starting repo/entity to trace dependencies or impact.");
+  }
+
+  if (plan.strategy === "cross_organ" && plan.target_organs.length < 2) {
+    followups.push("Specify at least two organs to compare (for example: ORGAN-I vs ORGAN-III).");
+  }
+
+  if (plan.answerability !== "answerable") {
+    followups.push("Specify exact organ/repo/deployment scope for evidence-backed results.");
+    followups.push("I can answer using current internal snapshot data if you narrow scope.");
+  }
+
+  return [...new Set(followups)].slice(0, 4);
 }

@@ -5,11 +5,22 @@
  * Supports: correct, missing, irrelevant, unsafe signals.
  */
 
+import { appendFileSync, mkdirSync } from "fs";
+import { dirname, join } from "path";
+
 // ---------------------------------------------------------------------------
 // Feedback types
 // ---------------------------------------------------------------------------
 
 export type FeedbackSignal = "correct" | "missing" | "irrelevant" | "unsafe";
+export type FeedbackAnswerability = "answerable" | "partial" | "unanswerable";
+
+export interface FeedbackContext {
+  strategy: string | null;
+  answerability: FeedbackAnswerability | null;
+  answerability_reason: string | null;
+  suggestions: string[];
+}
 
 export interface FeedbackEntry {
   id: string;
@@ -20,6 +31,7 @@ export interface FeedbackEntry {
   citation_ids: string[];      // which citations were relevant
   created_at: string;
   client_id: string;           // anonymized
+  context: FeedbackContext | null;
 }
 
 export interface FeedbackStats {
@@ -42,7 +54,8 @@ export function submitFeedback(
   signal: FeedbackSignal,
   comment: string | null = null,
   citationIds: string[] = [],
-  clientId = "anonymous"
+  clientId = "anonymous",
+  context: FeedbackContext | null = null
 ): FeedbackEntry {
   feedbackCounter += 1;
   const entry: FeedbackEntry = {
@@ -54,9 +67,11 @@ export function submitFeedback(
     citation_ids: citationIds,
     created_at: new Date().toISOString(),
     client_id: clientId,
+    context,
   };
 
   feedbackStore.push(entry);
+  persistFeedbackEvent(entry);
 
   // Keep store bounded
   if (feedbackStore.length > 10_000) {
@@ -94,6 +109,10 @@ export function getRecentFeedback(limit = 50): FeedbackEntry[] {
   return feedbackStore.slice(-limit).reverse();
 }
 
+export function getFeedbackByClientId(clientId: string): FeedbackEntry[] {
+  return feedbackStore.filter((entry) => entry.client_id === clientId);
+}
+
 export function getTrainingDataset(): Array<{
   query: string;
   response: string;
@@ -109,6 +128,57 @@ export function getTrainingDataset(): Array<{
 export function resetFeedback(): void {
   feedbackStore.length = 0;
   feedbackCounter = 0;
+}
+
+export function deleteFeedbackByClientId(clientId: string): number {
+  if (!clientId) return 0;
+  const before = feedbackStore.length;
+  const kept = feedbackStore.filter((entry) => entry.client_id !== clientId);
+  feedbackStore.length = 0;
+  feedbackStore.push(...kept);
+  return before - feedbackStore.length;
+}
+
+export function purgeFeedbackBefore(cutoffIso: string): number {
+  const cutoffMs = Date.parse(cutoffIso);
+  if (!Number.isFinite(cutoffMs)) return 0;
+
+  const before = feedbackStore.length;
+  const kept = feedbackStore.filter((entry) => {
+    const entryMs = Date.parse(entry.created_at);
+    if (!Number.isFinite(entryMs)) return true;
+    return entryMs >= cutoffMs;
+  });
+  feedbackStore.length = 0;
+  feedbackStore.push(...kept);
+  return before - feedbackStore.length;
+}
+
+function shouldPersistFeedbackEvents(): boolean {
+  if (process.env.FEEDBACK_PERSIST_DISABLED === "1") return false;
+  if (process.env.NODE_ENV === "test") return false;
+  return true;
+}
+
+function getFeedbackEventLogPath(): string {
+  return process.env.FEEDBACK_EVENT_LOG_PATH
+    ?? join(process.cwd(), ".codex", "telemetry", "feedback-events.ndjson");
+}
+
+function persistFeedbackEvent(entry: FeedbackEntry): void {
+  if (!shouldPersistFeedbackEvents()) return;
+  const logPath = getFeedbackEventLogPath();
+  const serialized = JSON.stringify({
+    ...entry,
+    persisted_at: new Date().toISOString(),
+  });
+
+  try {
+    mkdirSync(dirname(logPath), { recursive: true });
+    appendFileSync(logPath, `${serialized}\n`, "utf-8");
+  } catch {
+    // Best-effort persistence only.
+  }
 }
 
 // ---------------------------------------------------------------------------

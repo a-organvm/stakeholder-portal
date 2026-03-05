@@ -194,6 +194,54 @@ registerRule({
 });
 
 // ---------------------------------------------------------------------------
+// Built-in rule: project health inference
+// ---------------------------------------------------------------------------
+
+registerRule({
+  id: "project-health",
+  name: "Project Health Inference",
+  description: "Calculates health scores based on commit activity and issue density",
+  applies_to: ["repo"],
+  apply: (entity: Entity): DerivedRelationship[] => {
+    const commits = Number(entity.attributes.total_commits ?? 0);
+    const issues = Number(entity.attributes.open_issues ?? 0);
+    const lastPushed = entity.attributes.pushed_at ?? entity.attributes.last_commit;
+
+    if (!commits && !issues && !lastPushed) return [];
+
+    let score = 0.5; // Baseline
+
+    // Activity bonus
+    if (lastPushed) {
+      const pushedAtMs = Date.parse(String(lastPushed));
+      if (Number.isFinite(pushedAtMs)) {
+        const daysSince =
+          (Date.now() - pushedAtMs) / (1000 * 60 * 60 * 24);
+        if (daysSince < 7) score += 0.3;
+        else if (daysSince < 30) score += 0.1;
+        else score -= 0.2;
+      }
+    }
+
+    // Complexity/Stability ratio
+    if (commits > 0) {
+      const issueDensity = issues / commits;
+      if (issueDensity < 0.05) score += 0.2; // Very stable
+      else if (issueDensity > 0.5) score -= 0.3; // High technical debt/churn
+    }
+
+    const finalScore = Math.max(0, Math.min(1, score));
+
+    // Update entity attributes with the derived health score
+    entity.attributes.health_score = finalScore;
+    entity.attributes.health_label =
+      finalScore > 0.8 ? "robust" : finalScore > 0.4 ? "active" : "stagnant";
+
+    return []; // No new edges, just enrichment for now
+  },
+});
+
+// ---------------------------------------------------------------------------
 // Engine execution
 // ---------------------------------------------------------------------------
 

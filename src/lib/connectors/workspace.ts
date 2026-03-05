@@ -176,7 +176,7 @@ export class WorkspaceConnector implements ConnectorAdapter {
           }),
           relationships: [
             {
-              type: "belongs_to",
+              type: "references",
               target_hint: `repo:${repoName}`,
               strength: 1.0,
               evidence: `File ${docFile} in repo ${repoName}`,

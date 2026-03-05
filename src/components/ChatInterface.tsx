@@ -12,6 +12,30 @@ interface MessageMeta {
   confidence_score?: number;
   citation_coverage?: number;
   strategy?: string;
+  suggestions?: string[];
+  answerability?: "answerable" | "partial" | "unanswerable";
+  answerability_reason?: string;
+  diagnostics?: {
+    path: string;
+    planner: {
+      strategy: string;
+      answerability: string;
+      reason: string;
+      target_repos: number;
+      target_organs: number;
+      sub_queries: number;
+    };
+    retrieval?: {
+      strategy: string;
+      source_count: number;
+      total_candidates: number;
+    };
+    provider?: {
+      name: string;
+      status: string;
+      reason?: string;
+    };
+  };
 }
 
 interface Message {
@@ -132,6 +156,10 @@ export function ChatInterface() {
                 confidence_score: parsed.confidence_score,
                 citation_coverage: parsed.citation_coverage,
                 strategy: parsed.strategy,
+                suggestions: Array.isArray(parsed.suggestions) ? parsed.suggestions : [],
+                answerability: parsed.answerability,
+                answerability_reason: parsed.answerability_reason,
+                diagnostics: parsed.diagnostics,
               };
             }
 
@@ -239,11 +267,33 @@ export function ChatInterface() {
                     />
                   )}
                   {/* Feedback actions */}
+                  {msg.content && !isStreaming && i === messages.length - 1 && (msg.meta?.suggestions?.length ?? 0) > 0 && (
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      {(msg.meta?.suggestions ?? []).map((suggestion) => (
+                        <button
+                          key={suggestion}
+                          onClick={() => sendMessage(suggestion)}
+                          className="rounded-full border border-[var(--color-border)] bg-[var(--color-bg)] px-3 py-1 text-xs text-[var(--color-text-muted)] transition-colors hover:border-[var(--color-accent)] hover:text-[var(--color-accent)]"
+                        >
+                          {suggestion}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                  {msg.content && !isStreaming && i === messages.length - 1 && msg.meta?.diagnostics && (
+                    <div className="mt-2 rounded border border-[var(--color-border)] bg-[var(--color-bg)] px-2 py-1 text-[10px] text-[var(--color-text-muted)]">
+                      Diagnostics: path={msg.meta.diagnostics.path}, strategy={msg.meta.diagnostics.planner.strategy}, provider={msg.meta.diagnostics.provider?.name ?? "none"} ({msg.meta.diagnostics.provider?.status ?? "n/a"})
+                    </div>
+                  )}
                   {msg.content && !isStreaming && i === messages.length - 1 && (
                     <FeedbackActions
                       query={messages.filter((m) => m.role === "user").pop()?.content ?? ""}
                       responseText={msg.content}
                       citationIds={msg.meta?.citations?.map((c) => c.id)}
+                      strategy={msg.meta?.strategy}
+                      answerability={msg.meta?.answerability}
+                      answerabilityReason={msg.meta?.answerability_reason}
+                      suggestions={msg.meta?.suggestions}
                     />
                   )}
                 </>

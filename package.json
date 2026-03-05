@@ -10,6 +10,8 @@
     "lint:fix": "eslint . --fix",
     "test": "vitest run",
     "test:watch": "vitest",
+    "eval:offline": "tsx scripts/run-evals.ts",
+    "maintenance:run": "tsx scripts/run-maintenance.ts",
     "validate-manifest": "tsx scripts/validate-manifest.ts",
     "generate": "python3 scripts/generate-manifest.py",
     "prebuild": "npm run generate -- --allow-stale-manifest && npm run validate-manifest"

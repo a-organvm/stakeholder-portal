@@ -34,6 +34,9 @@ export default function RootLayout({
               <Link href="/ask" className="hover:text-white transition-colors">
                 Ask
               </Link>
+              <Link href="/admin/intel" className="hover:text-white transition-colors">
+                Admin
+              </Link>
               <Link href="/about" className="hover:text-white transition-colors">
                 About
               </Link>

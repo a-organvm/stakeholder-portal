@@ -8,6 +8,10 @@ interface FeedbackActionsProps {
   query: string;
   responseText: string;
   citationIds?: string[];
+  strategy?: string;
+  answerability?: "answerable" | "partial" | "unanswerable";
+  answerabilityReason?: string;
+  suggestions?: string[];
   onFeedbackSubmitted?: (signal: FeedbackSignal) => void;
 }
 
@@ -26,6 +30,10 @@ export function FeedbackActions({
   query,
   responseText,
   citationIds = [],
+  strategy,
+  answerability,
+  answerabilityReason,
+  suggestions = [],
   onFeedbackSubmitted,
 }: FeedbackActionsProps) {
   const [submitted, setSubmitted] = useState<FeedbackSignal | null>(null);
@@ -44,6 +52,10 @@ export function FeedbackActions({
           response_text: responseText.slice(0, 2000),
           signal,
           citation_ids: citationIds,
+          strategy,
+          answerability,
+          answerability_reason: answerabilityReason,
+          suggestions,
         }),
       });
       if (!response.ok) return;

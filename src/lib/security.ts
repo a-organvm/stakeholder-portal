@@ -248,6 +248,34 @@ export function resetAuditLog(): void {
   auditCounter = 0;
 }
 
+export function getAuditEntriesByUserId(userId: string): AuditEntry[] {
+  return auditLog.filter((entry) => entry.user_id === userId);
+}
+
+export function deleteAuditEntriesByUserId(userId: string): number {
+  if (!userId) return 0;
+  const before = auditLog.length;
+  const kept = auditLog.filter((entry) => entry.user_id !== userId);
+  auditLog.length = 0;
+  auditLog.push(...kept);
+  return before - auditLog.length;
+}
+
+export function purgeAuditBefore(cutoffIso: string): number {
+  const cutoffMs = Date.parse(cutoffIso);
+  if (!Number.isFinite(cutoffMs)) return 0;
+
+  const before = auditLog.length;
+  const kept = auditLog.filter((entry) => {
+    const entryMs = Date.parse(entry.timestamp);
+    if (!Number.isFinite(entryMs)) return true;
+    return entryMs >= cutoffMs;
+  });
+  auditLog.length = 0;
+  auditLog.push(...kept);
+  return before - auditLog.length;
+}
+
 // ---------------------------------------------------------------------------
 // Request context builder
 // ---------------------------------------------------------------------------

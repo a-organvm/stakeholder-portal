@@ -249,7 +249,7 @@ const VALID_SOURCE_ENTITIES: Record<RelationshipType, EntityClass[]> = {
   decided_by: ["decision"],
   impacts: ["decision"],
   assigned_to: ["issue"],
-  references: ["conversation"],
+  references: ["conversation", "issue", "artifact"],
   part_of: ["sprint"],
   blocked_by: ["issue"],
   successor_of: ["decision"],

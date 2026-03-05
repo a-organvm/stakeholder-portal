@@ -98,8 +98,10 @@ describe("ingestion pipeline", () => {
 
     ingestRecords(records);
 
+    const registry = getEntityRegistry();
     const graph = getKnowledgeGraph();
     expect(graph.edgeCount()).toBe(1);
+    expect(registry.has("repo:other-repo")).toBe(true);
   });
 
   it("quarantines records with invalid relationship type", () => {
@@ -132,6 +134,35 @@ describe("ingestion pipeline", () => {
     expect(result.ingested).toBe(0);
     expect(result.quarantined).toBe(1);
     expect(result.errors.some((e) => e.field === "relationships[0].strength")).toBe(true);
+  });
+
+  it("quarantines records with malformed relationship target IDs", () => {
+    const records = [
+      makeRecord({
+        dedup_key: "test:bad-rel-target",
+        relationships: [{ type: "depends_on", target_hint: "other-repo" }],
+      }),
+    ];
+
+    const result = ingestRecords(records);
+    expect(result.ingested).toBe(0);
+    expect(result.quarantined).toBe(1);
+    expect(result.errors.some((e) => e.field === "relationships[0].target_hint")).toBe(true);
+  });
+
+  it("quarantines records with invalid relationship source/target class combinations", () => {
+    const records = [
+      makeRecord({
+        dedup_key: "test:bad-rel-combo",
+        entity_class: "artifact",
+        relationships: [{ type: "depends_on", target_hint: "repo:core-repo" }],
+      }),
+    ];
+
+    const result = ingestRecords(records);
+    expect(result.ingested).toBe(0);
+    expect(result.quarantined).toBe(1);
+    expect(result.errors.some((e) => e.field === "relationships[0]")).toBe(true);
   });
 });
 

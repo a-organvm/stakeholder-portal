@@ -38,6 +38,7 @@ describe("query planner", () => {
   it("marks potentially unanswerable queries", () => {
     const plan = planQuery("What is the competitor market share?");
     expect(plan.answerability).toBe("partial");
+    expect(plan.suggested_followups.length).toBeGreaterThan(0);
   });
 
   it("decomposes compound queries", () => {
@@ -55,5 +56,13 @@ describe("query planner", () => {
     const deterministic = planQuery("Flagship repos");
     const exploratory = planQuery("Give me a broad overview of everything");
     expect(deterministic.suggested_max_tokens).toBeLessThan(exploratory.suggested_max_tokens);
+  });
+
+  it("classifies external recency queries as live_research", () => {
+    const plan = planQuery("What is the latest competitor news today?");
+    expect(plan.strategy).toBe("live_research");
+    expect(plan.answerability).toBe("partial");
+    expect(plan.estimated_cost).toBeGreaterThanOrEqual(9);
+    expect(plan.suggested_followups.some((s) => s.includes("scope"))).toBe(true);
   });
 });

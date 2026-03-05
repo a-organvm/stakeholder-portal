@@ -52,6 +52,11 @@ describe("POST /api/feedback", () => {
           signal: "missing",
           comment: "  add deployment metrics  ",
           citation_ids: Array.from({ length: 75 }, (_, i) => ` cite-${i + 1} `),
+          strategy: "live_research",
+          answerability: "partial",
+          answerability_reason: "external data requested",
+          suggestions: Array.from({ length: 15 }, (_, i) => ` suggestion-${i + 1} `),
+          client_id: " client-123 ",
         }),
       })
     );
@@ -62,6 +67,13 @@ describe("POST /api/feedback", () => {
     expect(stored.response_text).toBe("A system summary.");
     expect(stored.comment).toBe("add deployment metrics");
     expect(stored.citation_ids).toHaveLength(50);
+    expect(stored.client_id).toBe("client-123");
+    expect(stored.context).toEqual({
+      strategy: "live_research",
+      answerability: "partial",
+      answerability_reason: "external data requested",
+      suggestions: Array.from({ length: 10 }, (_, i) => `suggestion-${i + 1}`),
+    });
   });
 });
 

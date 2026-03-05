@@ -129,12 +129,15 @@ export class GitHubConnector implements ConnectorAdapter {
     this.state.status = "running";
     const records: IngestRecord[] = [];
     const shouldCollectActivity = !options?.incremental || Boolean(options?.since);
+    const shouldFetchReadme = !options?.incremental;
 
     try {
       for (const org of this.orgs) {
         const repos = await this.fetchOrgRepos(org);
         for (const repo of repos) {
-          records.push(this.repoToRecord(repo, org));
+          // README fetches are expensive; keep incremental sync lightweight.
+          const readme = shouldFetchReadme ? await this.fetchRepoReadme(org, repo.name) : null;
+          records.push(this.repoToRecord(repo, org, readme));
 
           if (shouldCollectActivity) {
             const [commits, issues, prs] = await Promise.all([
@@ -173,7 +176,9 @@ export class GitHubConnector implements ConnectorAdapter {
     const records: IngestRecord[] = [];
 
     if (hook.repository) {
-      records.push(this.repoToRecord(hook.repository, hook.repository.full_name.split("/")[0]));
+      const org = hook.repository.full_name.split("/")[0];
+      const readme = await this.fetchRepoReadme(org, hook.repository.name);
+      records.push(this.repoToRecord(hook.repository, org, readme));
     }
 
     if (hook.commits) {
@@ -309,11 +314,25 @@ export class GitHubConnector implements ConnectorAdapter {
     return valueMs >= thresholdMs;
   }
 
+  private async fetchRepoReadme(org: string, repo: string): Promise<string | null> {
+    try {
+      const data = await this.fetchJson<{ content: string; encoding: string }>(
+        `https://api.github.com/repos/${org}/${repo}/readme`
+      );
+      if (data.encoding === "base64") {
+        return Buffer.from(data.content, "base64").toString("utf-8");
+      }
+      return data.content;
+    } catch {
+      return null;
+    }
+  }
+
   // -------------------------------------------------------------------------
   // Record conversion
   // -------------------------------------------------------------------------
 
-  private repoToRecord(repo: GitHubRepo, org: string): IngestRecord {
+  private repoToRecord(repo: GitHubRepo, org: string, readme: string | null): IngestRecord {
     return {
       dedup_key: `github:repo:${repo.full_name}`,
       entity_class: "repo",
@@ -331,6 +350,7 @@ export class GitHubConnector implements ConnectorAdapter {
         open_issues: repo.open_issues_count,
         pushed_at: repo.pushed_at,
         created_at: repo.created_at,
+        readme_content: readme?.slice(0, 10000), // Cap at 10k chars
       },
       envelope: createEnvelope({
         source_id: `github:${org}`,
@@ -374,7 +394,7 @@ export class GitHubConnector implements ConnectorAdapter {
       }),
       relationships: [
         {
-          type: "belongs_to",
+          type: "references",
           target_hint: `repo:${repoFullName.split("/")[1]}`,
           strength: 1.0,
           evidence: `Commit ${commit.sha.slice(0, 8)} in ${repoFullName}`,

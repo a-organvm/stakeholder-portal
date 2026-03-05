@@ -1,16 +1,50 @@
 {
-  "generated": "2026-03-05T08:44:37.104215+00:00",
+  "generated": "2026-03-05T15:21:31.490784+00:00",
   "system": {
     "name": "ORGANVM",
     "tagline": "Eight-organ creative-institutional system",
     "total_repos": 103,
     "total_organs": 8,
     "launch_date": "2026-02-11",
-    "sprints_completed": 0,
-    "sprint_names": [],
+    "sprints_completed": 33,
+    "sprint_names": [
+      "01-ignition",
+      "02-propulsion",
+      "03-ascension",
+      "04-exodus",
+      "05-perfection",
+      "06-autonomy",
+      "07-genesis",
+      "08-alchemia",
+      "09-convergence",
+      "10-praxis",
+      "11-veritas",
+      "12-illustratio",
+      "13-manifestatio",
+      "14-operatio",
+      "15-gap-fill",
+      "16-platinum",
+      "17-remedium",
+      "18-synchronium",
+      "19-concordia",
+      "20-tripartitum",
+      "21-submissio",
+      "22-metricum",
+      "23-publicatio",
+      "24-canon",
+      "25-inspectio",
+      "26-propagatio",
+      "27-beta-vitae",
+      "28-recognitio",
+      "29-automata",
+      "30-distributio",
+      "31-fundamen",
+      "32-sensoria",
+      "33-operatio"
+    ],
     "ci_workflows": 94,
     "dependency_edges": 43,
-    "published_essays": 0,
+    "published_essays": 48,
     "active_repos": 94,
     "archived_repos": 9
   },
@@ -487,7 +521,7 @@
       "promotion_status": "LOCAL",
       "description": "Organization-wide CI/CD, AI agents, and community health files",
       "tech_stack": [],
-      "ci_workflow": null,
+      "ci_workflow": "",
       "dependencies": [],
       "produces": [],
       "consumes": [],
@@ -776,7 +810,7 @@
       "promotion_status": "LOCAL",
       "description": "Cross-domain creative-technical framework exploring identity systems, cipher visualization, mythology, and generative platforms",
       "tech_stack": [],
-      "ci_workflow": null,
+      "ci_workflow": "",
       "dependencies": [],
       "produces": [
         "theory: Epistemological frameworks, recursive engines, ontological systems"
@@ -809,7 +843,7 @@
       "promotion_status": "ARCHIVED",
       "description": "[ARCHIVED] Central generative art engine \u2014 consolidated into metasystem-master",
       "tech_stack": [],
-      "ci_workflow": null,
+      "ci_workflow": "",
       "dependencies": [
         "organvm-ii-poiesis/metasystem-master"
       ],
@@ -844,7 +878,7 @@
       "promotion_status": "ARCHIVED",
       "description": "[ARCHIVED] SDK for real-time performance systems \u2014 consolidated into metasystem-master",
       "tech_stack": [],
-      "ci_workflow": null,
+      "ci_workflow": "",
       "dependencies": [
         "organvm-ii-poiesis/metasystem-master"
       ],
@@ -1114,7 +1148,7 @@
       "promotion_status": "ARCHIVED",
       "description": "[ARCHIVED] Visual generative example \u2014 consolidated into metasystem-master",
       "tech_stack": [],
-      "ci_workflow": null,
+      "ci_workflow": "",
       "dependencies": [
         "organvm-ii-poiesis/metasystem-master"
       ],
@@ -1211,7 +1245,7 @@
       "promotion_status": "ARCHIVED",
       "description": "[ARCHIVED] Documentation scaffold \u2014 consolidated into metasystem-master",
       "tech_stack": [],
-      "ci_workflow": null,
+      "ci_workflow": "",
       "dependencies": [
         "organvm-ii-poiesis/metasystem-master"
       ],
@@ -1669,7 +1703,7 @@
       "promotion_status": "LOCAL",
       "description": "CHTHON-ONEIROS \u2014 Underworld-dream: psychological horror theory corpus. Field II (Present Dreaming). Surrealism, found footage, digital paranoia, the unconscious as compositional engine.",
       "tech_stack": [],
-      "ci_workflow": null,
+      "ci_workflow": "",
       "dependencies": [],
       "produces": [],
       "consumes": [],
@@ -1769,7 +1803,7 @@
       "promotion_status": "LOCAL",
       "description": "MET4MORFOSES Web Edition \u2014 Digital representation of MFA thesis as immersive multi-mode web experience (Next.js + Playwright)",
       "tech_stack": [],
-      "ci_workflow": null,
+      "ci_workflow": "",
       "dependencies": [],
       "produces": [
         "creative-artifact: Generative art, interactive system, or experiential work"
@@ -2711,7 +2745,7 @@
       "promotion_status": "LOCAL",
       "description": "3D printing files archive from sources across the internet",
       "tech_stack": [],
-      "ci_workflow": null,
+      "ci_workflow": "",
       "dependencies": [],
       "produces": [],
       "consumes": [],
@@ -2915,10 +2949,10 @@
       "deployment_urls": [],
       "github_url": "https://github.com/organvm-iv-taxis/agentic-titan",
       "git_stats": {
-        "total_commits": 85,
+        "total_commits": 86,
         "first_commit": "2026-01-19",
         "last_commit": "2026-03-05",
-        "weekly_velocity": 13.5
+        "weekly_velocity": 13.8
       },
       "sections": {},
       "ai_context": "Agentic Titan (agentic-titan) \u2014 ORGAN-IV. Polymorphic Agent Swarm Architecture: model-agnostic, self-organizing multi-agent system with 6 topologies, 1,095+ tests (adversarial, chaos, e2e, integration, performance, MCP, Ray), 18 completed phases.",
@@ -3475,10 +3509,10 @@
       "deployment_urls": [],
       "github_url": "https://github.com/meta-organvm/organvm-corpvs-testamentvm",
       "git_stats": {
-        "total_commits": 207,
+        "total_commits": 211,
         "first_commit": "2026-02-11",
         "last_commit": "2026-03-05",
-        "weekly_velocity": 51.8
+        "weekly_velocity": 52.8
       },
       "sections": {},
       "ai_context": "Organvm Corpvs Testamentvm (organvm-corpvs-testamentvm) \u2014 META-ORGANVM. The authoritative planning and governance corpus for the eight-organ creative-institutional system. 81 repos, ~339K words, 8 organizations, 21 essays.",
@@ -3514,10 +3548,10 @@
       "deployment_urls": [],
       "github_url": "https://github.com/meta-organvm/alchemia-ingestvm",
       "git_stats": {
-        "total_commits": 17,
+        "total_commits": 18,
         "first_commit": "2026-02-12",
         "last_commit": "2026-03-05",
-        "weekly_velocity": 4.2
+        "weekly_velocity": 4.5
       },
       "sections": {
         "architecture": "Alchemia operates as a three-stage pipeline with a parallel aesthetic subsystem:\n\n```\n                    \u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510\n                    \u2502           CAPTURE CHANNELS               \u2502\n                    \u2502  Bookmarks \u00b7 Apple Notes \u00b7 Google Docs   \u2502\n                    \u2502  AI Chat Transcripts \u00b7 Screenshots       \u2502\n                    \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u252c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518\n                                     \u2502\n                    \u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u25bc\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510\n                    \u2502           STAGE 1: INTAKE                \u2502\n                    \u2502  Crawl directories \u00b7 SHA-256 fingerprint \u2502\n                    \u2502  Detect duplicates \u00b7 Enrich from manifest\u2502\n                    \u2502  Output: intake-inventory.json           \u2502\n                    \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u252c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518\n                                     \u2502\n                    \u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u25bc\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510\n                    \u2502           STAGE 2: ABSORB                \u2502\n                    \u2502  7-rule priority classification chain     \u2502\n                    \u2502  Map files \u2192 organ/org/repo              \u2502\n                    \u2502  Output: absorb-mapping.json             \u2502\n                    \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u252c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518\n                                     \u2502\n                    \u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u25bc\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510\n                    \u2502          STAGE 3: ALCHEMIZE              \u2502\n                    \u2502  Transform (docx\u2192md) \u00b7 Deploy via GitHu"
@@ -3584,10 +3618,10 @@
       "deployment_urls": [],
       "github_url": "https://github.com/meta-organvm/organvm-engine",
       "git_stats": {
-        "total_commits": 35,
+        "total_commits": 36,
         "first_commit": "2026-02-17",
         "last_commit": "2026-03-05",
-        "weekly_velocity": 8.8
+        "weekly_velocity": 9.0
       },
       "sections": {},
       "ai_context": "Organvm Engine (organvm-engine) \u2014 META-ORGANVM. Core Python package \u2014 governance, registry, seed discovery, metrics, dispatch, and unified CLI for the eight-organ system. Consolidates ~30 standalone scripts into a proper installable package.",
@@ -3622,10 +3656,10 @@
       "deployment_urls": [],
       "github_url": "https://github.com/meta-organvm/system-dashboard",
       "git_stats": {
-        "total_commits": 12,
+        "total_commits": 13,
         "first_commit": "2026-02-17",
         "last_commit": "2026-03-05",
-        "weekly_velocity": 3.0
+        "weekly_velocity": 3.2
       },
       "sections": {},
       "ai_context": "System Dashboard (system-dashboard) \u2014 META-ORGANVM. Live system health dashboard \u2014 FastAPI + Jinja2 + HTMX with brutalist CMYK design. 6 pages: health overview, registry browser, dependency graph, soak test monitoring, essay feed, omega scorecard.",
@@ -3657,10 +3691,10 @@
       "deployment_urls": [],
       "github_url": "https://github.com/meta-organvm/organvm-mcp-server",
       "git_stats": {
-        "total_commits": 10,
+        "total_commits": 11,
         "first_commit": "2026-02-18",
         "last_commit": "2026-03-05",
-        "weekly_velocity": 2.5
+        "weekly_velocity": 2.8
       },
       "sections": {
         "architecture": "```\nClaude Code session (any repo)\n  \u2193 stdio\norganvm-mcp-server\n  \u2193 imports\norganvm-engine (registry, seeds, governance, dispatch)\n  \u2193 reads\nregistry-v2.json, seed.yaml files, event-catalog.yaml, governance-rules.json\n```"

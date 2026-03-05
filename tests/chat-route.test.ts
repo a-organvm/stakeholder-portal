@@ -48,6 +48,7 @@ beforeEach(() => {
   delete process.env.EDGE_BLOCK_HEADER;
   delete process.env.EDGE_REMAINING_HEADER;
   delete process.env.EDGE_RETRY_AFTER_HEADER;
+  delete process.env.CHAT_DIAGNOSTICS_ENABLED;
   vi.stubGlobal("fetch", fetchMock);
 });
 
@@ -264,6 +265,7 @@ describe("POST /api/chat", () => {
     expect(body).toContain("ORGANVM Snapshot Response");
     expect(body).toContain("live OSS model path is currently unavailable");
     expect(body).toContain("Primary provider: `GROQ_API_KEY`");
+    expect(body).toContain("\"strategy\":\"offline_fallback\"");
     expect(body).toContain("data: [DONE]");
   });
 
@@ -278,6 +280,21 @@ describe("POST /api/chat", () => {
     const body = await res.text();
     expect(body).toContain("Last Sprint Status");
     expect(body).toContain("completed sprints");
+    expect(body).toContain("\"source_name\":\"ORGANVM Manifest Snapshot\"");
+  });
+
+  it("includes diagnostics payload when CHAT_DIAGNOSTICS_ENABLED=1", async () => {
+    process.env.CHAT_DIAGNOSTICS_ENABLED = "1";
+    const POST = await loadPostHandler();
+    const res = await POST(
+      makeRequest("10.0.0.11", { messages: [{ role: "user", content: "What happened in the last sprint?" }] })
+    );
+
+    expect(res.status).toBe(200);
+    const body = await res.text();
+    expect(body).toContain("\"diagnostics\":{");
+    expect(body).toContain("\"path\":\"deterministic\"");
+    expect(body).toContain("\"strategy\":\"deterministic\"");
   });
 
   it("returns deterministic tech stack fallback when repo is unknown", async () => {
@@ -291,5 +308,52 @@ describe("POST /api/chat", () => {
     const body = await res.text();
     expect(body).toContain("I could not find a repository named **Styx**");
     expect(body).toContain("repo snapshot");
+  });
+
+  it("returns explicit limitation for live-research queries without calling provider", async () => {
+    const POST = await loadPostHandler();
+    const res = await POST(
+      makeRequest("10.0.0.8", {
+        messages: [{ role: "user", content: "What is the latest competitor news today?" }],
+      })
+    );
+
+    expect(res.status).toBe(200);
+    expect(fetchMock).not.toHaveBeenCalled();
+
+    const body = await res.text();
+    expect(body).toContain("Live Research Query Detected");
+    expect(body).toContain("cannot currently perform real-time external retrieval");
+    expect(body).toContain("\"strategy\":\"live_research\"");
+    expect(body).toContain("\"suggestions\":[");
+    expect(body).toContain("Which ORGANVM repo or organ should I scope this to?");
+  });
+
+  it("blocks unsupported partial answers with insufficient-evidence response", async () => {
+    process.env.GROQ_API_KEY = "gsk_test";
+    const POST = await loadPostHandler();
+    fetchMock.mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          choices: [{ message: { role: "assistant", content: "There are 50 active repos." } }],
+        }),
+        { status: 200, headers: { "content-type": "application/json" } }
+      )
+    );
+
+    const res = await POST(
+      makeRequest("10.0.0.10", {
+        messages: [{ role: "user", content: "What is the salary range for this project?" }],
+      })
+    );
+
+    expect(res.status).toBe(200);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+
+    const body = await res.text();
+    expect(body).toContain("Insufficient Evidence for Full Answer");
+    expect(body).not.toContain("There are 50 active repos.");
+    expect(body).toContain("\"answerability\":\"partial\"");
+    expect(body).toContain("\"suggestions\":[");
   });
 });

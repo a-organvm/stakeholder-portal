@@ -10,6 +10,7 @@ import { getManifest } from "./manifest";
 import { getKnowledgeGraph } from "./graph";
 import { getEntityRegistry } from "./entity-registry";
 import { buildTier1Context } from "./retrieval";
+import { incrementCounter, recordTiming } from "./observability";
 
 // ---------------------------------------------------------------------------
 // Retrieval result
@@ -36,6 +37,12 @@ export interface HybridRetrievalResult {
   tier1: string;             // system overview
   strategy: string;          // which retrieval strategies were used
   total_candidates: number;
+}
+
+export interface HybridRetrieveOptions {
+  maxSources?: number;
+  includeGraph?: boolean;
+  disableCache?: boolean;
 }
 
 // ---------------------------------------------------------------------------
@@ -85,20 +92,65 @@ const STOP_WORDS = new Set([
   "will", "would", "could", "should", "may", "might",
 ]);
 
+const retrievalCache = new Map<string, { expires_at: number; result: HybridRetrievalResult }>();
+
+function getCacheTtlMs(): number {
+  const raw = process.env.HYBRID_RETRIEVAL_CACHE_TTL_MS;
+  const parsed = Number(raw);
+  if (Number.isFinite(parsed) && parsed >= 0) return Math.floor(parsed);
+  return 30_000;
+}
+
+function cloneResult(result: HybridRetrievalResult): HybridRetrievalResult {
+  return JSON.parse(JSON.stringify(result)) as HybridRetrievalResult;
+}
+
+function makeCacheKey(query: string, options: HybridRetrieveOptions): string {
+  return JSON.stringify({
+    query,
+    maxSources: options.maxSources ?? 15,
+    includeGraph: options.includeGraph ?? true,
+  });
+}
+
+function rewriteQuery(query: string): string {
+  return query
+    .replace(/\bvs\.\b/gi, "versus")
+    .replace(/[^\w\s:-]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+export function resetHybridRetrievalCache(): void {
+  retrievalCache.clear();
+}
+
 // ---------------------------------------------------------------------------
 // Hybrid retrieval
 // ---------------------------------------------------------------------------
 
 export function hybridRetrieve(
   query: string,
-  options?: { maxSources?: number; includeGraph?: boolean }
+  options: HybridRetrieveOptions = {}
 ): HybridRetrievalResult {
+  const startedMs = Date.now();
+  const rewrittenQuery = rewriteQuery(query);
+  const cacheKey = makeCacheKey(rewrittenQuery, options);
+  const cacheEntry = retrievalCache.get(cacheKey);
+  const cacheTtlMs = getCacheTtlMs();
+  if (!options.disableCache && cacheEntry && cacheEntry.expires_at >= Date.now()) {
+    incrementCounter("retrieval.cache_hit_total");
+    recordTiming("retrieval.duration_ms", Date.now() - startedMs, { cached: true });
+    return cloneResult(cacheEntry.result);
+  }
+
+  incrementCounter("retrieval.cache_miss_total");
   const maxSources = options?.maxSources ?? 15;
   const includeGraph = options?.includeGraph ?? true;
   const manifest = getManifest();
   const strategies: string[] = [];
 
-  const queryTokens = tokenize(query).filter((t) => !STOP_WORDS.has(t));
+  const queryTokens = tokenize(rewrittenQuery).filter((t) => !STOP_WORDS.has(t));
   const sources: RetrievalSource[] = [];
 
   // -------------------------------------------------------------------------
@@ -212,8 +264,7 @@ export function hybridRetrieve(
   // -------------------------------------------------------------------------
   const tier1 = buildTier1Context();
   const context = assembleContext(finalSources, tier1);
-
-  return {
+  const result: HybridRetrievalResult = {
     query,
     sources: finalSources,
     context,
@@ -221,6 +272,16 @@ export function hybridRetrieve(
     strategy: strategies.join("+"),
     total_candidates: scoredRepos.length + (includeGraph ? sources.length : 0),
   };
+
+  if (!options.disableCache && cacheTtlMs > 0) {
+    retrievalCache.set(cacheKey, {
+      expires_at: Date.now() + cacheTtlMs,
+      result: cloneResult(result),
+    });
+  }
+
+  recordTiming("retrieval.duration_ms", Date.now() - startedMs, { cached: false });
+  return result;
 }
 
 // ---------------------------------------------------------------------------

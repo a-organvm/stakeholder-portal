@@ -98,3 +98,11 @@ export function getConnector(id: string): ConnectorAdapter | undefined {
 export function listConnectors(): ConnectorAdapter[] {
   return [...connectors.values()];
 }
+
+export function unregisterConnector(id: string): void {
+  connectors.delete(id);
+}
+
+export function resetConnectors(): void {
+  connectors.clear();
+}

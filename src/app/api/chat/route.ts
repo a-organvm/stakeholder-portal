@@ -4,8 +4,11 @@ import { planQuery } from "@/lib/query-planner";
 import { buildCitations, buildCitationInstructions, buildCitedResponse } from "@/lib/citations";
 import { maskPii, buildAccessContext, logAudit } from "@/lib/security";
 import { getManifest } from "@/lib/manifest";
+import { getPlatformConfig } from "@/lib/platform-config";
+import { incrementCounter, recordTiming, withTimingAsync } from "@/lib/observability";
 import type { Repo } from "@/lib/types";
 import type { Citation } from "@/lib/citations";
+import type { QueryPlan } from "@/lib/query-planner";
 
 // Simple in-memory rate limiter: 10 req/min per IP
 type RateLimitEntry = {
@@ -28,12 +31,35 @@ const DEFAULT_GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
 const DEFAULT_GROQ_MODEL = "llama-3.3-70b-versatile";
 const DEFAULT_OSS_LLM_API_URL = "https://text.pollinations.ai/openai";
 const DEFAULT_OSS_LLM_MODEL = "openai-fast";
+const CHAT_DIAGNOSTICS_ENABLED = getPlatformConfig().observability.diagnostics_enabled;
 const manifest = getManifest();
 
 type ChatMessage = {
   role: "user" | "assistant";
   content: string;
 };
+
+interface ChatDiagnostics {
+  path: "deterministic" | "live_research_blocked" | "hybrid_retrieval" | "offline_fallback" | "insufficient_evidence";
+  planner: {
+    strategy: string;
+    answerability: QueryPlan["answerability"];
+    reason: string;
+    target_repos: number;
+    target_organs: number;
+    sub_queries: number;
+  };
+  retrieval?: {
+    strategy: string;
+    source_count: number;
+    total_candidates: number;
+  };
+  provider?: {
+    name: string;
+    status: "success" | "error" | "skipped";
+    reason?: string;
+  };
+}
 
 function normalizeText(input: string): string {
   return input
@@ -203,10 +229,88 @@ function buildDeterministicAnswer(queryText: string): string | null {
   return null;
 }
 
+function getFreshnessLabel(freshness: number): Citation["freshness_label"] {
+  if (freshness >= 0.95) return "live";
+  if (freshness >= 0.8) return "fresh";
+  if (freshness >= 0.5) return "recent";
+  if (freshness >= 0.3) return "aged";
+  return "stale";
+}
+
+function computeFreshnessScore(timestamp: string | null | undefined): number {
+  if (!timestamp) return 0.3;
+  const parsedMs = Date.parse(timestamp);
+  if (!Number.isFinite(parsedMs)) return 0.3;
+
+  const ageHours = Math.max(0, (Date.now() - parsedMs) / (1000 * 60 * 60));
+  if (ageHours <= 1) return 0.98;
+  if (ageHours <= 24) return 0.9;
+  if (ageHours <= 24 * 7) return 0.75;
+  if (ageHours <= 24 * 30) return 0.55;
+  return 0.35;
+}
+
+function buildManifestSnapshotCitation(): Citation {
+  const retrievedAt = new Date().toISOString();
+  const generatedAt = typeof manifest.generated === "string" ? manifest.generated : null;
+  const freshness = computeFreshnessScore(generatedAt);
+
+  return {
+    id: "cite-1",
+    source_name: "ORGANVM Manifest Snapshot",
+    source_type: "manifest",
+    url: null,
+    relevance: 1,
+    confidence: 0.92,
+    freshness,
+    freshness_label: getFreshnessLabel(freshness),
+    snippet: `Snapshot generated ${generatedAt ?? "unknown"} covering ${manifest.system.total_repos} repos and ${manifest.system.total_organs} organs.`,
+    retrieved_at: retrievedAt,
+  };
+}
+
+function buildInsufficientEvidenceResponse(queryText: string, reason: string): string {
+  const query = queryText.trim() || "this request";
+  return [
+    "### Insufficient Evidence for Full Answer",
+    `I cannot fully answer **${query}** using the current authorized context.`,
+    `Reason: ${reason}.`,
+    "I can still provide a snapshot-only answer if you want an internal-only approximation.",
+  ].join("\n\n");
+}
+
+function buildDiagnostics(
+  queryPlan: QueryPlan,
+  path: ChatDiagnostics["path"],
+  partial?: Omit<ChatDiagnostics, "path" | "planner">
+): ChatDiagnostics | undefined {
+  if (!CHAT_DIAGNOSTICS_ENABLED) return undefined;
+  return {
+    path,
+    planner: {
+      strategy: queryPlan.strategy,
+      answerability: queryPlan.answerability,
+      reason: queryPlan.answerability_reason,
+      target_repos: queryPlan.target_repos.length,
+      target_organs: queryPlan.target_organs.length,
+      sub_queries: queryPlan.sub_queries.length,
+    },
+    ...partial,
+  };
+}
+
 function createSseResponse(
   text: string,
   citations?: Citation[],
-  meta?: { confidence?: number; coverage?: number; strategy?: string }
+  meta?: {
+    confidence?: number;
+    coverage?: number;
+    strategy?: string;
+    suggestions?: string[];
+    answerability?: "answerable" | "partial" | "unanswerable";
+    answerability_reason?: string;
+    diagnostics?: ChatDiagnostics;
+  }
 ): Response {
   const encoder = new TextEncoder();
   const readable = new ReadableStream({
@@ -214,13 +318,17 @@ function createSseResponse(
       controller.enqueue(
         encoder.encode(`data: ${JSON.stringify({ text })}\n\n`)
       );
-      if (citations && citations.length > 0) {
+      if ((citations && citations.length > 0) || meta) {
         controller.enqueue(
           encoder.encode(`data: ${JSON.stringify({
-            citations,
+            citations: citations ?? [],
             confidence_score: meta?.confidence ?? 0,
             citation_coverage: meta?.coverage ?? 0,
             strategy: meta?.strategy ?? "unknown",
+            suggestions: meta?.suggestions ?? [],
+            answerability: meta?.answerability ?? "answerable",
+            answerability_reason: meta?.answerability_reason ?? "",
+            diagnostics: meta?.diagnostics,
           })}\n\n`)
         );
       }
@@ -236,6 +344,11 @@ function createSseResponse(
       Connection: "keep-alive",
     },
   });
+}
+
+function trackChatPath(path: string, startedAtMs: number): void {
+  incrementCounter("chat.path_total", 1, { path });
+  recordTiming("chat.request_duration_ms", Date.now() - startedAtMs, { path });
 }
 
 function buildOfflineResponse(
@@ -331,37 +444,49 @@ function extractProviderText(data: OpenAICompatibleResponse): string | null {
 async function generateModelResponse(
   messages: ChatMessage[],
   systemPrompt: string
-): Promise<string> {
+): Promise<{ text: string; providerName: string }> {
   const provider = getProviderConfig();
 
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), 20_000);
 
   try {
-    const response = await fetch(provider.apiUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        ...(provider.apiKey ? { Authorization: `Bearer ${provider.apiKey}` } : {}),
-      },
-      body: JSON.stringify({
-        model: provider.model,
-        stream: false,
-        temperature: 0.2,
-        max_tokens: 1200,
-        messages: [{ role: "system", content: systemPrompt }, ...messages],
-      }),
-      signal: controller.signal,
-    });
+    const response = await withTimingAsync(
+      "chat.provider_request_ms",
+      () =>
+        fetch(provider.apiUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            ...(provider.apiKey ? { Authorization: `Bearer ${provider.apiKey}` } : {}),
+          },
+          body: JSON.stringify({
+            model: provider.model,
+            stream: false,
+            temperature: 0.2,
+            max_tokens: 1200,
+            messages: [{ role: "system", content: systemPrompt }, ...messages],
+          }),
+          signal: controller.signal,
+        }),
+      { provider: provider.providerName }
+    );
 
     if (!response.ok) {
+      incrementCounter("chat.provider_error_total", 1, {
+        provider: provider.providerName,
+        status: response.status,
+      });
       const errorBody = (await response.text()).slice(0, 350);
       throw new Error(`${provider.providerName} HTTP ${response.status}: ${errorBody}`);
     }
 
     const data = (await response.json()) as OpenAICompatibleResponse;
     const text = extractProviderText(data);
-    if (text) return text;
+    if (text) {
+      incrementCounter("chat.provider_success_total", 1, { provider: provider.providerName });
+      return { text, providerName: provider.providerName };
+    }
     if (data.error?.message) throw new Error(data.error.message);
     throw new Error("OSS provider returned no assistant text.");
   } finally {
@@ -486,16 +611,29 @@ function rateLimitResponse(retryAfter: string | null = null): Response {
 }
 
 export async function POST(request: Request) {
+  const requestStartedAtMs = Date.now();
+  incrementCounter("chat.requests_total");
+
   const edgeDecision = getEdgeRateLimitDecision(request);
-  if (edgeDecision.limited) return rateLimitResponse(edgeDecision.retryAfter);
+  if (edgeDecision.limited) {
+    incrementCounter("chat.rate_limited_total", 1, { type: "edge" });
+    trackChatPath("edge_rate_limited", requestStartedAtMs);
+    return rateLimitResponse(edgeDecision.retryAfter);
+  }
 
   const clientKey = getClientKey(request);
-  if (isRateLimited(clientKey)) return rateLimitResponse();
+  if (isRateLimited(clientKey)) {
+    incrementCounter("chat.rate_limited_total", 1, { type: "local" });
+    trackChatPath("local_rate_limited", requestStartedAtMs);
+    return rateLimitResponse();
+  }
 
   let body: unknown;
   try {
     body = await request.json();
   } catch {
+    incrementCounter("chat.bad_request_total", 1, { reason: "invalid_json" });
+    trackChatPath("invalid_json", requestStartedAtMs);
     return new Response(
       JSON.stringify({ error: "Invalid JSON payload" }),
       { status: 400, headers: { "Content-Type": "application/json" } }
@@ -525,6 +663,8 @@ export async function POST(request: Request) {
     : [];
 
   if (!messages.length) {
+    incrementCounter("chat.bad_request_total", 1, { reason: "no_messages" });
+    trackChatPath("no_messages", requestStartedAtMs);
     return new Response(
       JSON.stringify({ error: "No messages provided" }),
       { status: 400, headers: { "Content-Type": "application/json" } }
@@ -559,7 +699,40 @@ export async function POST(request: Request) {
   // Deterministic answers (no LLM needed)
   const deterministicAnswer = buildDeterministicAnswer(sanitizedQuery);
   if (deterministicAnswer) {
-    return createSseResponse(deterministicAnswer);
+    const snapshotCitation = buildManifestSnapshotCitation();
+    trackChatPath("deterministic", requestStartedAtMs);
+    return createSseResponse(deterministicAnswer, [snapshotCitation], {
+      confidence: snapshotCitation.confidence,
+      coverage: 1,
+      strategy: "deterministic",
+      suggestions: queryPlan.suggested_followups,
+      answerability: queryPlan.answerability,
+      answerability_reason: queryPlan.answerability_reason,
+      diagnostics: buildDiagnostics(queryPlan, "deterministic", {
+        provider: { name: "none", status: "skipped" },
+      }),
+    });
+  }
+
+  // Avoid pretending live web/news retrieval exists when only snapshot data is available.
+  if (queryPlan.strategy === "live_research") {
+    const snapshotCitation = buildManifestSnapshotCitation();
+    trackChatPath("live_research_blocked", requestStartedAtMs);
+    return createSseResponse([
+      "### Live Research Query Detected",
+      "This endpoint cannot currently perform real-time external retrieval (web/news/market APIs).",
+      "I can answer from the current ORGANVM snapshot only. To support this query class, wire external connectors into ingestion and schedule incremental sync.",
+    ].join("\n\n"), [snapshotCitation], {
+      confidence: 0.35,
+      coverage: 0.4,
+      strategy: "live_research",
+      suggestions: queryPlan.suggested_followups,
+      answerability: queryPlan.answerability,
+      answerability_reason: queryPlan.answerability_reason,
+      diagnostics: buildDiagnostics(queryPlan, "live_research_blocked", {
+        provider: { name: "none", status: "skipped" },
+      }),
+    });
   }
 
   // Hybrid retrieval with citations
@@ -570,6 +743,10 @@ export async function POST(request: Request) {
 
   const citations = buildCitations(retrieval.sources);
   const citationInstructions = buildCitationInstructions(citations);
+  const answerabilityInstruction =
+    queryPlan.answerability === "answerable"
+      ? ""
+      : `\n\nANSWERABILITY CONSTRAINT:\nThis query is classified as ${queryPlan.answerability}. Reason: ${queryPlan.answerability_reason}.\nDo not infer facts outside provided context. If evidence is insufficient, state that clearly.`;
 
   const systemPrompt = `You are the ORGANVM Intelligence Assistant. You provide information about the ORGANVM eight-organ creative-institutional system to investors, partners, and stakeholders.
 
@@ -578,6 +755,7 @@ Answer using ONLY the context below. Reference specific repo names and deploymen
 Repo names in your responses should be formatted as links to their detail pages: [Display Name](/repos/slug).
 
 ${citationInstructions}
+${answerabilityInstruction}
 
 === SYSTEM OVERVIEW ===
 ${retrieval.tier1}
@@ -586,8 +764,33 @@ ${retrieval.tier1}
 ${retrieval.context}`;
 
   try {
-    const responseText = await generateModelResponse(messages, systemPrompt);
+    const providerResponse = await generateModelResponse(messages, systemPrompt);
+    const responseText = providerResponse.text;
     const cited = buildCitedResponse(responseText, retrieval.sources);
+    if (queryPlan.answerability !== "answerable" && cited.has_unsupported_claims) {
+      trackChatPath("insufficient_evidence", requestStartedAtMs);
+      return createSseResponse(
+        buildInsufficientEvidenceResponse(sanitizedQuery, queryPlan.answerability_reason),
+        cited.citations,
+        {
+          confidence: Math.min(0.45, cited.confidence_score),
+          coverage: cited.citation_coverage,
+          strategy: retrieval.strategy,
+          suggestions: queryPlan.suggested_followups,
+          answerability: queryPlan.answerability,
+          answerability_reason: queryPlan.answerability_reason,
+          diagnostics: buildDiagnostics(queryPlan, "insufficient_evidence", {
+            retrieval: {
+              strategy: retrieval.strategy,
+              source_count: retrieval.sources.length,
+              total_candidates: retrieval.total_candidates,
+            },
+            provider: { name: providerResponse.providerName, status: "success" },
+          }),
+        }
+      );
+    }
+    trackChatPath("hybrid_retrieval", requestStartedAtMs);
     return createSseResponse(
       maskPii(responseText),
       cited.citations,
@@ -595,11 +798,36 @@ ${retrieval.context}`;
         confidence: cited.confidence_score,
         coverage: cited.citation_coverage,
         strategy: retrieval.strategy,
+        suggestions: queryPlan.suggested_followups,
+        answerability: queryPlan.answerability,
+        answerability_reason: queryPlan.answerability_reason,
+        diagnostics: buildDiagnostics(queryPlan, "hybrid_retrieval", {
+          retrieval: {
+            strategy: retrieval.strategy,
+            source_count: retrieval.sources.length,
+            total_candidates: retrieval.total_candidates,
+          },
+          provider: { name: providerResponse.providerName, status: "success" },
+        }),
       }
     );
   } catch (error) {
     const reason =
       error instanceof Error ? error.message : "Unknown provider error";
-    return createSseResponse(buildOfflineResponse(sanitizedQuery, tier1, tier2, reason));
+    trackChatPath("offline_fallback", requestStartedAtMs);
+    return createSseResponse(buildOfflineResponse(sanitizedQuery, tier1, tier2, reason), [], {
+      strategy: "offline_fallback",
+      suggestions: queryPlan.suggested_followups,
+      answerability: queryPlan.answerability,
+      answerability_reason: queryPlan.answerability_reason,
+      diagnostics: buildDiagnostics(queryPlan, "offline_fallback", {
+        retrieval: {
+          strategy: retrieval.strategy,
+          source_count: retrieval.sources.length,
+          total_candidates: retrieval.total_candidates,
+        },
+        provider: { name: "unknown", status: "error", reason },
+      }),
+    });
   }
 }

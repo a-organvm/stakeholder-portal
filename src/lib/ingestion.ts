@@ -7,7 +7,12 @@
 
 import type { IngestRecord } from "./connectors/types";
 import type { RelationshipType } from "./ontology";
-import { ENTITY_CLASSES, RELATIONSHIP_TYPES } from "./ontology";
+import {
+  ENTITY_CLASSES,
+  RELATIONSHIP_TYPES,
+  parseEntityId,
+  validateRelationship,
+} from "./ontology";
 import { getEntityRegistry, createEntity } from "./entity-registry";
 import { getKnowledgeGraph } from "./graph";
 
@@ -122,6 +127,36 @@ function validateRecord(record: IngestRecord): ValidationError[] {
         });
       }
 
+      if (typeof rel.target_hint !== "string") {
+        errors.push({
+          record_key: key,
+          field: `relationships[${i}].target_hint`,
+          message: "Relationship target_hint must be a string entity ID",
+        });
+      } else {
+        const parsedTarget = parseEntityId(rel.target_hint);
+        if (!parsedTarget) {
+          errors.push({
+            record_key: key,
+            field: `relationships[${i}].target_hint`,
+            message: `Invalid target entity ID: ${rel.target_hint}`,
+          });
+        } else if (RELATIONSHIP_TYPES.includes(relType) && ENTITY_CLASSES.includes(record.entity_class)) {
+          const relationValidation = validateRelationship(
+            relType,
+            record.entity_class,
+            parsedTarget.entityClass
+          );
+          if (!relationValidation.valid) {
+            errors.push({
+              record_key: key,
+              field: `relationships[${i}]`,
+              message: relationValidation.reason || "Invalid relationship source/target combination",
+            });
+          }
+        }
+      }
+
       if (typeof rel.strength !== "undefined") {
         if (typeof rel.strength !== "number" || rel.strength < 0 || rel.strength > 1) {
           errors.push({
@@ -233,12 +268,34 @@ export function ingestRecords(records: IngestRecord[]): PipelineResult {
       for (const rel of normalized.relationships) {
         const relType = rel.type as RelationshipType;
         if (!RELATIONSHIP_TYPES.includes(relType)) continue;
+        const parsedTarget = parseEntityId(rel.target_hint);
+        if (!parsedTarget) continue;
+
+        const targetId = rel.target_hint;
+        if (!registry.has(targetId)) {
+          const placeholder = createEntity(
+            parsedTarget.entityClass,
+            parsedTarget.slug,
+            `Placeholder ${parsedTarget.entityClass} entity created from ${relType} relationship`,
+            { placeholder: true, source_relationship: relType },
+            {
+              source_id: normalized.envelope.source_id,
+              source_type: normalized.envelope.source_type,
+              confidence: 0.6,
+              channel: normalized.envelope.channel,
+            }
+          );
+          placeholder.id = targetId;
+          placeholder.display_name = parsedTarget.slug;
+          registry.register(placeholder);
+          graph.addNode(placeholder);
+        }
 
         graph.addEdge({
-          id: `${entity.id}-${relType}-${rel.target_hint}`,
+          id: `${entity.id}-${relType}-${targetId}`,
           type: relType,
           source_id: entity.id,
-          target_id: rel.target_hint,
+          target_id: targetId,
           strength: rel.strength ?? 0.8,
           direction: "forward",
           evidence: rel.evidence ? [rel.evidence] : [],
