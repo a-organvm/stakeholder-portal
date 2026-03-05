@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { mkdtempSync, rmSync } from "fs";
 import { join } from "path";
 import { tmpdir } from "os";
@@ -24,6 +24,25 @@ import {
   createAdminCsrfToken,
   createAdminSessionToken,
 } from "@/lib/admin-auth";
+
+// In-memory scorecard store shared between mock runMaintenanceCycle and readRecentMaintenanceScorecards
+const scorecardsStore: unknown[] = [];
+
+vi.mock("@/lib/maintenance", async () => {
+  const actual = await vi.importActual<typeof import("@/lib/maintenance")>("@/lib/maintenance");
+  return {
+    ...actual,
+    getMaintenanceRunState: async () => ({ running: false, scorecard_id: null, started_at: null }),
+    runMaintenanceCycle: async (opts?: Parameters<typeof actual.runMaintenanceCycle>[0]) => {
+      const sc = await actual.runMaintenanceCycle({ ...opts, persist_scorecard: false });
+      scorecardsStore.push(sc);
+      return sc;
+    },
+    readRecentMaintenanceScorecards: async (limit = 20) =>
+      [...scorecardsStore].reverse().slice(0, limit) as Awaited<ReturnType<typeof actual.readRecentMaintenanceScorecards>>,
+  };
+});
+
 
 const originalEnv = { ...process.env };
 
@@ -75,7 +94,9 @@ describe("admin intel route", () => {
   let tmpDir = "";
 
   beforeEach(() => {
+    scorecardsStore.length = 0;
     tmpDir = mkdtempSync(join(tmpdir(), "admin-intel-route-"));
+
     process.env = {
       ...originalEnv,
       ADMIN_API_TOKEN: "topsecret",
