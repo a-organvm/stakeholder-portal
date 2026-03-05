@@ -1,0 +1,30 @@
+schema_version: "1.0"
+name: stakeholder-portal
+organ: META-ORGANVM
+tier: standard
+implementation_status: ACTIVE
+promotion_status: LOCAL
+
+metadata:
+  description: "Hermeneus — Public intelligence portal for ORGANVM stakeholders. Natural language queries over 111 repos via Groq + OSS/free LLM API."
+  tags:
+    - next.js
+    - typescript
+    - groq
+    - oss-llm
+    - intelligence
+    - stakeholder-portal
+
+produces:
+  - artifact: stakeholder-intelligence-ui
+    type: web-application
+    consumers:
+      - external-stakeholders
+
+consumes:
+  - artifact: registry-v2.json
+    source: organvm-corpvs-testamentvm
+  - artifact: system-metrics.json
+    source: organvm-corpvs-testamentvm
+  - artifact: organvm-engine
+    source: organvm-engine
