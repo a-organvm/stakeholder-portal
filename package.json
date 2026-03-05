@@ -10,8 +10,9 @@
     "lint:fix": "eslint . --fix",
     "test": "vitest run",
     "test:watch": "vitest",
+    "validate-manifest": "tsx scripts/validate-manifest.ts",
     "generate": "python3 scripts/generate-manifest.py",
-    "prebuild": "python3 scripts/generate-manifest.py --allow-stale-manifest"
+    "prebuild": "npm run generate -- --allow-stale-manifest && npm run validate-manifest"
   },
   "dependencies": {
     "next": "^15.3.0",
@@ -29,6 +30,7 @@
     "eslint-config-next": "^15.5.12",
     "postcss": "^8.5.0",
     "tailwindcss": "^4.0.0",
+    "tsx": "4.21.0",
     "typescript": "^5.7.0",
     "vitest": "^3.2.4"
   }

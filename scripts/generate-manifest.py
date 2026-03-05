@@ -166,6 +166,17 @@ def humanize_name(repo_name: str) -> str:
     return repo_name.replace("-", " ").title()
 
 
+def normalize_tech_stack(raw: Any) -> list[str]:
+    """Normalize tech stack values to a strict list of non-empty strings."""
+    if isinstance(raw, list):
+        cleaned = [str(item).strip() for item in raw if str(item).strip()]
+        return cleaned
+    if isinstance(raw, str):
+        parts = [part.strip() for part in re.split(r"[,;|/]", raw) if part.strip()]
+        return parts
+    return []
+
+
 # ---------------------------------------------------------------------------
 # Git stats
 # ---------------------------------------------------------------------------
@@ -447,9 +458,9 @@ def generate_manifest(output_path: Path, allow_stale_manifest: bool = False) -> 
                 description = extract_first_paragraph(all_sections["what this is"])
 
             # Tech stack
-            tech_stack = repo_entry.get("tech_stack", seed_meta.get("tags", []))
-            if not tech_stack and isinstance(tech_stack, list):
-                tech_stack = []
+            tech_stack = normalize_tech_stack(repo_entry.get("tech_stack"))
+            if not tech_stack:
+                tech_stack = normalize_tech_stack(seed_meta.get("tags"))
 
             # Extract key sections
             sections: dict[str, str] = {}

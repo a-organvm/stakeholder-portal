@@ -3,10 +3,21 @@
 import { useState, useRef, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import { parseSseChunk } from "@/lib/sse";
+import { EvidencePanel } from "./EvidencePanel";
+import type { EvidenceCitation } from "./EvidencePanel";
+import { FeedbackActions } from "./FeedbackActions";
+
+interface MessageMeta {
+  citations?: EvidenceCitation[];
+  confidence_score?: number;
+  citation_coverage?: number;
+  strategy?: string;
+}
 
 interface Message {
   role: "user" | "assistant";
   content: string;
+  meta?: MessageMeta;
 }
 
 function sanitizeHref(href: string | undefined): string {
@@ -96,6 +107,7 @@ export function ChatInterface() {
       let accumulated = "";
       let buffered = "";
       let streamDone = false;
+      let messageMeta: MessageMeta = {};
 
       while (!streamDone) {
         const { done, value } = await reader.read();
@@ -113,6 +125,14 @@ export function ChatInterface() {
               accumulated += `\n\n*${parsed.error}*`;
             } else if (parsed.text) {
               accumulated += parsed.text;
+            } else if (parsed.citations) {
+              // Citation metadata chunk
+              messageMeta = {
+                citations: parsed.citations,
+                confidence_score: parsed.confidence_score,
+                citation_coverage: parsed.citation_coverage,
+                strategy: parsed.strategy,
+              };
             }
 
             setMessages((prev) => {
@@ -120,6 +140,7 @@ export function ChatInterface() {
               updated[updated.length - 1] = {
                 role: "assistant",
                 content: accumulated,
+                meta: messageMeta,
               };
               return updated;
             });
@@ -186,28 +207,46 @@ export function ChatInterface() {
               }`}
             >
               {msg.role === "assistant" ? (
-                <div className="prose prose-invert prose-sm max-w-none">
-                  <ReactMarkdown
-                    components={{
-                      a: ({ href, children }) => {
-                        const safeHref = sanitizeHref(href);
-                        const isExternal = !safeHref.startsWith("/");
-                        return (
-                          <a
-                            href={safeHref}
-                            className="text-[var(--color-accent)] hover:underline"
-                            rel="noopener noreferrer nofollow"
-                            target={isExternal ? "_blank" : undefined}
-                          >
-                            {children}
-                          </a>
-                        );
-                      },
-                    }}
-                  >
-                    {msg.content || (isStreaming && i === messages.length - 1 ? "Thinking..." : "")}
-                  </ReactMarkdown>
-                </div>
+                <>
+                  <div className="prose prose-invert prose-sm max-w-none">
+                    <ReactMarkdown
+                      components={{
+                        a: ({ href, children }) => {
+                          const safeHref = sanitizeHref(href);
+                          const isExternal = !safeHref.startsWith("/");
+                          return (
+                            <a
+                              href={safeHref}
+                              className="text-[var(--color-accent)] hover:underline"
+                              rel="noopener noreferrer nofollow"
+                              target={isExternal ? "_blank" : undefined}
+                            >
+                              {children}
+                            </a>
+                          );
+                        },
+                      }}
+                    >
+                      {msg.content || (isStreaming && i === messages.length - 1 ? "Thinking..." : "")}
+                    </ReactMarkdown>
+                  </div>
+                  {/* Evidence panel for cited responses */}
+                  {msg.meta?.citations && msg.meta.citations.length > 0 && !isStreaming && (
+                    <EvidencePanel
+                      citations={msg.meta.citations}
+                      confidence_score={msg.meta.confidence_score ?? 0}
+                      citation_coverage={msg.meta.citation_coverage ?? 0}
+                    />
+                  )}
+                  {/* Feedback actions */}
+                  {msg.content && !isStreaming && i === messages.length - 1 && (
+                    <FeedbackActions
+                      query={messages.filter((m) => m.role === "user").pop()?.content ?? ""}
+                      responseText={msg.content}
+                      citationIds={msg.meta?.citations?.map((c) => c.id)}
+                    />
+                  )}
+                </>
               ) : (
                 msg.content
               )}

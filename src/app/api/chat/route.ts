@@ -1,12 +1,27 @@
 import { buildTier1Context, buildTier2Context } from "@/lib/retrieval";
+import { hybridRetrieve } from "@/lib/hybrid-retrieval";
+import { planQuery } from "@/lib/query-planner";
+import { buildCitations, buildCitationInstructions, buildCitedResponse } from "@/lib/citations";
+import { maskPii, buildAccessContext, logAudit } from "@/lib/security";
 import { getManifest } from "@/lib/manifest";
 import type { Repo } from "@/lib/types";
+import type { Citation } from "@/lib/citations";
 
 // Simple in-memory rate limiter: 10 req/min per IP
-const rateLimitMap = new Map<string, number[]>();
+type RateLimitEntry = {
+  timestamps: number[];
+  lastSeen: number;
+};
+
+const rateLimitMap = new Map<string, RateLimitEntry>();
 const RATE_LIMIT = 10;
 const RATE_WINDOW_MS = 60_000;
 const MAX_RATE_LIMIT_KEYS = 5_000;
+const TRUST_PROXY_IP_HEADERS = process.env.TRUST_PROXY_IP_HEADERS === "1";
+const EDGE_RATE_LIMIT_ENABLED = process.env.EDGE_RATE_LIMIT_ENABLED === "1";
+const EDGE_BLOCK_HEADER = process.env.EDGE_BLOCK_HEADER || "x-edge-rate-limit-blocked";
+const EDGE_REMAINING_HEADER = process.env.EDGE_REMAINING_HEADER || "x-ratelimit-remaining";
+const EDGE_RETRY_AFTER_HEADER = process.env.EDGE_RETRY_AFTER_HEADER || "retry-after";
 const MAX_MESSAGE_COUNT = 10;
 const MAX_MESSAGE_CHARS = 4_000;
 const DEFAULT_GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
@@ -188,13 +203,27 @@ function buildDeterministicAnswer(queryText: string): string | null {
   return null;
 }
 
-function createSseResponse(text: string): Response {
+function createSseResponse(
+  text: string,
+  citations?: Citation[],
+  meta?: { confidence?: number; coverage?: number; strategy?: string }
+): Response {
   const encoder = new TextEncoder();
   const readable = new ReadableStream({
     start(controller) {
       controller.enqueue(
         encoder.encode(`data: ${JSON.stringify({ text })}\n\n`)
       );
+      if (citations && citations.length > 0) {
+        controller.enqueue(
+          encoder.encode(`data: ${JSON.stringify({
+            citations,
+            confidence_score: meta?.confidence ?? 0,
+            citation_coverage: meta?.coverage ?? 0,
+            strategy: meta?.strategy ?? "unknown",
+          })}\n\n`)
+        );
+      }
       controller.enqueue(encoder.encode("data: [DONE]\n\n"));
       controller.close();
     },
@@ -340,50 +369,128 @@ async function generateModelResponse(
   }
 }
 
-function getClientIp(request: Request): string {
-  const cfIp = request.headers.get("cf-connecting-ip");
-  const realIp = request.headers.get("x-real-ip");
-  const forwarded = request.headers.get("x-forwarded-for");
-  const forwardedIp = forwarded?.split(",")[0]?.trim();
-  return cfIp || realIp || forwardedIp || "unknown";
+function parseForwardedIp(value: string | null): string | null {
+  if (!value) return null;
+  const first = value.split(",")[0]?.trim();
+  return first || null;
+}
+
+function hashString(value: string): string {
+  let hash = 2166136261;
+  for (let i = 0; i < value.length; i += 1) {
+    hash ^= value.charCodeAt(i);
+    hash = Math.imul(hash, 16777619);
+  }
+  return (hash >>> 0).toString(16);
+}
+
+function buildAnonymousClientKey(request: Request): string {
+  const ua = request.headers.get("user-agent") || "";
+  const accept = request.headers.get("accept") || "";
+  const lang = request.headers.get("accept-language") || "";
+  return `anon:${hashString(`${ua}|${accept}|${lang}`)}`;
+}
+
+function getTrustedProxyIp(request: Request): string | null {
+  if (request.headers.has("cf-ray")) {
+    return parseForwardedIp(request.headers.get("cf-connecting-ip"));
+  }
+  if (request.headers.has("x-vercel-id")) {
+    return parseForwardedIp(request.headers.get("x-forwarded-for"));
+  }
+  if (TRUST_PROXY_IP_HEADERS) {
+    return (
+      parseForwardedIp(request.headers.get("x-forwarded-for")) ||
+      parseForwardedIp(request.headers.get("x-real-ip")) ||
+      parseForwardedIp(request.headers.get("cf-connecting-ip"))
+    );
+  }
+  return null;
+}
+
+function getClientKey(request: Request): string {
+  const trustedIp = getTrustedProxyIp(request);
+  if (trustedIp) return `ip:${trustedIp}`;
+  return buildAnonymousClientKey(request);
+}
+
+function getEdgeRateLimitDecision(request: Request): {
+  limited: boolean;
+  retryAfter: string | null;
+} {
+  if (!EDGE_RATE_LIMIT_ENABLED) return { limited: false, retryAfter: null };
+
+  const blocked = request.headers.get(EDGE_BLOCK_HEADER);
+  if (blocked === "1" || blocked?.toLowerCase() === "true") {
+    return {
+      limited: true,
+      retryAfter: request.headers.get(EDGE_RETRY_AFTER_HEADER),
+    };
+  }
+
+  const remaining = Number(request.headers.get(EDGE_REMAINING_HEADER));
+  if (Number.isFinite(remaining) && remaining <= 0) {
+    return {
+      limited: true,
+      retryAfter: request.headers.get(EDGE_RETRY_AFTER_HEADER),
+    };
+  }
+
+  return { limited: false, retryAfter: null };
+}
+
+function evictOldestRateLimitKeys(targetSize: number): void {
+  if (rateLimitMap.size <= targetSize) return;
+  const keysByLastSeen = [...rateLimitMap.entries()]
+    .sort((a, b) => a[1].lastSeen - b[1].lastSeen)
+    .map(([key]) => key);
+  const removeCount = rateLimitMap.size - targetSize;
+  for (let i = 0; i < removeCount; i += 1) {
+    const key = keysByLastSeen[i];
+    if (key) rateLimitMap.delete(key);
+  }
 }
 
 function cleanupRateLimitMap(now: number): void {
-  for (const [ip, timestamps] of rateLimitMap.entries()) {
-    const recent = timestamps.filter((t) => now - t < RATE_WINDOW_MS);
+  for (const [clientKey, entry] of rateLimitMap.entries()) {
+    const recent = entry.timestamps.filter((t) => now - t < RATE_WINDOW_MS);
     if (recent.length > 0) {
-      rateLimitMap.set(ip, recent);
+      rateLimitMap.set(clientKey, { timestamps: recent, lastSeen: entry.lastSeen });
     } else {
-      rateLimitMap.delete(ip);
+      rateLimitMap.delete(clientKey);
     }
   }
-
-  // Hard cap to avoid unbounded memory growth under spoofed IP floods.
-  if (rateLimitMap.size > MAX_RATE_LIMIT_KEYS) {
-    rateLimitMap.clear();
-  }
+  evictOldestRateLimitKeys(MAX_RATE_LIMIT_KEYS);
 }
 
-function isRateLimited(ip: string): boolean {
+function isRateLimited(clientKey: string): boolean {
   const now = Date.now();
   cleanupRateLimitMap(now);
 
-  const recent = rateLimitMap.get(ip) || [];
-  if (recent.length >= RATE_LIMIT) return true;
-  recent.push(now);
-  rateLimitMap.set(ip, recent);
+  const current = rateLimitMap.get(clientKey) || { timestamps: [], lastSeen: now };
+  if (current.timestamps.length >= RATE_LIMIT) return true;
+
+  current.timestamps.push(now);
+  current.lastSeen = now;
+  rateLimitMap.set(clientKey, current);
   return false;
 }
 
+function rateLimitResponse(retryAfter: string | null = null): Response {
+  const headers: Record<string, string> = { "Content-Type": "application/json" };
+  if (retryAfter) headers["Retry-After"] = retryAfter;
+  return new Response(
+    JSON.stringify({ error: "Rate limited. Try again in a minute." }),
+    { status: 429, headers }
+  );
+}
+
 export async function POST(request: Request) {
-  // Rate limiting
-  const ip = getClientIp(request);
-  if (isRateLimited(ip)) {
-    return new Response(
-      JSON.stringify({ error: "Rate limited. Try again in a minute." }),
-      { status: 429, headers: { "Content-Type": "application/json" } }
-    );
-  }
+  const edgeDecision = getEdgeRateLimitDecision(request);
+  if (edgeDecision.limited) return rateLimitResponse(edgeDecision.retryAfter);
+
+  const clientKey = getClientKey(request);
+  if (isRateLimited(clientKey)) return rateLimitResponse();
 
   let body: unknown;
   try {
@@ -433,14 +540,36 @@ export async function POST(request: Request) {
       ? lastUserMessage.content
       : "";
 
-  // Build context
-  const tier1 = buildTier1Context();
-  const tier2 = buildTier2Context(queryText);
+  // Security: mask PII in query
+  const sanitizedQuery = maskPii(queryText);
 
-  const deterministicAnswer = buildDeterministicAnswer(queryText);
+  // Audit log
+  const accessCtx = buildAccessContext(request);
+  logAudit("chat_query", "chat", accessCtx, true, "Query accepted", {
+    query_length: sanitizedQuery.length,
+  });
+
+  // Query planning
+  const queryPlan = planQuery(sanitizedQuery);
+
+  // Build context (legacy tier system for fallback)
+  const tier1 = buildTier1Context();
+  const tier2 = buildTier2Context(sanitizedQuery);
+
+  // Deterministic answers (no LLM needed)
+  const deterministicAnswer = buildDeterministicAnswer(sanitizedQuery);
   if (deterministicAnswer) {
     return createSseResponse(deterministicAnswer);
   }
+
+  // Hybrid retrieval with citations
+  const retrieval = hybridRetrieve(sanitizedQuery, {
+    maxSources: queryPlan.strategy === "single_repo" ? 5 : 15,
+    includeGraph: queryPlan.strategy === "graph_traversal" || queryPlan.strategy === "cross_organ",
+  });
+
+  const citations = buildCitations(retrieval.sources);
+  const citationInstructions = buildCitationInstructions(citations);
 
   const systemPrompt = `You are the ORGANVM Intelligence Assistant. You provide information about the ORGANVM eight-organ creative-institutional system to investors, partners, and stakeholders.
 
@@ -448,18 +577,29 @@ Answer using ONLY the context below. Reference specific repo names and deploymen
 
 Repo names in your responses should be formatted as links to their detail pages: [Display Name](/repos/slug).
 
-=== SYSTEM OVERVIEW ===
-${tier1}
+${citationInstructions}
 
-  === RELEVANT PROJECTS ===
-  ${tier2}`;
+=== SYSTEM OVERVIEW ===
+${retrieval.tier1}
+
+=== EVIDENCE-GROUNDED CONTEXT ===
+${retrieval.context}`;
 
   try {
     const responseText = await generateModelResponse(messages, systemPrompt);
-    return createSseResponse(responseText);
+    const cited = buildCitedResponse(responseText, retrieval.sources);
+    return createSseResponse(
+      maskPii(responseText),
+      cited.citations,
+      {
+        confidence: cited.confidence_score,
+        coverage: cited.citation_coverage,
+        strategy: retrieval.strategy,
+      }
+    );
   } catch (error) {
     const reason =
       error instanceof Error ? error.message : "Unknown provider error";
-    return createSseResponse(buildOfflineResponse(queryText, tier1, tier2, reason));
+    return createSseResponse(buildOfflineResponse(sanitizedQuery, tier1, tier2, reason));
   }
 }

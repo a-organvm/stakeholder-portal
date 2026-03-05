@@ -1,5 +1,5 @@
 {
-  "generated": "2026-03-05T05:13:02.679590+00:00",
+  "generated": "2026-03-05T08:44:37.104215+00:00",
   "system": {
     "name": "ORGANVM",
     "tagline": "Eight-organ creative-institutional system",
@@ -24,7 +24,12 @@
       "description": "Epistemological frameworks, recursive engines, ontological systems, conceptual research",
       "repo_count": 20,
       "status": "OPERATIONAL",
-      "aesthetic": {}
+      "aesthetic": {
+        "palette": "cooler, more muted \u2014 blue-grays over warm tones",
+        "typography": "serif headings for philosophical weight, monospace for formal notation",
+        "tone": "more academic, denser, philosophical gravitas \u2014 tolerate longer sentences",
+        "visual": "diagram-heavy, clean lines, mathematical precision, whiteboard aesthetic"
+      }
     },
     {
       "key": "ORGAN-II",
@@ -35,7 +40,12 @@
       "description": "Generative art, interactive systems, performance frameworks, experiential work",
       "repo_count": 30,
       "status": "OPERATIONAL",
-      "aesthetic": {}
+      "aesthetic": {
+        "palette": "allow warmer accents \u2014 the crimson breathes here, occasional gold",
+        "typography": "display typefaces for titles, body remains clean \u2014 contrast between art and reading",
+        "tone": "more evocative, sensory language permitted \u2014 but never purple prose",
+        "visual": "generative art patterns, visual rhythm, breathing negative space, grid-breaking occasional"
+      }
     },
     {
       "key": "ORGAN-III",
@@ -46,7 +56,12 @@
       "description": "Revenue-generating products, deployed systems, customer-facing tools, B2B/B2C applications",
       "repo_count": 27,
       "status": "OPERATIONAL",
-      "aesthetic": {}
+      "aesthetic": {
+        "palette": "professional neutrals \u2014 navy, charcoal, clean white, minimal accent",
+        "typography": "sans-serif authority, clear hierarchy, scannable headers",
+        "tone": "crisp, action-oriented, value-proposition language \u2014 zero fluff",
+        "visual": "clean data visualization, pricing tables, feature grids, business metrics"
+      }
     },
     {
       "key": "ORGAN-IV",
@@ -68,7 +83,12 @@
       "description": "Essays, marginalia, process documentation, building in public, RSS/newsletter, audience engagement",
       "repo_count": 2,
       "status": "OPERATIONAL",
-      "aesthetic": {}
+      "aesthetic": {
+        "palette": "warm paper tones \u2014 amber highlights on dark, reading-lamp warmth",
+        "typography": "literary serif for essay body, generous line-height, reading-optimized",
+        "tone": "essayistic, first-person permitted, building-in-public honesty",
+        "visual": "long-form typography, pull quotes, minimal illustration, footnotes welcome"
+      }
     },
     {
       "key": "ORGAN-VI",
@@ -79,7 +99,12 @@
       "description": "Community infrastructure \u2014 salon archives, reading group curricula, adaptive syllabi, contributor profiles, shared PostgreSQL layer, FastAPI portal with full-text search, Atom feeds, and WebSocket live rooms",
       "repo_count": 6,
       "status": "OPERATIONAL",
-      "aesthetic": {}
+      "aesthetic": {
+        "palette": "warmer, more inviting \u2014 amber accents, softer contrast",
+        "typography": "balanced serif-sans mix, approachable but not casual",
+        "tone": "inclusive, facilitative, question-posing \u2014 seminar voice",
+        "visual": "circular diagrams, seating arrangements, relational maps, warmth"
+      }
     },
     {
       "key": "ORGAN-VII",
@@ -90,7 +115,12 @@
       "description": "Marketing & Distribution \u2014 POSSE distribution pipeline with Ghost newsletter hub, Mastodon, Discord, Bluesky adapters, cross-organ event wiring, autonomous RSS polling, bidirectional analytics, Ghost Handlebars theme, 15 announcement templates",
       "repo_count": 4,
       "status": "OPERATIONAL",
-      "aesthetic": {}
+      "aesthetic": {
+        "palette": "higher contrast for social media visibility \u2014 crimson accent prominent",
+        "typography": "bold headlines, scan-optimized, social-card-aware sizing",
+        "tone": "announcement cadence, concise impact, headline-first writing",
+        "visual": "social card templates, announcement banners, share-optimized layouts"
+      }
     },
     {
       "key": "META-ORGANVM",
@@ -101,7 +131,12 @@
       "description": "Umbrella organization coordinating all 7 organ orgs. System-wide governance, cross-organ visibility, and institutional identity.",
       "repo_count": 7,
       "status": "OPERATIONAL",
-      "aesthetic": {}
+      "aesthetic": {
+        "palette": "full palette \u2014 this is the umbrella, uses the complete system identity",
+        "typography": "balanced mix \u2014 demonstrates the full range",
+        "tone": "authoritative yet transparent, meta-commentary on the system itself",
+        "visual": "system-of-systems diagrams, org charts, registry visualizations, bird's-eye view"
+      }
     }
   ],
   "repos": [
@@ -118,15 +153,17 @@
       "tech_stack": [],
       "ci_workflow": "ci-python.yml",
       "dependencies": [],
-      "produces": [],
+      "produces": [
+        "theory: Epistemological frameworks, recursive engines, ontological systems"
+      ],
       "consumes": [],
       "deployment_urls": [],
       "github_url": "https://github.com/organvm-i-theoria/recursive-engine--generative-entity",
       "git_stats": {
-        "total_commits": 111,
+        "total_commits": 112,
         "first_commit": "2026-01-22",
-        "last_commit": "2026-03-04",
-        "weekly_velocity": 25.5
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 25.8
       },
       "sections": {
         "architecture": ""
@@ -149,15 +186,17 @@
       "tech_stack": [],
       "ci_workflow": "ci-python.yml",
       "dependencies": [],
-      "produces": [],
+      "produces": [
+        "theory: Epistemological frameworks, recursive engines, ontological systems"
+      ],
       "consumes": [],
       "deployment_urls": [],
       "github_url": "https://github.com/organvm-i-theoria/organon-noumenon--ontogenetic-morphe",
       "git_stats": {
-        "total_commits": 20,
+        "total_commits": 21,
         "first_commit": "2026-01-21",
-        "last_commit": "2026-02-28",
-        "weekly_velocity": 4.2
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 4.5
       },
       "sections": {
         "architecture": ""
@@ -180,15 +219,17 @@
       "tech_stack": [],
       "ci_workflow": "ci-python.yml",
       "dependencies": [],
-      "produces": [],
+      "produces": [
+        "dependency: Consumed by organvm-ii-poiesis/art-from--auto-revision-epistemic-engine"
+      ],
       "consumes": [],
       "deployment_urls": [],
       "github_url": "https://github.com/organvm-i-theoria/auto-revision-epistemic-engine",
       "git_stats": {
-        "total_commits": 4,
+        "total_commits": 6,
         "first_commit": "2026-02-12",
-        "last_commit": "2026-02-24",
-        "weekly_velocity": 1.0
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 1.5
       },
       "sections": {},
       "ai_context": "Auto Revision Epistemic Engine (auto-revision-epistemic-engine) \u2014 ORGAN-I. Self-governing orchestration framework with 8 phases, 4 human review gates, BLAKE3 audit chain, and ethical axiom enforcement",
@@ -209,15 +250,17 @@
       "tech_stack": [],
       "ci_workflow": "ci-python.yml",
       "dependencies": [],
-      "produces": [],
+      "produces": [
+        "dependency: Consumed by organvm-ii-poiesis/art-from--narratological-algorithmic-lenses"
+      ],
       "consumes": [],
       "deployment_urls": [],
       "github_url": "https://github.com/organvm-i-theoria/narratological-algorithmic-lenses",
       "git_stats": {
-        "total_commits": 46,
+        "total_commits": 47,
         "first_commit": "2026-01-28",
-        "last_commit": "2026-03-03",
-        "weekly_velocity": 10.5
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 10.8
       },
       "sections": {
         "architecture": "**Hybrid: Python core + TypeScript web app**\n\n```\nnarratological-algorithmic-lenses/\n\u251c\u2500\u2500 specs/                    # Theoretical specifications (14 studies, templates, sources)\n\u2502   \u251c\u2500\u2500 01-primary-sources/\n\u2502   \u251c\u2500\u2500 02-completed-studies/\n\u2502   \u251c\u2500\u2500 03-structured-data/   # JSON exports + unified compendium\n\u2502   \u251c\u2500\u2500 04-templates/\n\u2502   \u251c\u2500\u2500 05-secondary-sources/\n\u2502   \u2514\u2500\u2500 07-skill-documentation/\n\u2502\n\u251c\u2500\u2500 packages/\n\u2502   \u251c\u2500\u2500 core/                 # Python core library (Pydantic models, algorithms)\n\u2502   \u251c\u2500\u2500 cli/                  # Python CLI application (typer)\n\u2502   \u251c\u2500\u2500 api/                  # FastAPI backend\n\u2502   \u2514\u2500\u2500 web/                  # TypeScript/React web app (Vite)\n\u2502\n\u251c\u2500\u2500 pyproject.toml            # Python workspace root (uv)\n\u2514\u2500\u2500 package.json              # Node.js workspace root\n```"
@@ -242,15 +285,17 @@
       "dependencies": [
         "organvm-i-theoria/organon-noumenon--ontogenetic-morphe"
       ],
-      "produces": [],
+      "produces": [
+        "theory: Epistemological frameworks, recursive engines, ontological systems"
+      ],
       "consumes": [],
       "deployment_urls": [],
       "github_url": "https://github.com/organvm-i-theoria/call-function--ontological",
       "git_stats": {
-        "total_commits": 49,
+        "total_commits": 50,
         "first_commit": "2026-01-20",
-        "last_commit": "2026-03-03",
-        "weekly_velocity": 11.0
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 11.2
       },
       "sections": {
         "architecture": ""
@@ -275,15 +320,17 @@
       "dependencies": [
         "organvm-i-theoria/a-recursive-root"
       ],
-      "produces": [],
+      "produces": [
+        "theory: Epistemological frameworks, recursive engines, ontological systems"
+      ],
       "consumes": [],
       "deployment_urls": [],
       "github_url": "https://github.com/organvm-i-theoria/sema-metra--alchemica-mundi",
       "git_stats": {
-        "total_commits": 25,
+        "total_commits": 26,
         "first_commit": "2026-01-22",
-        "last_commit": "2026-02-28",
-        "weekly_velocity": 5.2
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 5.5
       },
       "sections": {
         "what this is": "**Sema-Metra: Alchemica Mundi** is a TypeScript framework implementing an axiom-driven signal-matrix system. It functions as a programmable creative engine \u2014 a modular synthesis patchbay that routes and transforms signals across modalities using formal ontological architecture. Where conventional signal-processing frameworks treat transformation as stateless pipes (signals enter, get processed, exit unchanged), this system enforces a closed ontological loop: every output rewrites the world that interprets subsequent inputs.\n\nThe name encodes the architecture. *Sema* (Greek: \u03c3\u1fc6\u03bc\u03b1, sign, signal) and *metra* (Greek: \u03bc\u03ae\u03c4\u03c1\u03b1, matrix, measure) describe the input/output surface. *Alchemica mundi* (Latin: world-alchemy) describes what happens between: transmutation that alters not just the signal but the conditions under which future signals will be read.\n\nThe framework blends four domains that rarely share infrastructure:\n\n- **Modular synthesis** \u2014 LFO waveforms, signal routing, FX chains, patch save/load\n- **Tabletop RPG mechanics** \u2014 Dice systems (d4 through d1000), ritual conditions, pass/fail gates\n- **Ritual and mythological systems** \u2014 Pre-built rituals with binary gate checks, hybrid toggle states, character waveform models as AI entities\n- **Formal ontology** \u2014 10 axioms enforced at runtime through an event-sourcing spine with hard rules, cost vectors, and mandatory world-binding feedback\n\nThe result is a system where creative emergence and formal rigor coexist by design, not",
@@ -307,15 +354,17 @@
       "tech_stack": [],
       "ci_workflow": "ci-python.yml",
       "dependencies": [],
-      "produces": [],
+      "produces": [
+        "theory: Epistemological frameworks, recursive engines, ontological systems"
+      ],
       "consumes": [],
       "deployment_urls": [],
       "github_url": "https://github.com/organvm-i-theoria/system-governance-framework",
       "git_stats": {
-        "total_commits": 58,
+        "total_commits": 60,
         "first_commit": "2025-09-06",
-        "last_commit": "2026-03-03",
-        "weekly_velocity": 6.8
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 7.2
       },
       "sections": {
         "architecture": ""
@@ -340,15 +389,17 @@
       "dependencies": [
         "organvm-i-theoria/recursive-engine--generative-entity"
       ],
-      "produces": [],
+      "produces": [
+        "theory: Epistemological frameworks, recursive engines, ontological systems"
+      ],
       "consumes": [],
       "deployment_urls": [],
       "github_url": "https://github.com/organvm-i-theoria/cognitive-archaelogy-tribunal",
       "git_stats": {
-        "total_commits": 89,
+        "total_commits": 90,
         "first_commit": "2025-11-02",
-        "last_commit": "2026-02-28",
-        "weekly_velocity": 3.8
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 4.0
       },
       "sections": {
         "architecture": "```\nmain.py                          # CLI entry point (argparse)\n  |\n  +-- cognitive_tribunal/\n  |     +-- modules/\n  |     |     +-- archive_scanner.py        # Layer 0: Filesystem scanning + deduplication\n  |     |     +-- ai_context_aggregator.py  # Layer 1: ChatGPT/generic JSON parsing\n  |     |     +-- personal_repo_analyzer.py # Layer 2: Personal GitHub repo analysis\n  |     |     +-- org_repo_analyzer.py      # Layer 3: Org GitHub repo analysis\n  |     |     +-- web_bookmark_analyzer.py  # Layer 4: Netscape bookmark parsing\n  |     |\n  |     +-- outputs/\n  |     |     +-- inventory.py              # Unified inventory generator\n  |     |     +-- knowledge_graph.py        # Knowledge graph + Cytoscape export\n  |     |     +-- triage_report.py          # Prioritised triage (JSON + text)\n  |     |\n  |     +-- utils/\n  |           +-- file_utils.py             # FileClassifier, FileHasher, Deduplicator\n  |           +-- github_utils.py           # GitHubClient wrapper (PyGithub)\n  |           +-- metadata.py               # Dublin Core / DataCite metadata\n  |\n  +-- ingestion/                  # Ingestion chambers (input staging)\n  |     +-- ai-exports/           # ChatGPT/Claude export JSON files\n  |     +-- archives/             # Filesystem archive path references\n  |     +-- bookmarks/            # Netscape-format bookmark HTML exports\n  |     +-- browser-tabs/         # Browser session JSON exports\n  |\n  +-- data/\n  |     +-- genesis-conversations/ # 16 indexed genesis"
@@ -371,15 +422,18 @@
       "tech_stack": [],
       "ci_workflow": "ci-python.yml",
       "dependencies": [],
-      "produces": [],
+      "produces": [
+        "dependency: Consumed by organvm-i-theoria/sema-metra--alchemica-mundi",
+        "dependency: Consumed by organvm-i-theoria/radix-recursiva-solve-coagula-redi"
+      ],
       "consumes": [],
       "deployment_urls": [],
       "github_url": "https://github.com/organvm-i-theoria/a-recursive-root",
       "git_stats": {
-        "total_commits": 101,
+        "total_commits": 102,
         "first_commit": "2025-10-23",
-        "last_commit": "2026-02-28",
-        "weekly_velocity": 5.0
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 5.2
       },
       "sections": {
         "architecture": ""
@@ -409,10 +463,10 @@
       "deployment_urls": [],
       "github_url": "https://github.com/organvm-i-theoria/radix-recursiva-solve-coagula-redi",
       "git_stats": {
-        "total_commits": 329,
+        "total_commits": 330,
         "first_commit": "2025-05-10",
-        "last_commit": "2026-02-28",
-        "weekly_velocity": 7.2
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 7.5
       },
       "sections": {
         "architecture": ""
@@ -440,10 +494,10 @@
       "deployment_urls": [],
       "github_url": "https://github.com/organvm-i-theoria/.github",
       "git_stats": {
-        "total_commits": 3,
+        "total_commits": 5,
         "first_commit": "2026-02-24",
-        "last_commit": "2026-03-04",
-        "weekly_velocity": 0.8
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 1.2
       },
       "sections": {},
       "ai_context": ".Github (.github) \u2014 ORGAN-I. Organization-wide CI/CD, AI agents, and community health files",
@@ -466,15 +520,19 @@
       "dependencies": [
         "organvm-i-theoria/linguistic-atomization-framework"
       ],
-      "produces": [],
-      "consumes": [],
+      "produces": [
+        "theory: Epistemological frameworks, recursive engines, ontological systems"
+      ],
+      "consumes": [
+        "dependency: Depends on organvm-i-theoria/linguistic-atomization-framework"
+      ],
       "deployment_urls": [],
       "github_url": "https://github.com/organvm-i-theoria/nexus--babel-alexandria-",
       "git_stats": {
-        "total_commits": 43,
+        "total_commits": 44,
         "first_commit": "2025-11-19",
-        "last_commit": "2026-02-25",
-        "weekly_velocity": 10.2
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 10.5
       },
       "sections": {
         "what this is": "**Nexus Babel Alexandria** is the **ARC4N Living Digital Canon** \u2014 a breathing organism that atomizes literary works into modular cells for creative recombination, translation, and scholarly exploration. It preserves classic texts at molecular levels and unlocks infinite creative and scholarly recombination through a temporal evolution spiral (expansion \u2192 peak \u2192 compression \u2192 rebirth).\n\nThe NLP engine underneath (aka \"Theoria Linguae Machina\") ingests multimodal documents (text, PDF, image, audio), atomizes them into a 5-level hierarchy (glyph-seed \u2192 syllable \u2192 word \u2192 sentence \u2192 paragraph), projects them into a knowledge graph, and provides multi-layer linguistic analysis with dual-mode governance (PUBLIC/RAW).",
@@ -501,15 +559,17 @@
       "dependencies": [
         "organvm-i-theoria/recursive-engine--generative-entity"
       ],
-      "produces": [],
+      "produces": [
+        "theory: Epistemological frameworks, recursive engines, ontological systems"
+      ],
       "consumes": [],
       "deployment_urls": [],
       "github_url": "https://github.com/organvm-i-theoria/reverse-engine-recursive-run",
       "git_stats": {
-        "total_commits": 35,
+        "total_commits": 36,
         "first_commit": "2025-10-23",
-        "last_commit": "2026-03-03",
-        "weekly_velocity": 7.0
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 7.2
       },
       "sections": {},
       "ai_context": "Reverse Engine Recursive Run (reverse-engine-recursive-run) \u2014 ORGAN-I. Architecture governance toolkit \u2014 7-script Python pipeline for risk scoring, drift detection, ownership analysis, and SBOM generation across any codebase",
@@ -588,7 +648,9 @@
       "tech_stack": [],
       "ci_workflow": "ci-python.yml",
       "dependencies": [],
-      "produces": [],
+      "produces": [
+        "theory: Epistemological frameworks, recursive engines, ontological systems"
+      ],
       "consumes": [],
       "deployment_urls": [],
       "github_url": "https://github.com/organvm-i-theoria/collective-persona-operations",
@@ -617,15 +679,17 @@
       "tech_stack": [],
       "ci_workflow": "ci-python.yml",
       "dependencies": [],
-      "produces": [],
+      "produces": [
+        "theory: Epistemological frameworks, recursive engines, ontological systems"
+      ],
       "consumes": [],
       "deployment_urls": [],
       "github_url": "https://github.com/organvm-i-theoria/linguistic-atomization-framework",
       "git_stats": {
-        "total_commits": 45,
+        "total_commits": 46,
         "first_commit": "2026-01-20",
-        "last_commit": "2026-03-04",
-        "weekly_velocity": 4.2
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 4.5
       },
       "sections": {
         "architecture": ""
@@ -650,15 +714,17 @@
       "dependencies": [
         "organvm-i-theoria/linguistic-atomization-framework"
       ],
-      "produces": [],
+      "produces": [
+        "theory: Epistemological frameworks, recursive engines, ontological systems"
+      ],
       "consumes": [],
       "deployment_urls": [],
       "github_url": "https://github.com/organvm-i-theoria/my-knowledge-base",
       "git_stats": {
-        "total_commits": 135,
+        "total_commits": 136,
         "first_commit": "2026-01-07",
-        "last_commit": "2026-03-04",
-        "weekly_velocity": 22.5
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 22.8
       },
       "sections": {
         "architecture": ""
@@ -681,15 +747,17 @@
       "tech_stack": [],
       "ci_workflow": "ci-python.yml",
       "dependencies": [],
-      "produces": [],
+      "produces": [
+        "theory-artifact: Theoretical framework, ontological model, or epistemological tool"
+      ],
       "consumes": [],
       "deployment_urls": [],
       "github_url": "https://github.com/organvm-i-theoria/scalable-lore-expert",
       "git_stats": {
-        "total_commits": 53,
+        "total_commits": 55,
         "first_commit": "2026-02-12",
-        "last_commit": "2026-02-28",
-        "weekly_velocity": 13.2
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 13.8
       },
       "sections": {},
       "ai_context": "Scalable Lore Expert (scalable-lore-expert) \u2014 ORGAN-I. Ontological knowledge management system applying Dante's epistemological framework to narrative universe modeling. Graph DB + semantic search for complex fictional universes.",
@@ -710,15 +778,17 @@
       "tech_stack": [],
       "ci_workflow": null,
       "dependencies": [],
-      "produces": [],
+      "produces": [
+        "theory: Epistemological frameworks, recursive engines, ontological systems"
+      ],
       "consumes": [],
       "deployment_urls": [],
       "github_url": "https://github.com/organvm-i-theoria/meta-source--ledger-output",
       "git_stats": {
-        "total_commits": 4,
+        "total_commits": 6,
         "first_commit": "2026-02-01",
-        "last_commit": "2026-03-04",
-        "weekly_velocity": 0.8
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 1.2
       },
       "sections": {
         "features": "- **Identity Systems** \u2014 Temporal identity modeling, visualization algorithms, ethics frameworks\n- **Cipher Visualization** \u2014 Visual cryptanalysis, generative art rendering, WebGL pipelines\n- **Mythology & Symbolism** \u2014 Golden ratio protocols, numerology synthesis, symbolic languages\n- **Platform Integration** \u2014 Unified architecture, component libraries, multiverse frameworks"
@@ -744,7 +814,9 @@
         "organvm-ii-poiesis/metasystem-master"
       ],
       "produces": [],
-      "consumes": [],
+      "consumes": [
+        "dependency: Depends on metasystem-master for manifest and orchestration"
+      ],
       "deployment_urls": [],
       "github_url": "https://github.com/organvm-ii-poiesis/core-engine",
       "git_stats": {
@@ -808,14 +880,16 @@
         "organvm-ii-poiesis/metasystem-master"
       ],
       "produces": [],
-      "consumes": [],
+      "consumes": [
+        "dependency: Depends on organvm-ii-poiesis/metasystem-master"
+      ],
       "deployment_urls": [],
       "github_url": "https://github.com/organvm-ii-poiesis/example-generative-music",
       "git_stats": {
-        "total_commits": 30,
+        "total_commits": 31,
         "first_commit": "2025-12-09",
-        "last_commit": "2026-03-04",
-        "weekly_velocity": 7.2
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 7.5
       },
       "sections": {
         "architecture": "```\n\u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510\n\u2502                        Audience (N devices)                      \u2502\n\u2502  \u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510  \u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510  \u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510  \u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510        \u2502\n\u2502  \u2502 Phone A  \u2502  \u2502 Phone B  \u2502  \u2502 Phone C  \u2502  \u2502 Phone N  \u2502  ...   \u2502\n\u2502  \u2502 Touch UI \u2502  \u2502 Touch UI \u2502  \u2502 Touch UI \u2502  \u2502 Touch UI \u2502        \u2502\n\u2502  \u2502 Tone.js  \u2502  \u2502 Tone.js  \u2502  \u2502 Tone.js  \u2502  \u2502 Tone.js  \u2502        \u2502\n\u2502  \u2514\u2500\u2500\u2500\u2500\u252c\u2500\u2500\u2500\u2500\u2500\u2518  \u2514\u2500\u2500\u2500\u2500\u252c\u2500\u2500\u2500\u2500\u2500\u2518  \u2514\u2500\u2500\u2500\u2500\u252c\u2500\u2500\u2500\u2500\u2500\u2518  \u2514\u2500\u2500\u2500\u2500\u252c\u2500\u2500\u2500\u2500\u2500\u2518        \u2502\n\u2502       \u2502              \u2502              \u2502              \u2502              \u2502\n\u2502       \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2534\u2500\u2500\u2500\u2500\u2500\u2500\u252c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2534\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518              \u2502\n\u2502                    WebSocket \u2502 (audience:input)                   \u2502\n\u2502                             \u25bc                                    \u2502\n\u2502  \u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510        \u2502\n\u2502  \u2502              CAL Server (Node.js + Socket.io)        \u2502        \u2502\n\u2502  \u2502                                                      \u2502        \u2502\n\u2502  \u2502  \u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510   \u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510  \u2502        \u2502\n\u2502  \u2502  \u2502  Input Buffer    \u2502\u2500\u2500\u25b6\u2502  Weighted Consensus      \u2502  \u2502        \u2502\n\u2502  \u2502  \u2502  (Map per user)  \u2502   \u2502  temporal_decay \u00d7        \u2502  \u2502        \u2502\n\u2502  \u2502  \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518   \u2502  consensus_proximity     \u2502  \u2502        \u2502\n\u2502  \u2502                         \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u252c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518  \u2502        \u2502\n\u2502  \u2502                                      \u2502                \u2502        \u2502\n\u2502  \u2502  \u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510                \u2502                \u2502        \u2502\n\u2502  \u2502  \u2502  Performer       \u2502\u2500\u2500\u25b6 Override \u2500\u2500\u25b6\u2502       "
@@ -840,15 +914,19 @@
       "dependencies": [
         "organvm-i-theoria/recursive-engine--generative-entity"
       ],
-      "produces": [],
-      "consumes": [],
+      "produces": [
+        "creative-artifact: Generative art, interactive system, or experiential work"
+      ],
+      "consumes": [
+        "theory-artifact: Theoretical frameworks inform art creation"
+      ],
       "deployment_urls": [],
       "github_url": "https://github.com/organvm-ii-poiesis/metasystem-master",
       "git_stats": {
-        "total_commits": 186,
+        "total_commits": 187,
         "first_commit": "2025-12-09",
-        "last_commit": "2026-02-24",
-        "weekly_velocity": 39.5
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 39.8
       },
       "sections": {},
       "ai_context": "Metasystem Master (metasystem-master) \u2014 ORGAN-II. Omni-Dromenon Engine \u2014 canonical monorepo for ORGAN-II. Real-time performance system consolidating 12 repos: core-engine, performance-sdk, client-sdk, audio-synthesis-bridge, orchestrate CLI, 4 examples, extensive docs.",
@@ -872,14 +950,16 @@
         "organvm-ii-poiesis/metasystem-master"
       ],
       "produces": [],
-      "consumes": [],
+      "consumes": [
+        "dependency: Depends on organvm-ii-poiesis/metasystem-master"
+      ],
       "deployment_urls": [],
       "github_url": "https://github.com/organvm-ii-poiesis/example-choreographic-interface",
       "git_stats": {
-        "total_commits": 26,
+        "total_commits": 27,
         "first_commit": "2025-12-09",
-        "last_commit": "2026-02-28",
-        "weekly_velocity": 6.2
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 6.5
       },
       "sections": {},
       "ai_context": "Example Choreographic Interface (example-choreographic-interface) \u2014 ORGAN-II. Choreographic UI example",
@@ -900,15 +980,19 @@
       "tech_stack": [],
       "ci_workflow": "ci-python.yml",
       "dependencies": [],
-      "produces": [],
-      "consumes": [],
+      "produces": [
+        "creative-artifact: Generative art, interactive system, or experiential work"
+      ],
+      "consumes": [
+        "theory-artifact: Theoretical frameworks inform art creation"
+      ],
       "deployment_urls": [],
       "github_url": "https://github.com/organvm-ii-poiesis/showcase-portfolio",
       "git_stats": {
-        "total_commits": 7,
+        "total_commits": 8,
         "first_commit": "2026-02-12",
-        "last_commit": "2026-03-04",
-        "weekly_velocity": 1.8
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 2.0
       },
       "sections": {
         "architecture": "The portfolio system is built as a static site generator with dynamic data sources. The core architecture separates content (artwork metadata, images, documentation) from presentation (templates, layouts, navigation logic) and from data (structured JSON records that drive both the site and API endpoints).\n\n```\nshowcase-portfolio/\n\u251c\u2500\u2500 content/\n\u2502   \u251c\u2500\u2500 works/                  # Per-work directories\n\u2502   \u2502   \u251c\u2500\u2500 omni-dromenon-v1/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 metadata.json   # Structured record\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 statement.md    # Artist statement\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 process.md      # Process documentation\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 media/          # Images, video stills, audio\n\u2502   \u2502   \u2514\u2500\u2500 ...\n\u2502   \u251c\u2500\u2500 exhibitions/            # Exhibition records\n\u2502   \u2514\u2500\u2500 press/                  # Press coverage links\n\u251c\u2500\u2500 src/\n\u2502   \u251c\u2500\u2500 generators/             # Site generation pipeline\n\u2502   \u2502   \u251c\u2500\u2500 gallery.ts          # Visual gallery builder\n\u2502   \u2502   \u251c\u2500\u2500 chronology.ts       # Timeline view\n\u2502   \u2502   \u251c\u2500\u2500 thematic.ts         # Thematic grouping engine\n\u2502   \u2502   \u2514\u2500\u2500 cv-export.ts        # CV/grant format exporters\n\u2502   \u251c\u2500\u2500 components/             # UI components\n\u2502   \u2502   \u251c\u2500\u2500 WorkCard.tsx        # Individual work display\n\u2502   \u2502   \u251c\u2500\u2500 FilterBar.tsx       # Medium/theme/year filters\n\u2502   \u2502   \u251c\u2500\u2500 GalleryGrid.tsx     # Responsive grid layout\n\u2502   \u2502   \u2514\u2500\u2500 ExhibitionTimeline.tsx\n\u2502   \u251c\u2500\u2500 metadata/\n\u2502   \u2502   \u251c\u2500\u2500 schema.ts           # Zod schema for work records\n\u2502   \u2502   \u251c\u2500\u2500 dublin-core.ts      # Dublin Core export\n\u2502   \u2502   \u2514\u2500\u2500 cv-formatter.ts     # Academic"
@@ -931,15 +1015,19 @@
       "tech_stack": [],
       "ci_workflow": "ci-python.yml",
       "dependencies": [],
-      "produces": [],
-      "consumes": [],
+      "produces": [
+        "creative-artifact: Generative art, interactive system, or experiential work"
+      ],
+      "consumes": [
+        "theory-artifact: Theoretical frameworks inform art creation"
+      ],
       "deployment_urls": [],
       "github_url": "https://github.com/organvm-ii-poiesis/archive-past-works",
       "git_stats": {
-        "total_commits": 4,
+        "total_commits": 5,
         "first_commit": "2026-02-12",
-        "last_commit": "2026-02-28",
-        "weekly_velocity": 1.0
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 1.2
       },
       "sections": {
         "architecture": "The archive is structured as a flat-file repository with structured metadata, designed for long-term durability over runtime convenience. No database server is required \u2014 the archive is fully functional as a Git repository.\n\n```\narchive-past-works/\n\u251c\u2500\u2500 works/\n\u2502   \u251c\u2500\u2500 2020/\n\u2502   \u2502   \u2514\u2500\u2500 early-consensus-experiments/\n\u2502   \u2502       \u251c\u2500\u2500 manifest.json          # Extended Dublin Core metadata\n\u2502   \u2502       \u251c\u2500\u2500 provenance.json        # Chain of custody / exhibition history\n\u2502   \u2502       \u251c\u2500\u2500 dependencies.json      # Runtime environment snapshot\n\u2502   \u2502       \u251c\u2500\u2500 README.md              # Human-readable description\n\u2502   \u2502       \u251c\u2500\u2500 source/                # Source code snapshot (tagged version)\n\u2502   \u2502       \u251c\u2500\u2500 documentation/         # Process photos, sketches, notes\n\u2502   \u2502       \u251c\u2500\u2500 outputs/               # Representative outputs (images, video, audio)\n\u2502   \u2502       \u2514\u2500\u2500 migration/             # Format migration notes and scripts\n\u2502   \u251c\u2500\u2500 2021/\n\u2502   \u251c\u2500\u2500 2022/\n\u2502   \u251c\u2500\u2500 2023/\n\u2502   \u251c\u2500\u2500 2024/\n\u2502   \u2514\u2500\u2500 2025/\n\u251c\u2500\u2500 schemas/\n\u2502   \u251c\u2500\u2500 manifest-v1.json              # JSON Schema for manifest records\n\u2502   \u251c\u2500\u2500 manifest-v2.json              # Current schema version\n\u2502   \u251c\u2500\u2500 provenance-v1.json            # Provenance record schema\n\u2502   \u2514\u2500\u2500 dependencies-v1.json          # Dependency snapshot schema\n\u251c\u2500\u2500 indices/\n\u2502   \u251c\u2500\u2500 chronological.json            # All works by date\n\u2502   \u251c\u2500\u2500 by-medium.json                # Grouped by medium\n\u2502   \u251c\u2500\u2500 by-theme.json                 # Grouped by thematic concern\n\u2502   \u251c\u2500\u2500 by-technology.json        "
@@ -962,15 +1050,19 @@
       "tech_stack": [],
       "ci_workflow": "ci-python.yml",
       "dependencies": [],
-      "produces": [],
-      "consumes": [],
+      "produces": [
+        "creative-artifact: Generative art, interactive system, or experiential work"
+      ],
+      "consumes": [
+        "theory-artifact: Theoretical frameworks inform art creation"
+      ],
       "deployment_urls": [],
       "github_url": "https://github.com/organvm-ii-poiesis/case-studies-methodology",
       "git_stats": {
-        "total_commits": 4,
+        "total_commits": 5,
         "first_commit": "2026-02-12",
-        "last_commit": "2026-02-28",
-        "weekly_velocity": 1.0
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 1.2
       },
       "sections": {},
       "ai_context": "Case Studies Methodology (case-studies-methodology) \u2014 ORGAN-II. Structured case studies documenting creative methodology \u2014 process documentation, comparative analysis, and grant-ready excerpts",
@@ -991,15 +1083,19 @@
       "tech_stack": [],
       "ci_workflow": "ci-python.yml",
       "dependencies": [],
-      "produces": [],
-      "consumes": [],
+      "produces": [
+        "creative-artifact: Generative art, interactive system, or experiential work"
+      ],
+      "consumes": [
+        "theory-artifact: Theoretical frameworks inform art creation"
+      ],
       "deployment_urls": [],
       "github_url": "https://github.com/organvm-ii-poiesis/learning-resources",
       "git_stats": {
-        "total_commits": 4,
+        "total_commits": 5,
         "first_commit": "2026-02-12",
-        "last_commit": "2026-02-28",
-        "weekly_velocity": 1.0
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 1.2
       },
       "sections": {},
       "ai_context": "Learning Resources (learning-resources) \u2014 ORGAN-II. Educational layer: workshop curricula, tiered learning paths, and creative coding tutorials for generative art and interactive performance",
@@ -1054,14 +1150,16 @@
         "organvm-ii-poiesis/metasystem-master"
       ],
       "produces": [],
-      "consumes": [],
+      "consumes": [
+        "dependency: Depends on organvm-ii-poiesis/metasystem-master"
+      ],
       "deployment_urls": [],
       "github_url": "https://github.com/organvm-ii-poiesis/example-interactive-installation",
       "git_stats": {
-        "total_commits": 5,
+        "total_commits": 6,
         "first_commit": "2026-02-12",
-        "last_commit": "2026-03-04",
-        "weekly_velocity": 1.2
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 1.5
       },
       "sections": {},
       "ai_context": "Example Interactive Installation (example-interactive-installation) \u2014 ORGAN-II. Reference implementation for sensor-driven interactive art installations with depth cameras, LIDAR, and spatial audio",
@@ -1082,15 +1180,19 @@
       "tech_stack": [],
       "ci_workflow": "ci-python.yml",
       "dependencies": [],
-      "produces": [],
-      "consumes": [],
+      "produces": [
+        "creative-artifact: Generative art, interactive system, or experiential work"
+      ],
+      "consumes": [
+        "theory-artifact: Theoretical frameworks inform art creation"
+      ],
       "deployment_urls": [],
       "github_url": "https://github.com/organvm-ii-poiesis/example-ai-collaboration",
       "git_stats": {
-        "total_commits": 4,
+        "total_commits": 5,
         "first_commit": "2026-02-12",
-        "last_commit": "2026-02-28",
-        "weekly_velocity": 1.0
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 1.2
       },
       "sections": {},
       "ai_context": "Example Ai Collaboration (example-ai-collaboration) \u2014 ORGAN-II. Human-AI co-creation framework: the AI-conductor model as artistic practice, with attribution tracking and process documentation",
@@ -1142,17 +1244,21 @@
       "tech_stack": [],
       "ci_workflow": "ci-typescript.yml",
       "dependencies": [],
-      "produces": [],
-      "consumes": [],
+      "produces": [
+        "creative-artifact: Generative art, interactive system, or experiential work"
+      ],
+      "consumes": [
+        "theory-artifact: Theoretical frameworks inform art creation"
+      ],
       "deployment_urls": [
         "https://etceter4.netlify.app"
       ],
       "github_url": "https://github.com/organvm-ii-poiesis/a-mavs-olevm",
       "git_stats": {
-        "total_commits": 188,
+        "total_commits": 189,
         "first_commit": "2016-11-06",
-        "last_commit": "2026-03-04",
-        "weekly_velocity": 8.2
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 8.5
       },
       "sections": {
         "architecture": ""
@@ -1179,14 +1285,17 @@
         "organvm-ii-poiesis/metasystem-master"
       ],
       "produces": [],
-      "consumes": [],
+      "consumes": [
+        "dependency: Depends on organvm-ii-poiesis/performance-sdk",
+        "dependency: Depends on organvm-ii-poiesis/metasystem-master"
+      ],
       "deployment_urls": [],
       "github_url": "https://github.com/organvm-ii-poiesis/a-i-council--coliseum",
       "git_stats": {
-        "total_commits": 70,
+        "total_commits": 71,
         "first_commit": "2025-12-11",
-        "last_commit": "2026-03-04",
-        "weekly_velocity": 7.0
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 7.2
       },
       "sections": {},
       "ai_context": "A I Council: Coliseum (a-i-council--coliseum) \u2014 ORGAN-II. Decentralized live-streaming platform where AI agents debate with viewer crypto participation",
@@ -1212,10 +1321,10 @@
       "deployment_urls": [],
       "github_url": "https://github.com/organvm-ii-poiesis/.github",
       "git_stats": {
-        "total_commits": 5,
+        "total_commits": 7,
         "first_commit": "2026-02-16",
-        "last_commit": "2026-03-03",
-        "weekly_velocity": 1.2
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 1.8
       },
       "sections": {},
       "ai_context": ".Github (.github) \u2014 ORGAN-II. Organization-wide community health files and CI templates",
@@ -1268,14 +1377,16 @@
         "organvm-ii-poiesis/metasystem-master"
       ],
       "produces": [],
-      "consumes": [],
+      "consumes": [
+        "dependency: Depends on organvm-ii-poiesis/metasystem-master"
+      ],
       "deployment_urls": [],
       "github_url": "https://github.com/organvm-ii-poiesis/client-sdk",
       "git_stats": {
-        "total_commits": 27,
+        "total_commits": 28,
         "first_commit": "2025-12-09",
-        "last_commit": "2026-02-28",
-        "weekly_velocity": 6.2
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 6.5
       },
       "sections": {},
       "ai_context": "Client Sdk (client-sdk) \u2014 ORGAN-II. WebSocket client library for audience vote submission in Omni-Dromenon-Engine",
@@ -1328,14 +1439,16 @@
         "organvm-ii-poiesis/metasystem-master"
       ],
       "produces": [],
-      "consumes": [],
+      "consumes": [
+        "dependency: Depends on organvm-ii-poiesis/metasystem-master"
+      ],
       "deployment_urls": [],
       "github_url": "https://github.com/organvm-ii-poiesis/example-theatre-dialogue",
       "git_stats": {
-        "total_commits": 26,
+        "total_commits": 27,
         "first_commit": "2025-12-09",
-        "last_commit": "2026-02-28",
-        "weekly_velocity": 6.2
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 6.5
       },
       "sections": {},
       "ai_context": "Example Theatre Dialogue (example-theatre-dialogue) \u2014 ORGAN-II. Interactive theatre dialogue example with server and client",
@@ -1359,14 +1472,16 @@
         "organvm-ii-poiesis/metasystem-master"
       ],
       "produces": [],
-      "consumes": [],
+      "consumes": [
+        "dependency: Depends on organvm-ii-poiesis/metasystem-master"
+      ],
       "deployment_urls": [],
       "github_url": "https://github.com/organvm-ii-poiesis/audio-synthesis-bridge",
       "git_stats": {
-        "total_commits": 29,
+        "total_commits": 30,
         "first_commit": "2025-12-09",
-        "last_commit": "2026-02-28",
-        "weekly_velocity": 7.0
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 7.2
       },
       "sections": {},
       "ai_context": "Audio Synthesis Bridge (audio-synthesis-bridge) \u2014 ORGAN-II. TypeScript bridge for audio synthesis via OSC and WebAudio",
@@ -1390,14 +1505,16 @@
         "organvm-i-theoria/auto-revision-epistemic-engine"
       ],
       "produces": [],
-      "consumes": [],
+      "consumes": [
+        "dependency: Depends on organvm-i-theoria/auto-revision-epistemic-engine"
+      ],
       "deployment_urls": [],
       "github_url": "https://github.com/organvm-ii-poiesis/art-from--auto-revision-epistemic-engine",
       "git_stats": {
-        "total_commits": 4,
+        "total_commits": 5,
         "first_commit": "2026-02-12",
-        "last_commit": "2026-02-28",
-        "weekly_velocity": 1.0
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 1.2
       },
       "sections": {
         "architecture": "```\nart-from--auto-revision-epistemic-engine/\n\u251c\u2500\u2500 src/\n\u2502   \u2514\u2500\u2500 art_from_auto_revision/\n\u2502       \u251c\u2500\u2500 __init__.py          # Package metadata and version\n\u2502       \u251c\u2500\u2500 visualizer.py        # Core OrchestrationVisualizer class\n\u2502       \u2514\u2500\u2500 server.py            # Flask application serving the visualization\n\u251c\u2500\u2500 tests/\n\u2502   \u2514\u2500\u2500 test_visualizer.py       # Test suite (10+ tests)\n\u251c\u2500\u2500 pyproject.toml               # Package configuration\n\u251c\u2500\u2500 LICENSE                      # MIT License\n\u251c\u2500\u2500 README.md                    # This document\n\u2514\u2500\u2500 .github/\n    \u2514\u2500\u2500 workflows/\n        \u2514\u2500\u2500 ci.yml               # Continuous integration\n```"
@@ -1423,14 +1540,16 @@
         "organvm-i-theoria/narratological-algorithmic-lenses"
       ],
       "produces": [],
-      "consumes": [],
+      "consumes": [
+        "dependency: Depends on organvm-i-theoria/narratological-algorithmic-lenses"
+      ],
       "deployment_urls": [],
       "github_url": "https://github.com/organvm-ii-poiesis/art-from--narratological-algorithmic-lenses",
       "git_stats": {
-        "total_commits": 4,
+        "total_commits": 5,
         "first_commit": "2026-02-12",
-        "last_commit": "2026-02-28",
-        "weekly_velocity": 1.0
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 1.2
       },
       "sections": {
         "architecture": "```\nart-from--narratological-algorithmic-lenses/\n\u251c\u2500\u2500 src/\n\u2502   \u2514\u2500\u2500 art_from_narratological_lenses/\n\u2502       \u251c\u2500\u2500 __init__.py              # Package metadata and version\n\u2502       \u251c\u2500\u2500 narrative_engine.py      # Core NarrativeVisualizationEngine\n\u2502       \u2514\u2500\u2500 lens_renderer.py         # LensRenderer for visual transformations\n\u251c\u2500\u2500 tests/\n\u2502   \u2514\u2500\u2500 test_narrative_engine.py     # Test suite (10+ tests)\n\u251c\u2500\u2500 pyproject.toml                   # Package configuration\n\u251c\u2500\u2500 LICENSE                          # MIT License\n\u251c\u2500\u2500 README.md                        # This document\n\u2514\u2500\u2500 .github/\n    \u2514\u2500\u2500 workflows/\n        \u2514\u2500\u2500 ci.yml                   # Continuous integration\n```"
@@ -1453,15 +1572,19 @@
       "tech_stack": [],
       "ci_workflow": "ci-python.yml",
       "dependencies": [],
-      "produces": [],
-      "consumes": [],
+      "produces": [
+        "creative-artifact: Generative art, interactive system, or experiential work"
+      ],
+      "consumes": [
+        "theory-artifact: Theoretical frameworks inform art creation"
+      ],
       "deployment_urls": [],
       "github_url": "https://github.com/organvm-ii-poiesis/life-betterment-simulation",
       "git_stats": {
-        "total_commits": 45,
+        "total_commits": 46,
         "first_commit": "2026-02-12",
-        "last_commit": "2026-02-28",
-        "weekly_velocity": 11.2
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 11.5
       },
       "sections": {},
       "ai_context": "Life Betterment Simulation (life-betterment-simulation) \u2014 ORGAN-II. Interactive simulation exploring social influence theory, dating dynamics, and personal growth through experiential narrative design",
@@ -1482,15 +1605,19 @@
       "tech_stack": [],
       "ci_workflow": "ci-typescript.yml",
       "dependencies": [],
-      "produces": [],
-      "consumes": [],
+      "produces": [
+        "creative-artifact: Generative art, interactive system, or experiential work"
+      ],
+      "consumes": [
+        "theory-artifact: Theoretical frameworks inform art creation"
+      ],
       "deployment_urls": [],
       "github_url": "https://github.com/organvm-ii-poiesis/universal-waveform-explorer",
       "git_stats": {
-        "total_commits": 78,
+        "total_commits": 79,
         "first_commit": "2026-02-12",
-        "last_commit": "2026-02-28",
-        "weekly_velocity": 19.5
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 19.8
       },
       "sections": {},
       "ai_context": "Universal Waveform Explorer (universal-waveform-explorer) \u2014 ORGAN-II. Aether Canvas \u2014 web-based 3D modular synthesizer reframing sound design as exploration of universal vibrations via WebGL and Web Audio API",
@@ -1511,15 +1638,19 @@
       "tech_stack": [],
       "ci_workflow": "ci-typescript.yml",
       "dependencies": [],
-      "produces": [],
-      "consumes": [],
+      "produces": [
+        "creative-artifact: Generative art, interactive system, or experiential work"
+      ],
+      "consumes": [
+        "theory-artifact: Theoretical frameworks inform art creation"
+      ],
       "deployment_urls": [],
       "github_url": "https://github.com/organvm-ii-poiesis/shared-remembrance-gateway",
       "git_stats": {
-        "total_commits": 28,
+        "total_commits": 29,
         "first_commit": "2026-02-12",
-        "last_commit": "2026-02-28",
-        "weekly_velocity": 7.0
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 7.2
       },
       "sections": {},
       "ai_context": "Shared Remembrance Gateway (shared-remembrance-gateway) \u2014 ORGAN-II. Hosting Home \u2014 privacy-first metaverse platform centering digital home as hub for life simulation, memorial spaces, and creator economy",
@@ -1545,10 +1676,10 @@
       "deployment_urls": [],
       "github_url": "https://github.com/organvm-ii-poiesis/chthon-oneiros",
       "git_stats": {
-        "total_commits": 31,
+        "total_commits": 32,
         "first_commit": "2026-02-14",
-        "last_commit": "2026-03-04",
-        "weekly_velocity": 7.8
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 8.0
       },
       "sections": {
         "what this is": "CHTHON-ONEIROS is a psychological horror theory corpus and narrative engine \u2014 the \"Underworld-dream\" of the ORGANVM system (Organ II / Art). It treats horror as epistemology, not genre decoration. All content explores the unconscious as compositional engine through surrealism, found footage, digital paranoia, and reality failure.\n\nPart of the **Artistic Triforce**: Polarity II (The Subconscious), inverse of KRYPTO-VELAMEN (Polarity I / The Conscious), historicized by Polarity III (The Temporal).",
@@ -1577,10 +1708,10 @@
       "deployment_urls": [],
       "github_url": "https://github.com/organvm-ii-poiesis/krypto-velamen",
       "git_stats": {
-        "total_commits": 28,
+        "total_commits": 29,
         "first_commit": "2026-02-14",
-        "last_commit": "2026-03-04",
-        "weekly_velocity": 7.0
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 7.2
       },
       "sections": {
         "what this is": "KRYPTO-VELAMEN \u2014 a distributed microservices platform and queer literary archive. \"The Instrument v1.0\": a living cultural operating system for double-channel text, concealment as compositional engine, and archival of lived interiority. Part of the ORGANVM system (Organ II \u2014 Art / POIESIS).",
@@ -1605,15 +1736,19 @@
       "tech_stack": [],
       "ci_workflow": "ci-minimal.yml",
       "dependencies": [],
-      "produces": [],
-      "consumes": [],
+      "produces": [
+        "creative-artifact: Generative art, interactive system, or experiential work"
+      ],
+      "consumes": [
+        "theory-artifact: Theoretical frameworks inform art creation"
+      ],
       "deployment_urls": [],
       "github_url": "https://github.com/organvm-ii-poiesis/alchemical-synthesizer",
       "git_stats": {
-        "total_commits": 8,
+        "total_commits": 9,
         "first_commit": "2026-02-16",
-        "last_commit": "2026-03-04",
-        "weekly_velocity": 2.0
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 2.2
       },
       "sections": {
         "architecture": ""
@@ -1636,15 +1771,19 @@
       "tech_stack": [],
       "ci_workflow": null,
       "dependencies": [],
-      "produces": [],
-      "consumes": [],
+      "produces": [
+        "creative-artifact: Generative art, interactive system, or experiential work"
+      ],
+      "consumes": [
+        "theory-artifact: Theoretical frameworks inform art creation"
+      ],
       "deployment_urls": [],
       "github_url": "https://github.com/organvm-ii-poiesis/ivi374ivi027-05",
       "git_stats": {
-        "total_commits": 6,
+        "total_commits": 8,
         "first_commit": "2026-02-12",
-        "last_commit": "2026-03-04",
-        "weekly_velocity": 1.5
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 2.0
       },
       "sections": {
         "what this is": "MET4MORFOSES Web Edition \u2014 a Next.js 16 App Router site that presents an MFA thesis as an immersive multi-mode web experience. The thesis content (Ovid's Metamorphoses reinterpretation) is stored as canonical PDFs in `public/mirror/` and ingested through a build pipeline into markdown and JSON data files.",
@@ -1672,17 +1811,21 @@
       "dependencies": [
         "organvm-iii-ergon/gamified-coach-interface"
       ],
-      "produces": [],
+      "produces": [
+        "product: Software product, API, or service",
+        "community_signal: Product milestones and releases generate community events",
+        "distribution_signal: Product updates trigger POSSE distribution via kerygma profile"
+      ],
       "consumes": [],
       "deployment_urls": [
         "https://classroom-rpg-aetheria.netlify.app"
       ],
       "github_url": "https://github.com/organvm-iii-ergon/classroom-rpg-aetheria",
       "git_stats": {
-        "total_commits": 248,
+        "total_commits": 249,
         "first_commit": "2025-11-20",
-        "last_commit": "2026-03-04",
-        "weekly_velocity": 8.5
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 8.8
       },
       "sections": {},
       "ai_context": "Classroom Rpg Aetheria (classroom-rpg-aetheria) \u2014 ORGAN-III. Educational RPG system for classroom engagement Deployed at: https://classroom-rpg-aetheria.netlify.app.",
@@ -1703,17 +1846,21 @@
       "tech_stack": [],
       "ci_workflow": "ci-typescript.yml",
       "dependencies": [],
-      "produces": [],
+      "produces": [
+        "product: Software product, API, or service",
+        "community_signal: Product milestones and releases generate community events",
+        "distribution_signal: Product updates trigger POSSE distribution via kerygma profile"
+      ],
       "consumes": [],
       "deployment_urls": [
         "https://gamified-coach-interface.pages.dev"
       ],
       "github_url": "https://github.com/organvm-iii-ergon/gamified-coach-interface",
       "git_stats": {
-        "total_commits": 151,
+        "total_commits": 152,
         "first_commit": "2025-11-08",
-        "last_commit": "2026-03-04",
-        "weekly_velocity": 8.2
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 8.5
       },
       "sections": {
         "what this is": "**Legion Command Center** \u2014 gamified fitness coaching interface with a holographic 3D experience. A coach/client platform where workout goals become military-style \"missions\" visualized in Three.js orbital node scenes. Has a Node.js backend for document analysis and client data persistence.",
@@ -1737,17 +1884,23 @@
       "tech_stack": [],
       "ci_workflow": "ci-mixed.yml",
       "dependencies": [],
-      "produces": [],
-      "consumes": [],
+      "produces": [
+        "product-artifact: Deployed product, SaaS service, or commercial tool",
+        "community_signal: Product milestones and releases generate community events",
+        "distribution_signal: Product updates trigger POSSE distribution via kerygma profile"
+      ],
+      "consumes": [
+        "governance-rules: Commerce operations follow governance policies"
+      ],
       "deployment_urls": [
         "https://trade-perpetual-future.netlify.app"
       ],
       "github_url": "https://github.com/organvm-iii-ergon/trade-perpetual-future",
       "git_stats": {
-        "total_commits": 171,
+        "total_commits": 172,
         "first_commit": "2025-10-29",
-        "last_commit": "2026-03-04",
-        "weekly_velocity": 9.0
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 9.2
       },
       "sections": {
         "what this is": "**Bang Perp Exchange** \u2014 gamified Solana perpetual futures trading platform. Integrates the Drift Protocol SDK for real on-chain trading alongside a simulated market mode, with social/leaderboard features, sentiment analysis, and an achievement system.",
@@ -1772,17 +1925,21 @@
       "tech_stack": [],
       "ci_workflow": "ci-typescript.yml",
       "dependencies": [],
-      "produces": [],
+      "produces": [
+        "product: Software product, API, or service",
+        "community_signal: Product milestones and releases generate community events",
+        "distribution_signal: Product updates trigger POSSE distribution via kerygma profile"
+      ],
       "consumes": [],
       "deployment_urls": [
         "https://fetch-familiar-friends.netlify.app"
       ],
       "github_url": "https://github.com/organvm-iii-ergon/fetch-familiar-friends",
       "git_stats": {
-        "total_commits": 268,
+        "total_commits": 269,
         "first_commit": "2025-10-25",
-        "last_commit": "2026-03-04",
-        "weekly_velocity": 8.8
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 9.0
       },
       "sections": {
         "architecture": ""
@@ -1805,17 +1962,21 @@
       "tech_stack": [],
       "ci_workflow": "ci-typescript.yml",
       "dependencies": [],
-      "produces": [],
+      "produces": [
+        "product: Software product, API, or service",
+        "community_signal: Product milestones and releases generate community events",
+        "distribution_signal: Product updates trigger POSSE distribution via kerygma profile"
+      ],
       "consumes": [],
       "deployment_urls": [
         "https://sovereign-ecosystem.netlify.app"
       ],
       "github_url": "https://github.com/organvm-iii-ergon/sovereign-ecosystem--real-estate-luxury",
       "git_stats": {
-        "total_commits": 99,
+        "total_commits": 100,
         "first_commit": "2025-12-16",
-        "last_commit": "2026-03-04",
-        "weekly_velocity": 7.8
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 8.0
       },
       "sections": {
         "what this is": "**Sovereign Ecosystem** \u2014 luxury real estate marketplace with compliance intelligence. Dual-role platform (Agent / Client) for discovering, analyzing, and transacting ultra-high-net-worth properties. Features AI compliance analysis, risk mapping, blockchain-verified document vaults, AR property previews, and offline sync.",
@@ -1839,17 +2000,19 @@
       "tech_stack": [],
       "ci_workflow": "ci-typescript.yml",
       "dependencies": [],
-      "produces": [],
+      "produces": [
+        "dependency: Consumed by organvm-v-logos/public-process"
+      ],
       "consumes": [],
       "deployment_urls": [
         "https://public-record-data-scrapper.netlify.app"
       ],
       "github_url": "https://github.com/organvm-iii-ergon/public-record-data-scrapper",
       "git_stats": {
-        "total_commits": 693,
+        "total_commits": 694,
         "first_commit": "2025-10-25",
-        "last_commit": "2026-03-04",
-        "weekly_velocity": 3.2
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 3.5
       },
       "sections": {
         "architecture": ""
@@ -1872,17 +2035,21 @@
       "tech_stack": [],
       "ci_workflow": "ci-typescript.yml",
       "dependencies": [],
-      "produces": [],
+      "produces": [
+        "product: Software product, API, or service",
+        "community_signal: Product milestones and releases generate community events",
+        "distribution_signal: Product updates trigger POSSE distribution via kerygma profile"
+      ],
       "consumes": [],
       "deployment_urls": [
         "https://search-local-happy-hour.netlify.app"
       ],
       "github_url": "https://github.com/organvm-iii-ergon/search-local--happy-hour",
       "git_stats": {
-        "total_commits": 47,
+        "total_commits": 48,
         "first_commit": "2025-11-09",
-        "last_commit": "2026-03-04",
-        "weekly_velocity": 5.2
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 5.5
       },
       "sections": {
         "features": ""
@@ -1905,17 +2072,21 @@
       "tech_stack": [],
       "ci_workflow": "ci-minimal.yml",
       "dependencies": [],
-      "produces": [],
+      "produces": [
+        "product: Software product, API, or service",
+        "community_signal: Product milestones and releases generate community events",
+        "distribution_signal: Product updates trigger POSSE distribution via kerygma profile"
+      ],
       "consumes": [],
       "deployment_urls": [
         "https://organvm-iii-ergon.github.io/multi-camera--livestream--framework/"
       ],
       "github_url": "https://github.com/organvm-iii-ergon/multi-camera--livestream--framework",
       "git_stats": {
-        "total_commits": 22,
+        "total_commits": 23,
         "first_commit": "2026-01-20",
-        "last_commit": "2026-02-28",
-        "weekly_velocity": 4.0
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 4.2
       },
       "sections": {
         "architecture": "```\nsoftware/configs/\n\u251c\u2500\u2500 defaults.yaml              # Base config inherited by all profiles\n\u251c\u2500\u2500 profiles/\n\u2502   \u251c\u2500\u2500 studio.yaml           # M1 Mac Studio + DeckLink + full Dante\n\u2502   \u251c\u2500\u2500 mobile.yaml           # MacBook Pro + portable gear\n\u2502   \u251c\u2500\u2500 budget.yaml           # Mac mini + USB capture\n\u2502   \u2514\u2500\u2500 broadcast.yaml        # Mac Studio/Pro + multi-DeckLink + SDI\n\u2514\u2500\u2500 active -> profiles/studio.yaml   # Symlink to active profile\n\nsoftware/generated/            # Output (gitignored)\n\u251c\u2500\u2500 config.sh                 # Shell-sourceable variables\n\u251c\u2500\u2500 config.json               # JSON for external tools\n\u2514\u2500\u2500 docs/                     # Generated documentation\n```"
@@ -1938,15 +2109,18 @@
       "tech_stack": [],
       "ci_workflow": "ci-python.yml",
       "dependencies": [],
-      "produces": [],
+      "produces": [
+        "community_signal: Product milestones and releases generate community events",
+        "distribution_signal: Product updates trigger POSSE distribution via kerygma profile"
+      ],
       "consumes": [],
       "deployment_urls": [],
       "github_url": "https://github.com/organvm-iii-ergon/universal-mail--automation",
       "git_stats": {
-        "total_commits": 25,
+        "total_commits": 27,
         "first_commit": "2026-01-20",
-        "last_commit": "2026-02-28",
-        "weekly_velocity": 3.5
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 4.0
       },
       "sections": {
         "architecture": ""
@@ -1969,17 +2143,21 @@
       "tech_stack": [],
       "ci_workflow": "ci-typescript.yml",
       "dependencies": [],
-      "produces": [],
+      "produces": [
+        "product: Software product, API, or service",
+        "community_signal: Product milestones and releases generate community events",
+        "distribution_signal: Product updates trigger POSSE distribution via kerygma profile"
+      ],
       "consumes": [],
       "deployment_urls": [
         "https://mirror-mirror-app.netlify.app"
       ],
       "github_url": "https://github.com/organvm-iii-ergon/mirror-mirror",
       "git_stats": {
-        "total_commits": 50,
+        "total_commits": 52,
         "first_commit": "2025-12-30",
-        "last_commit": "2026-02-28",
-        "weekly_velocity": 4.2
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 4.8
       },
       "sections": {
         "what this is": "**Mirror Mirror** \u2014 AI-powered beauty and styling platform. Users create avatars, get virtual try-ons (hair, makeup, outfits), book salon appointments, participate in social style challenges, and collect/trade achievement badges. Targets both clients (discovery, booking) and stylists (dashboard, client management).",
@@ -2003,17 +2181,21 @@
       "tech_stack": [],
       "ci_workflow": "ci-typescript.yml",
       "dependencies": [],
-      "produces": [],
+      "produces": [
+        "product: Software product, API, or service",
+        "community_signal: Product milestones and releases generate community events",
+        "distribution_signal: Product updates trigger POSSE distribution via kerygma profile"
+      ],
       "consumes": [],
       "deployment_urls": [
         "https://the-invisible-ledger.netlify.app"
       ],
       "github_url": "https://github.com/organvm-iii-ergon/the-invisible-ledger",
       "git_stats": {
-        "total_commits": 73,
+        "total_commits": 75,
         "first_commit": "2025-12-30",
-        "last_commit": "2026-02-28",
-        "weekly_velocity": 4.2
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 4.8
       },
       "sections": {
         "what this is": "**The Invisible Ledger** \u2014 financial compliance and wealth management intelligence platform. Tracks high-net-worth clients, documents, custody events, and money flows. Features ML-based anomaly detection, webhook health monitoring, incident response drills, and automated escalation workflows.",
@@ -2042,10 +2224,10 @@
       "deployment_urls": [],
       "github_url": "https://github.com/organvm-iii-ergon/enterprise-plugin",
       "git_stats": {
-        "total_commits": 14,
+        "total_commits": 16,
         "first_commit": "2025-12-28",
-        "last_commit": "2026-02-28",
-        "weekly_velocity": 3.2
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 3.8
       },
       "sections": {
         "what this is": "**ARCHIVED** \u2014 Claude Code plugin reference implementation. No longer maintained.\n\n<!-- ORGANVM:AUTO:START -->"
@@ -2073,10 +2255,10 @@
       "deployment_urls": [],
       "github_url": "https://github.com/organvm-iii-ergon/virgil-training-overlay",
       "git_stats": {
-        "total_commits": 47,
+        "total_commits": 49,
         "first_commit": "2025-11-16",
-        "last_commit": "2026-02-28",
-        "weekly_velocity": 2.8
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 3.2
       },
       "sections": {
         "features": ""
@@ -2099,15 +2281,18 @@
       "tech_stack": [],
       "ci_workflow": "ci-typescript.yml",
       "dependencies": [],
-      "produces": [],
+      "produces": [
+        "community_signal: Product milestones and releases generate community events",
+        "distribution_signal: Product updates trigger POSSE distribution via kerygma profile"
+      ],
       "consumes": [],
       "deployment_urls": [],
       "github_url": "https://github.com/organvm-iii-ergon/tab-bookmark-manager",
       "git_stats": {
-        "total_commits": 9,
+        "total_commits": 11,
         "first_commit": "2026-02-14",
-        "last_commit": "2026-02-28",
-        "weekly_velocity": 2.2
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 2.8
       },
       "sections": {
         "what this is": "**Tab & Bookmark Manager** \u2014 AI-powered browser tab and bookmark management system. Chrome/Edge MV3 extension captures URLs; a Node.js backend orchestrates persistence, semantic search, and automation; a Python Flask ML service handles NLP (summarization via BART, NER via spaCy, embeddings via MiniLM). PostgreSQL with pgvector for vector similarity search. Redis for caching and job queues. Puppeteer for full-page archival.",
@@ -2131,15 +2316,21 @@
       "tech_stack": [],
       "ci_workflow": "ci-typescript.yml",
       "dependencies": [],
-      "produces": [],
-      "consumes": [],
+      "produces": [
+        "product-artifact: Deployed product, SaaS service, or commercial tool",
+        "community_signal: Product milestones and releases generate community events",
+        "distribution_signal: Product updates trigger POSSE distribution via kerygma profile"
+      ],
+      "consumes": [
+        "governance-rules: Commerce operations follow governance policies"
+      ],
       "deployment_urls": [],
       "github_url": "https://github.com/organvm-iii-ergon/a-i-chat--exporter",
       "git_stats": {
-        "total_commits": 12,
+        "total_commits": 14,
         "first_commit": "2026-02-12",
-        "last_commit": "2026-03-03",
-        "weekly_velocity": 3.0
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 3.5
       },
       "sections": {
         "what this is": "**@pionxzh/chatgpt-exporter** \u2014 browser extension to export ChatGPT and other AI chat conversation history. Supports multiple export formats. Fork of the original chatgpt-exporter, extended to cover additional AI chat interfaces.\n\n**Active branch**: `master` (not `main`).",
@@ -2168,10 +2359,10 @@
       "deployment_urls": [],
       "github_url": "https://github.com/organvm-iii-ergon/.github",
       "git_stats": {
-        "total_commits": 6,
+        "total_commits": 8,
         "first_commit": "2026-02-16",
-        "last_commit": "2026-03-04",
-        "weekly_velocity": 1.5
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 2.0
       },
       "sections": {},
       "ai_context": ".Github (.github) \u2014 ORGAN-III. Organization profile and community health files",
@@ -2192,17 +2383,21 @@
       "tech_stack": [],
       "ci_workflow": "ci-typescript.yml",
       "dependencies": [],
-      "produces": [],
+      "produces": [
+        "product: Software product, API, or service",
+        "community_signal: Product milestones and releases generate community events",
+        "distribution_signal: Product updates trigger POSSE distribution via kerygma profile"
+      ],
       "consumes": [],
       "deployment_urls": [
         "https://the-actual-news.pages.dev"
       ],
       "github_url": "https://github.com/organvm-iii-ergon/the-actual-news",
       "git_stats": {
-        "total_commits": 41,
+        "total_commits": 43,
         "first_commit": "2026-02-07",
-        "last_commit": "2026-03-03",
-        "weekly_velocity": 10.2
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 10.8
       },
       "sections": {
         "what this is": "**The Actual News** \u2014 verifiable news ledger platform treating news as a public service. A pnpm monorepo with an OpenAPI-defined gateway, microservices for claims/evidence/stories/verification, and a PostgreSQL-backed audit trail. Deployed as a Next.js static export on Cloudflare Pages.",
@@ -2226,17 +2421,21 @@
       "tech_stack": [],
       "ci_workflow": "ci-typescript.yml",
       "dependencies": [],
-      "produces": [],
+      "produces": [
+        "product: Software product, API, or service",
+        "community_signal: Product milestones and releases generate community events",
+        "distribution_signal: Product updates trigger POSSE distribution via kerygma profile"
+      ],
       "consumes": [],
       "deployment_urls": [
         "https://organvm-iii-ergon.github.io/your-fit-tailored/"
       ],
       "github_url": "https://github.com/organvm-iii-ergon/your-fit-tailored",
       "git_stats": {
-        "total_commits": 36,
+        "total_commits": 37,
         "first_commit": "2026-01-29",
-        "last_commit": "2026-02-28",
-        "weekly_velocity": 7.5
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 7.8
       },
       "sections": {
         "features": ""
@@ -2259,7 +2458,11 @@
       "tech_stack": [],
       "ci_workflow": "ci-typescript.yml",
       "dependencies": [],
-      "produces": [],
+      "produces": [
+        "product: Software product, API, or service",
+        "community_signal: Product milestones and releases generate community events",
+        "distribution_signal: Product updates trigger POSSE distribution via kerygma profile"
+      ],
       "consumes": [],
       "deployment_urls": [
         "https://turfsynth-mcp-maps.pages.dev",
@@ -2267,10 +2470,10 @@
       ],
       "github_url": "https://github.com/organvm-iii-ergon/my-block-warfare",
       "git_stats": {
-        "total_commits": 33,
+        "total_commits": 34,
         "first_commit": "2026-01-29",
-        "last_commit": "2026-02-28",
-        "weekly_velocity": 7.0
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 7.2
       },
       "sections": {},
       "ai_context": "My Block Warfare (my-block-warfare) \u2014 ORGAN-III. TurfSynth AR \u2014 location-based game with environmental synthesis and procedural creature generation Deployed at: https://turfsynth-mcp-maps.pages.dev, https://turfsynth-spatial.pages.dev.",
@@ -2291,17 +2494,23 @@
       "tech_stack": [],
       "ci_workflow": "ci-typescript.yml",
       "dependencies": [],
-      "produces": [],
-      "consumes": [],
+      "produces": [
+        "product-artifact: Deployed product, SaaS service, or commercial tool",
+        "community_signal: Product milestones and releases generate community events",
+        "distribution_signal: Product updates trigger POSSE distribution via kerygma profile"
+      ],
+      "consumes": [
+        "governance-rules: Commerce operations follow governance policies"
+      ],
       "deployment_urls": [
         "https://inmidst-web.onrender.com"
       ],
       "github_url": "https://github.com/organvm-iii-ergon/life-my--midst--in",
       "git_stats": {
-        "total_commits": 222,
+        "total_commits": 223,
         "first_commit": "2026-01-07",
-        "last_commit": "2026-03-04",
-        "weekly_velocity": 41.8
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 42.0
       },
       "sections": {
         "features": ""
@@ -2324,15 +2533,18 @@
       "tech_stack": [],
       "ci_workflow": "ci-python.yml",
       "dependencies": [],
-      "produces": [],
+      "produces": [
+        "community_signal: Product milestones and releases generate community events",
+        "distribution_signal: Product updates trigger POSSE distribution via kerygma profile"
+      ],
       "consumes": [],
       "deployment_urls": [],
       "github_url": "https://github.com/organvm-iii-ergon/my--father-mother",
       "git_stats": {
-        "total_commits": 19,
+        "total_commits": 20,
         "first_commit": "2026-01-19",
-        "last_commit": "2026-02-28",
-        "weekly_velocity": 4.0
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 4.2
       },
       "sections": {
         "architecture": ""
@@ -2360,10 +2572,10 @@
       "deployment_urls": [],
       "github_url": "https://github.com/organvm-iii-ergon/commerce--meta",
       "git_stats": {
-        "total_commits": 4,
+        "total_commits": 5,
         "first_commit": "2026-02-12",
-        "last_commit": "2026-02-28",
-        "weekly_velocity": 1.0
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 1.2
       },
       "sections": {},
       "ai_context": "Commerce: Meta (commerce--meta) \u2014 ORGAN-III. Private governance repo for ORGAN-III commerce operations: contracts, IP agreements, customer terms, financial governance",
@@ -2384,17 +2596,23 @@
       "tech_stack": [],
       "ci_workflow": "ci-typescript.yml",
       "dependencies": [],
-      "produces": [],
-      "consumes": [],
+      "produces": [
+        "product-artifact: Deployed product, SaaS service, or commercial tool",
+        "community_signal: Product milestones and releases generate community events",
+        "distribution_signal: Product updates trigger POSSE distribution via kerygma profile"
+      ],
+      "consumes": [
+        "governance-rules: Commerce operations follow governance policies"
+      ],
       "deployment_urls": [
         "https://organvm-iii-ergon.github.io/card-trade-social/"
       ],
       "github_url": "https://github.com/organvm-iii-ergon/card-trade-social",
       "git_stats": {
-        "total_commits": 36,
+        "total_commits": 37,
         "first_commit": "2026-02-12",
-        "last_commit": "2026-02-28",
-        "weekly_velocity": 9.0
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 9.2
       },
       "sections": {
         "what this is": "**Hydra TCG Platform** \u2014 vertical SaaS treating trading cards (MTG, Pok\u00e9mon, Yu-Gi-Oh!, Lorcana) as a financial asset class. Combines portfolio tracking, price discovery, creator monetization, and gamification. **Specification + TypeScript stubs only** \u2014 no backend or frontend implementation.",
@@ -2418,17 +2636,23 @@
       "tech_stack": [],
       "ci_workflow": "ci-typescript.yml",
       "dependencies": [],
-      "produces": [],
-      "consumes": [],
+      "produces": [
+        "product-artifact: Deployed product, SaaS service, or commercial tool",
+        "community_signal: Product milestones and releases generate community events",
+        "distribution_signal: Product updates trigger POSSE distribution via kerygma profile"
+      ],
+      "consumes": [
+        "governance-rules: Commerce operations follow governance policies"
+      ],
       "deployment_urls": [
         "https://organvm-iii-ergon.github.io/hokage-chess/"
       ],
       "github_url": "https://github.com/organvm-iii-ergon/hokage-chess",
       "git_stats": {
-        "total_commits": 11,
+        "total_commits": 12,
         "first_commit": "2026-02-13",
-        "last_commit": "2026-02-28",
-        "weekly_velocity": 2.8
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 3.0
       },
       "sections": {
         "what this is": "**HokageChess** \u2014 data-driven chess content creation and audience development platform. TypeScript library that models content strategy, analytics, growth mechanics, and narrative structures for chess YouTube/social media creators. Uses Ki-Sho-Ten-Ketsu storytelling structure + Chess.com API data. **DESIGN_ONLY** \u2014 library stubs and type definitions, no runtime backend.",
@@ -2452,15 +2676,19 @@
       "tech_stack": [],
       "ci_workflow": "python-package.yml",
       "dependencies": [],
-      "produces": [],
+      "produces": [
+        "product: Software product, API, or service",
+        "community_signal: Product milestones and releases generate community events",
+        "distribution_signal: Product updates trigger POSSE distribution via kerygma profile"
+      ],
       "consumes": [],
       "deployment_urls": [],
       "github_url": "https://github.com/organvm-iii-ergon/anon-hookup-now",
       "git_stats": {
-        "total_commits": 13,
+        "total_commits": 16,
         "first_commit": "2025-10-31",
-        "last_commit": "2026-02-28",
-        "weekly_velocity": 3.0
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 3.8
       },
       "sections": {
         "what this is": "**GrindrPlus** \u2014 Xposed module that unlocks and adds features to the Grindr Android app. Built with Kotlin, uses Xposed/LSPosed framework to hook into Grindr's runtime. Requires a rooted Android device with LSPosed installed.\n\n**Active branch**: `master` (not `main`).",
@@ -2509,15 +2737,19 @@
       "tech_stack": [],
       "ci_workflow": "ci-minimal.yml",
       "dependencies": [],
-      "produces": [],
+      "produces": [
+        "product: Software product, API, or service",
+        "community_signal: Product milestones and releases generate community events",
+        "distribution_signal: Product updates trigger POSSE distribution via kerygma profile"
+      ],
       "consumes": [],
       "deployment_urls": [],
       "github_url": "https://github.com/organvm-iii-ergon/select-or-left-or-right-or",
       "git_stats": {
-        "total_commits": 11,
+        "total_commits": 13,
         "first_commit": "2025-12-19",
-        "last_commit": "2026-02-28",
-        "weekly_velocity": 2.5
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 3.0
       },
       "sections": {
         "what this is": "**Pepe Social Network** \u2014 satirical affiliation-based social network. Users join political/cultural \"bubbles\" (affiliations); content is filtered and colored by affiliation. Full-stack Node.js + SQLite app with real-time Socket.io, JWT auth, 2FA (TOTP), and image processing.",
@@ -2542,15 +2774,23 @@
       "tech_stack": [],
       "ci_workflow": "ci-python.yml",
       "dependencies": [],
-      "produces": [],
-      "consumes": [],
+      "produces": [
+        "governance-rules: Cross-organ governance policies and dependency validation",
+        "logic-as-code: Machine-readable organizational commandments from petasum-super-petasum",
+        "health-reports: Weekly registry health audit reports",
+        "promotion-decisions: Automated promotion recommendations based on quality gates"
+      ],
+      "consumes": [
+        "registry-updates: Changes to repo status, new repos, CI results",
+        "essay-notifications: New essay publications for distribution coordination"
+      ],
       "deployment_urls": [],
       "github_url": "https://github.com/organvm-iv-taxis/orchestration-start-here",
       "git_stats": {
-        "total_commits": 67,
+        "total_commits": 72,
         "first_commit": "2026-02-10",
-        "last_commit": "2026-02-28",
-        "weekly_velocity": 16.8
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 18.0
       },
       "sections": {},
       "ai_context": "Orchestration Start Here (orchestration-start-here) \u2014 ORGAN-IV. Central orchestration hub: registry, governance rules, 5 workflows, 3 Python scripts. The central nervous system of the eight-organ system.",
@@ -2573,15 +2813,19 @@
       "dependencies": [
         "organvm-i-theoria/system-governance-framework"
       ],
-      "produces": [],
-      "consumes": [],
+      "produces": [
+        "governance-policy: Orchestration config and governance rules"
+      ],
+      "consumes": [
+        "registry: Registry data for orchestration"
+      ],
       "deployment_urls": [],
       "github_url": "https://github.com/organvm-iv-taxis/petasum-super-petasum",
       "git_stats": {
-        "total_commits": 69,
+        "total_commits": 72,
         "first_commit": "2025-10-29",
-        "last_commit": "2026-02-28",
-        "weekly_velocity": 7.5
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 8.2
       },
       "sections": {
         "features": ""
@@ -2605,14 +2849,16 @@
       "ci_workflow": "ci-python.yml",
       "dependencies": [],
       "produces": [],
-      "consumes": [],
+      "consumes": [
+        "registry: Registry data for orchestration"
+      ],
       "deployment_urls": [],
       "github_url": "https://github.com/organvm-iv-taxis/universal-node-network",
       "git_stats": {
-        "total_commits": 32,
+        "total_commits": 33,
         "first_commit": "2025-08-14",
-        "last_commit": "2026-02-28",
-        "weekly_velocity": 7.8
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 8.0
       },
       "sections": {},
       "ai_context": "Universal Node Network (universal-node-network) \u2014 ORGAN-IV. Distributed node network infrastructure for decentralized systems",
@@ -2637,16 +2883,9 @@
       "consumes": [],
       "deployment_urls": [],
       "github_url": "https://github.com/organvm-iv-taxis/.github",
-      "git_stats": {
-        "total_commits": 7,
-        "first_commit": "2026-02-16",
-        "last_commit": "2026-03-04",
-        "weekly_velocity": 1.8
-      },
-      "sections": {
-        "what this is": "Organization profile and community health files for **ORGAN-IV (Taxis/Orchestration)** \u2014 the `organvm-iv-taxis` GitHub organization. This is an infrastructure repo; it contains no application code."
-      },
-      "ai_context": ".Github (.github) \u2014 ORGAN-IV. Organization profile and community health files Organization profile and community health files for **ORGAN-IV (Taxis/Orchestration)** \u2014 the `organvm-iv-taxis` GitHub organization. This is an infrastructure repo; it contains no application code.",
+      "git_stats": {},
+      "sections": {},
+      "ai_context": ".Github (.github) \u2014 ORGAN-IV. Organization profile and community health files",
       "revenue_model": null,
       "revenue_status": null,
       "platinum_status": false
@@ -2666,15 +2905,20 @@
       "dependencies": [
         "organvm-i-theoria/recursive-engine--generative-entity"
       ],
-      "produces": [],
-      "consumes": [],
+      "produces": [
+        "dependency: Consumed by organvm-iv-taxis/agent--claude-smith",
+        "dependency: Consumed by organvm-v-logos/public-process"
+      ],
+      "consumes": [
+        "dependency: Depends on organvm-i-theoria/recursive-engine--generative-entity"
+      ],
       "deployment_urls": [],
       "github_url": "https://github.com/organvm-iv-taxis/agentic-titan",
       "git_stats": {
-        "total_commits": 84,
+        "total_commits": 85,
         "first_commit": "2026-01-19",
-        "last_commit": "2026-02-24",
-        "weekly_velocity": 13.2
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 13.5
       },
       "sections": {},
       "ai_context": "Agentic Titan (agentic-titan) \u2014 ORGAN-IV. Polymorphic Agent Swarm Architecture: model-agnostic, self-organizing multi-agent system with 6 topologies, 1,095+ tests (adversarial, chaos, e2e, integration, performance, MCP, Ray), 18 completed phases.",
@@ -2697,15 +2941,19 @@
       "dependencies": [
         "organvm-iv-taxis/agentic-titan"
       ],
-      "produces": [],
-      "consumes": [],
+      "produces": [
+        "governance-policy: Orchestration config and governance rules"
+      ],
+      "consumes": [
+        "registry: Registry data for orchestration"
+      ],
       "deployment_urls": [],
       "github_url": "https://github.com/organvm-iv-taxis/agent--claude-smith",
       "git_stats": {
-        "total_commits": 30,
+        "total_commits": 31,
         "first_commit": "2026-01-18",
-        "last_commit": "2026-02-24",
-        "weekly_velocity": 5.5
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 5.8
       },
       "sections": {
         "architecture": ""
@@ -2731,14 +2979,16 @@
         "organvm-iv-taxis/agent--claude-smith"
       ],
       "produces": [],
-      "consumes": [],
+      "consumes": [
+        "dependency: Depends on organvm-iv-taxis/agent--claude-smith"
+      ],
       "deployment_urls": [],
       "github_url": "https://github.com/organvm-iv-taxis/a-i--skills",
       "git_stats": {
-        "total_commits": 68,
+        "total_commits": 69,
         "first_commit": "2025-10-15",
-        "last_commit": "2026-03-04",
-        "weekly_velocity": 7.5
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 7.8
       },
       "sections": {
         "architecture": ""
@@ -2766,17 +3016,26 @@
         "organvm-iii-ergon/public-record-data-scrapper",
         "organvm-iv-taxis/agentic-titan"
       ],
-      "produces": [],
-      "consumes": [],
+      "produces": [
+        "essay-markdown",
+        "essays-index",
+        "rss-feed"
+      ],
+      "consumes": [
+        "dependency: Depends on organvm-i-theoria/recursive-engine--generative-entity",
+        "dependency: Depends on organvm-ii-poiesis/metasystem-master",
+        "dependency: Depends on organvm-iii-ergon/public-record-data-scrapper",
+        "dependency: Depends on organvm-iv-taxis/agentic-titan"
+      ],
       "deployment_urls": [
         "https://public-process.netlify.app"
       ],
       "github_url": "https://github.com/organvm-v-logos/public-process",
       "git_stats": {
-        "total_commits": 152,
+        "total_commits": 153,
         "first_commit": "2026-02-10",
-        "last_commit": "2026-03-04",
-        "weekly_velocity": 38.0
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 38.2
       },
       "sections": {},
       "ai_context": "Public Process (public-process) \u2014 ORGAN-V. Essays, case studies, methodology documentation, RSS feed, newsletter integration Deployed at: https://public-process.netlify.app.",
@@ -2802,10 +3061,10 @@
       "deployment_urls": [],
       "github_url": "https://github.com/organvm-v-logos/.github",
       "git_stats": {
-        "total_commits": 9,
+        "total_commits": 10,
         "first_commit": "2026-02-16",
-        "last_commit": "2026-03-04",
-        "weekly_velocity": 2.2
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 2.5
       },
       "sections": {},
       "ai_context": ".Github (.github) \u2014 ORGAN-V. Organization profile and community health files",
@@ -2826,15 +3085,17 @@
       "tech_stack": [],
       "ci_workflow": "ci.yml",
       "dependencies": [],
-      "produces": [],
+      "produces": [
+        "package: Shared SQLAlchemy models, Alembic migrations, and seed data for all ORGAN-VI repos"
+      ],
       "consumes": [],
       "deployment_urls": [],
       "github_url": "https://github.com/organvm-vi-koinonia/koinonia-db",
       "git_stats": {
-        "total_commits": 13,
+        "total_commits": 15,
         "first_commit": "2026-02-17",
-        "last_commit": "2026-02-27",
-        "weekly_velocity": 3.2
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 3.8
       },
       "sections": {},
       "ai_context": "Koinonia Db (koinonia-db) \u2014 ORGAN-VI. Shared SQLAlchemy 2.0 models, Alembic migrations, PostgreSQL seed data for all ORGAN-VI schemas (salons, reading, community, syllabus)",
@@ -2857,17 +3118,24 @@
       "dependencies": [
         "koinonia-db"
       ],
-      "produces": [],
-      "consumes": [],
+      "produces": [
+        "web_application: Community portal with salon archive, curricula browser, and stats dashboard",
+        "api: REST API for salons, curricula, taxonomy, and community stats"
+      ],
+      "consumes": [
+        "package: Shared database models and migrations",
+        "data: Salon session data and transcripts",
+        "data: Curriculum and reading list data"
+      ],
       "deployment_urls": [
         "https://community-hub-8p8t.onrender.com"
       ],
       "github_url": "https://github.com/organvm-vi-koinonia/community-hub",
       "git_stats": {
-        "total_commits": 15,
+        "total_commits": 17,
         "first_commit": "2026-02-17",
-        "last_commit": "2026-02-28",
-        "weekly_velocity": 3.8
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 4.2
       },
       "sections": {
         "architecture": "```\ncommunity-hub/\n\u251c\u2500\u2500 src/community_hub/\n\u2502   \u251c\u2500\u2500 app.py              # FastAPI app with lifespan, CORS, CSRF, rate limiting\n\u2502   \u251c\u2500\u2500 config.py           # Environment-based settings\n\u2502   \u251c\u2500\u2500 csrf.py             # Double-submit cookie CSRF middleware\n\u2502   \u251c\u2500\u2500 logging_config.py   # Structured logging\n\u2502   \u251c\u2500\u2500 routes/\n\u2502   \u2502   \u251c\u2500\u2500 api.py          # JSON API endpoints\n\u2502   \u2502   \u251c\u2500\u2500 salons.py       # Salon HTML routes\n\u2502   \u2502   \u251c\u2500\u2500 curricula.py    # Curricula HTML routes\n\u2502   \u2502   \u251c\u2500\u2500 community.py    # Events, contributors, stats\n\u2502   \u2502   \u251c\u2500\u2500 search.py       # Full-text search (HTML + JSON)\n\u2502   \u2502   \u251c\u2500\u2500 syllabus.py     # Learning path generation\n\u2502   \u2502   \u251c\u2500\u2500 feeds.py        # Atom 1.0 syndication feeds\n\u2502   \u2502   \u2514\u2500\u2500 live.py         # WebSocket live salon rooms\n\u2502   \u251c\u2500\u2500 templates/          # Jinja2 templates\n\u2502   \u2514\u2500\u2500 static/             # CSS\n\u251c\u2500\u2500 scripts/\n\u2502   \u2514\u2500\u2500 entrypoint.sh       # Docker entrypoint (runs Alembic then uvicorn)\n\u251c\u2500\u2500 tests/                  # 122 tests\n\u251c\u2500\u2500 Dockerfile\n\u251c\u2500\u2500 render.yaml\n\u2514\u2500\u2500 pyproject.toml\n```\n\n**Key dependencies:**\n- **koinonia-db** \u2014 shared SQLAlchemy models, Alembic migrations (installed from git)\n- **FastAPI** \u2014 async web framework\n- **psycopg 3** \u2014 PostgreSQL async driver (Neon-compatible)\n- **Jinja2** \u2014 HTML templating\n- **slowapi** \u2014 rate limiting (per-IP)\n\n**Security:**\n- CSRF protection via double-submit cookie on all POST routes\n- Rate limiting on syllabus generation endpoints (10-20/min)\n- WebSocket rate limiting (10 msg/sec) and message size limits (4 KB)\n- "
@@ -2892,15 +3160,19 @@
       "dependencies": [
         "koinonia-db"
       ],
-      "produces": [],
-      "consumes": [],
+      "produces": [
+        "data: Salon session records, transcripts, and taxonomy"
+      ],
+      "consumes": [
+        "package: Shared database models and migrations"
+      ],
       "deployment_urls": [],
       "github_url": "https://github.com/organvm-vi-koinonia/salon-archive",
       "git_stats": {
-        "total_commits": 45,
+        "total_commits": 46,
         "first_commit": "2026-02-11",
-        "last_commit": "2026-02-24",
-        "weekly_velocity": 11.2
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 11.5
       },
       "sections": {},
       "ai_context": "Salon Archive (salon-archive) \u2014 ORGAN-VI. Archive infrastructure for intellectual salons: transcription pipeline, topic taxonomy, and session metadata aligned with the eight-organ model",
@@ -2923,15 +3195,20 @@
       "dependencies": [
         "koinonia-db"
       ],
-      "produces": [],
-      "consumes": [],
+      "produces": [
+        "data: Reading curricula, session plans, discussion guides"
+      ],
+      "consumes": [
+        "package: Shared database models and migrations",
+        "essay: Published essays feed reading group discussions"
+      ],
       "deployment_urls": [],
       "github_url": "https://github.com/organvm-vi-koinonia/reading-group-curriculum",
       "git_stats": {
-        "total_commits": 40,
+        "total_commits": 42,
         "first_commit": "2026-02-11",
-        "last_commit": "2026-02-24",
-        "weekly_velocity": 10.0
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 10.5
       },
       "sections": {},
       "ai_context": "Reading Group Curriculum (reading-group-curriculum) \u2014 ORGAN-VI. Structured reading group curricula spanning eight-organ domains: 8-12 week programs with curated reading lists, discussion guides, and exercises",
@@ -2954,15 +3231,19 @@
       "dependencies": [
         "koinonia-db"
       ],
-      "produces": [],
-      "consumes": [],
+      "produces": [
+        "learning_path: Personalized learning paths based on organ interests and difficulty level"
+      ],
+      "consumes": [
+        "package: Shared database models, taxonomy, and reading data"
+      ],
       "deployment_urls": [],
       "github_url": "https://github.com/organvm-vi-koinonia/adaptive-personal-syllabus",
       "git_stats": {
-        "total_commits": 112,
+        "total_commits": 113,
         "first_commit": "2026-02-12",
-        "last_commit": "2026-02-24",
-        "weekly_velocity": 28.0
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 28.2
       },
       "sections": {},
       "ai_context": "Adaptive Personal Syllabus (adaptive-personal-syllabus) \u2014 ORGAN-VI. AI-personalized education system with multi-module curriculum spanning OS development, algorithms, DSLs, and mixed reality. Features Wings multi-artifact framework.",
@@ -2988,10 +3269,10 @@
       "deployment_urls": [],
       "github_url": "https://github.com/organvm-vi-koinonia/.github",
       "git_stats": {
-        "total_commits": 21,
+        "total_commits": 23,
         "first_commit": "2026-02-16",
-        "last_commit": "2026-03-04",
-        "weekly_velocity": 5.2
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 5.8
       },
       "sections": {
         "what this is": "Org-level infrastructure repo for [organvm-vi-koinonia](https://github.com/organvm-vi-koinonia). Contains the org profile README (what visitors see on the org page) and community health files. This is **not application code** \u2014 changes here affect the org-wide GitHub presence."
@@ -3014,15 +3295,17 @@
       "tech_stack": [],
       "ci_workflow": "ci-minimal.yml",
       "dependencies": [],
-      "produces": [],
+      "produces": [
+        "template_pack: Template registry with metadata, quality checks, and channel limits"
+      ],
       "consumes": [],
       "deployment_urls": [],
       "github_url": "https://github.com/organvm-vii-kerygma/announcement-templates",
       "git_stats": {
-        "total_commits": 21,
+        "total_commits": 22,
         "first_commit": "2026-02-11",
-        "last_commit": "2026-02-27",
-        "weekly_velocity": 5.2
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 5.5
       },
       "sections": {
         "what this is": "`kerygma_templates` \u2014 the template engine and announcement library for ORGAN-VII (Kerygma). Renders multi-channel announcements from Markdown templates with YAML frontmatter. Stdlib-only (no Jinja2, no pyyaml for template parsing)."
@@ -3045,15 +3328,17 @@
       "tech_stack": [],
       "ci_workflow": "ci-python.yml",
       "dependencies": [],
-      "produces": [],
+      "produces": [
+        "delivery_log: Delivery log schema and POSSE distribution manifest"
+      ],
       "consumes": [],
       "deployment_urls": [],
       "github_url": "https://github.com/organvm-vii-kerygma/social-automation",
       "git_stats": {
-        "total_commits": 38,
+        "total_commits": 39,
         "first_commit": "2026-02-11",
-        "last_commit": "2026-03-04",
-        "weekly_velocity": 9.5
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 9.8
       },
       "sections": {
         "what this is": "`kerygma_social` \u2014 the POSSE distribution and social platform automation package for ORGAN-VII (Kerygma). Provides platform clients for Mastodon, Discord, Bluesky, and Ghost, a `PosseDistributor` orchestrator, and a resilience stack (retry, circuit breaker, rate limiter).",
@@ -3077,15 +3362,19 @@
       "tech_stack": [],
       "ci_workflow": "ci-python.yml",
       "dependencies": [],
-      "produces": [],
-      "consumes": [],
+      "produces": [
+        "distribution_artifact: Distribution strategy, channel reports, and audience analytics"
+      ],
+      "consumes": [
+        "essay: Published essays are primary distribution content"
+      ],
       "deployment_urls": [],
       "github_url": "https://github.com/organvm-vii-kerygma/distribution-strategy",
       "git_stats": {
-        "total_commits": 39,
+        "total_commits": 40,
         "first_commit": "2026-02-11",
-        "last_commit": "2026-02-24",
-        "weekly_velocity": 9.8
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 10.0
       },
       "sections": {
         "what this is": "`kerygma_strategy` \u2014 the analytics, scheduling, and distribution strategy package for ORGAN-VII (Kerygma). Tracks engagement metrics, manages publication calendars with posting modifiers, configures channel registries, and generates distribution reports."
@@ -3112,15 +3401,20 @@
         "social-automation",
         "distribution-strategy"
       ],
-      "produces": [],
+      "produces": [
+        ": Emitted after successful POSSE distribution",
+        ": Press releases authored by ORGAN-VII",
+        ": Grant and funding updates",
+        ": Ghost newsletter published and syndicated via POSSE"
+      ],
       "consumes": [],
       "deployment_urls": [],
       "github_url": "https://github.com/organvm-vii-kerygma/.github",
       "git_stats": {
-        "total_commits": 22,
+        "total_commits": 24,
         "first_commit": "2026-02-16",
-        "last_commit": "2026-03-04",
-        "weekly_velocity": 5.5
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 6.0
       },
       "sections": {
         "what this is": "The `.github` org-level repository for ORGAN-VII (Kerygma). Contains CI/CD workflows, the pipeline orchestrator script, operational deployment scripts, a Ghost newsletter theme, cross-organ workflow specs, community health files, and the authoritative `seed.yaml` for the entire organ."
@@ -3148,10 +3442,10 @@
       "deployment_urls": [],
       "github_url": "https://github.com/meta-organvm/.github",
       "git_stats": {
-        "total_commits": 7,
+        "total_commits": 9,
         "first_commit": "2026-02-16",
-        "last_commit": "2026-03-04",
-        "weekly_velocity": 1.8
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 2.2
       },
       "sections": {},
       "ai_context": ".Github (.github) \u2014 META-ORGANVM. Organization profile and community health files for meta-organvm",
@@ -3172,15 +3466,19 @@
       "tech_stack": [],
       "ci_workflow": "ci-python.yml",
       "dependencies": [],
-      "produces": [],
-      "consumes": [],
+      "produces": [
+        "meta-documentation: System-wide governance documentation and planning corpus"
+      ],
+      "consumes": [
+        "orchestration-artifact: Orchestration decisions inform meta-documentation"
+      ],
       "deployment_urls": [],
       "github_url": "https://github.com/meta-organvm/organvm-corpvs-testamentvm",
       "git_stats": {
-        "total_commits": 206,
+        "total_commits": 207,
         "first_commit": "2026-02-11",
-        "last_commit": "2026-03-04",
-        "weekly_velocity": 51.5
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 51.8
       },
       "sections": {},
       "ai_context": "Organvm Corpvs Testamentvm (organvm-corpvs-testamentvm) \u2014 META-ORGANVM. The authoritative planning and governance corpus for the eight-organ creative-institutional system. 81 repos, ~339K words, 8 organizations, 21 essays.",
@@ -3203,15 +3501,23 @@
       "dependencies": [
         "meta-organvm/organvm-corpvs-testamentvm"
       ],
-      "produces": [],
-      "consumes": [],
+      "produces": [
+        "classified-artifacts",
+        "deployment-manifests",
+        "provenance-records",
+        "creative-briefs",
+        "aesthetic-chains"
+      ],
+      "consumes": [
+        "registry-v2.json"
+      ],
       "deployment_urls": [],
       "github_url": "https://github.com/meta-organvm/alchemia-ingestvm",
       "git_stats": {
-        "total_commits": 16,
+        "total_commits": 17,
         "first_commit": "2026-02-12",
-        "last_commit": "2026-03-04",
-        "weekly_velocity": 4.0
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 4.2
       },
       "sections": {
         "architecture": "Alchemia operates as a three-stage pipeline with a parallel aesthetic subsystem:\n\n```\n                    \u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510\n                    \u2502           CAPTURE CHANNELS               \u2502\n                    \u2502  Bookmarks \u00b7 Apple Notes \u00b7 Google Docs   \u2502\n                    \u2502  AI Chat Transcripts \u00b7 Screenshots       \u2502\n                    \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u252c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518\n                                     \u2502\n                    \u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u25bc\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510\n                    \u2502           STAGE 1: INTAKE                \u2502\n                    \u2502  Crawl directories \u00b7 SHA-256 fingerprint \u2502\n                    \u2502  Detect duplicates \u00b7 Enrich from manifest\u2502\n                    \u2502  Output: intake-inventory.json           \u2502\n                    \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u252c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518\n                                     \u2502\n                    \u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u25bc\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510\n                    \u2502           STAGE 2: ABSORB                \u2502\n                    \u2502  7-rule priority classification chain     \u2502\n                    \u2502  Map files \u2192 organ/org/repo              \u2502\n                    \u2502  Output: absorb-mapping.json             \u2502\n                    \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u252c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518\n                                     \u2502\n                    \u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u25bc\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510\n                    \u2502          STAGE 3: ALCHEMIZE              \u2502\n                    \u2502  Transform (docx\u2192md) \u00b7 Deploy via GitHu"
@@ -3234,15 +3540,17 @@
       "tech_stack": [],
       "ci_workflow": "ci-python.yml",
       "dependencies": [],
-      "produces": [],
+      "produces": [
+        "schema: Canonical JSON Schema definitions for all system data contracts"
+      ],
       "consumes": [],
       "deployment_urls": [],
       "github_url": "https://github.com/meta-organvm/schema-definitions",
       "git_stats": {
-        "total_commits": 9,
+        "total_commits": 10,
         "first_commit": "2026-02-17",
-        "last_commit": "2026-03-04",
-        "weekly_velocity": 2.2
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 2.5
       },
       "sections": {},
       "ai_context": "Schema Definitions (schema-definitions) \u2014 META-ORGANVM. Canonical JSON Schema definitions for all eight-organ system data contracts \u2014 registry, seed.yaml, governance rules, dispatch payloads, soak tests, and system metrics.",
@@ -3265,15 +3573,21 @@
       "dependencies": [
         "meta-organvm/schema-definitions"
       ],
-      "produces": [],
-      "consumes": [],
+      "produces": [
+        "governance-policy: Registry validation, dependency checking, governance audit results",
+        "registry: Programmatic registry access and updates"
+      ],
+      "consumes": [
+        "registry: Reads registry-v2.json as primary data source",
+        "schema: Uses JSON Schema definitions for validation"
+      ],
       "deployment_urls": [],
       "github_url": "https://github.com/meta-organvm/organvm-engine",
       "git_stats": {
-        "total_commits": 34,
+        "total_commits": 35,
         "first_commit": "2026-02-17",
-        "last_commit": "2026-03-04",
-        "weekly_velocity": 8.5
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 8.8
       },
       "sections": {},
       "ai_context": "Organvm Engine (organvm-engine) \u2014 META-ORGANVM. Core Python package \u2014 governance, registry, seed discovery, metrics, dispatch, and unified CLI for the eight-organ system. Consolidates ~30 standalone scripts into a proper installable package.",
@@ -3297,15 +3611,21 @@
         "meta-organvm/organvm-engine",
         "meta-organvm/organvm-corpvs-testamentvm"
       ],
-      "produces": [],
-      "consumes": [],
+      "produces": [
+        "dashboard-view: Web-based system health visualization"
+      ],
+      "consumes": [
+        "registry-data",
+        "soak-test-data",
+        "system-metrics"
+      ],
       "deployment_urls": [],
       "github_url": "https://github.com/meta-organvm/system-dashboard",
       "git_stats": {
-        "total_commits": 10,
+        "total_commits": 12,
         "first_commit": "2026-02-17",
-        "last_commit": "2026-03-04",
-        "weekly_velocity": 2.5
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 3.0
       },
       "sections": {},
       "ai_context": "System Dashboard (system-dashboard) \u2014 META-ORGANVM. Live system health dashboard \u2014 FastAPI + Jinja2 + HTMX with brutalist CMYK design. 6 pages: health overview, registry browser, dependency graph, soak test monitoring, essay feed, omega scorecard.",
@@ -3329,14 +3649,18 @@
         "meta-organvm/organvm-engine"
       ],
       "produces": [],
-      "consumes": [],
+      "consumes": [
+        "registry-v2.json",
+        "seed discovery, governance rules, dependency graph",
+        "event-catalog.yaml"
+      ],
       "deployment_urls": [],
       "github_url": "https://github.com/meta-organvm/organvm-mcp-server",
       "git_stats": {
-        "total_commits": 9,
+        "total_commits": 10,
         "first_commit": "2026-02-18",
-        "last_commit": "2026-03-04",
-        "weekly_velocity": 2.2
+        "last_commit": "2026-03-05",
+        "weekly_velocity": 2.5
       },
       "sections": {
         "architecture": "```\nClaude Code session (any repo)\n  \u2193 stdio\norganvm-mcp-server\n  \u2193 imports\norganvm-engine (registry, seeds, governance, dispatch)\n  \u2193 reads\nregistry-v2.json, seed.yaml files, event-catalog.yaml, governance-rules.json\n```"

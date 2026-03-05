@@ -24,6 +24,17 @@ function makeRequest(ip: string, payload: unknown): Request {
   });
 }
 
+function makeRequestWithHeaders(payload: unknown, headers: Record<string, string>): Request {
+  return new Request("http://localhost/api/chat", {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      ...headers,
+    },
+    body: JSON.stringify(payload),
+  });
+}
+
 beforeEach(() => {
   fetchMock.mockReset();
   delete process.env.GROQ_API_KEY;
@@ -32,6 +43,11 @@ beforeEach(() => {
   delete process.env.OSS_LLM_API_KEY;
   delete process.env.OSS_LLM_MODEL;
   delete process.env.OSS_LLM_API_URL;
+  delete process.env.TRUST_PROXY_IP_HEADERS;
+  delete process.env.EDGE_RATE_LIMIT_ENABLED;
+  delete process.env.EDGE_BLOCK_HEADER;
+  delete process.env.EDGE_REMAINING_HEADER;
+  delete process.env.EDGE_RETRY_AFTER_HEADER;
   vi.stubGlobal("fetch", fetchMock);
 });
 
@@ -62,6 +78,7 @@ describe("POST /api/chat", () => {
   });
 
   it("enforces rate limiting per client IP", async () => {
+    process.env.TRUST_PROXY_IP_HEADERS = "1";
     const POST = await loadPostHandler();
     const payload = { messages: [{ role: "user", content: "hello" }] };
     fetchMock.mockResolvedValue(
@@ -82,6 +99,89 @@ describe("POST /api/chat", () => {
     expect(limited.status).toBe(429);
     expect(await limited.json()).toEqual({ error: "Rate limited. Try again in a minute." });
     expect(fetchMock).toHaveBeenCalledTimes(10);
+  });
+
+  it("does not trust unverified x-forwarded-for headers by default", async () => {
+    const POST = await loadPostHandler();
+    const payload = { messages: [{ role: "user", content: "hello" }] };
+    fetchMock.mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          choices: [{ message: { role: "assistant", content: "ok" } }],
+        }),
+        { status: 200, headers: { "content-type": "application/json" } }
+      )
+    );
+
+    for (let i = 0; i < 10; i += 1) {
+      const res = await POST(makeRequest("198.51.100.1", payload));
+      expect(res.status).toBe(200);
+    }
+
+    // With default settings (no trusted proxy markers), this still maps to the
+    // same anonymous client key and remains rate-limited.
+    const limited = await POST(makeRequest("203.0.113.99", payload));
+    expect(limited.status).toBe(429);
+    expect(fetchMock).toHaveBeenCalledTimes(10);
+  });
+
+  it("trusts proxy IP headers when TRUST_PROXY_IP_HEADERS=1", async () => {
+    process.env.TRUST_PROXY_IP_HEADERS = "1";
+    const POST = await loadPostHandler();
+    const payload = { messages: [{ role: "user", content: "hello" }] };
+    fetchMock.mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          choices: [{ message: { role: "assistant", content: "ok" } }],
+        }),
+        { status: 200, headers: { "content-type": "application/json" } }
+      )
+    );
+
+    for (let i = 0; i < 10; i += 1) {
+      const res = await POST(makeRequest("10.0.0.21", payload));
+      expect(res.status).toBe(200);
+    }
+
+    // Different forwarded IP should be allowed because TRUST_PROXY_IP_HEADERS is enabled.
+    const nextClient = await POST(makeRequest("10.0.0.22", payload));
+    expect(nextClient.status).toBe(200);
+    expect(fetchMock).toHaveBeenCalledTimes(11);
+  });
+
+  it("honors edge rate-limit blocked headers", async () => {
+    process.env.EDGE_RATE_LIMIT_ENABLED = "1";
+    const POST = await loadPostHandler();
+    const payload = { messages: [{ role: "user", content: "hello" }] };
+
+    const res = await POST(
+      makeRequestWithHeaders(payload, {
+        "x-edge-rate-limit-blocked": "1",
+        "retry-after": "45",
+      })
+    );
+
+    expect(res.status).toBe(429);
+    expect(res.headers.get("Retry-After")).toBe("45");
+    expect(await res.json()).toEqual({ error: "Rate limited. Try again in a minute." });
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("honors edge remaining header when remaining is zero", async () => {
+    process.env.EDGE_RATE_LIMIT_ENABLED = "1";
+    const POST = await loadPostHandler();
+    const payload = { messages: [{ role: "user", content: "hello" }] };
+
+    const res = await POST(
+      makeRequestWithHeaders(payload, {
+        "x-ratelimit-remaining": "0",
+        "retry-after": "30",
+      })
+    );
+
+    expect(res.status).toBe(429);
+    expect(res.headers.get("Retry-After")).toBe("30");
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 
   it("forwards only the last 10 messages and truncates oversized content for OSS provider", async () => {
