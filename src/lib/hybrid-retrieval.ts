@@ -167,7 +167,7 @@ export async function hybridRetrieve(
   const allDocs: Array<{ repo: Repo; tokens: string[] }> = manifest.repos.map((r) => ({
     repo: r,
     tokens: tokenize(
-      [r.name, r.display_name, r.description, r.ai_context, ...Object.values(r.sections)].join(" ")
+      [r.name, r.display_name, r.description, r.ai_context, ...Object.values(r.sections), ...(r.file_index ?? [])].join(" ")
     ),
   }));
 
@@ -267,6 +267,7 @@ export async function hybridRetrieve(
     const EMBEDDING_API_URL = process.env.EMBEDDING_API_URL || "https://api.openai.com/v1/embeddings";
     const EMBEDDING_API_KEY = process.env.EMBEDDING_API_KEY;
     const EMBEDDING_MODEL = process.env.EMBEDDING_MODEL || "text-embedding-3-small";
+    const isHuggingFace = EMBEDDING_API_URL.includes("huggingface.co") || EMBEDDING_API_URL.includes("hf-inference");
 
     const embedRes = await fetch(EMBEDDING_API_URL, {
       method: "POST",
@@ -274,13 +275,17 @@ export async function hybridRetrieve(
         "Content-Type": "application/json",
         ...(EMBEDDING_API_KEY ? { Authorization: `Bearer ${EMBEDDING_API_KEY}` } : {}),
       },
-      body: JSON.stringify({ input: rewrittenQuery, model: EMBEDDING_MODEL }),
-      signal: AbortSignal.timeout(3000), // 3s timeout so it degrades gracefully
+      body: isHuggingFace
+        ? JSON.stringify({ inputs: rewrittenQuery })
+        : JSON.stringify({ input: rewrittenQuery, model: EMBEDDING_MODEL }),
+      signal: AbortSignal.timeout(5000),
     });
 
     if (embedRes.ok) {
       const data = await embedRes.json();
-      const embedding = data.data?.[0]?.embedding;
+      const embedding = isHuggingFace
+        ? (Array.isArray(data[0]) ? data[0] : data)
+        : data.data?.[0]?.embedding;
 
       if (embedding) {
         strategies.push("semantic");
@@ -292,22 +297,30 @@ export async function hybridRetrieve(
             organ: documentChunks.organ,
             path: documentChunks.path,
             content: documentChunks.content,
+            ingestedAt: documentChunks.ingestedAt,
             similarity,
           })
           .from(documentChunks)
-          .where(sql`${similarity} > 0.6`)
+          .where(sql`${similarity} > 0.45`)
           .orderBy((t) => desc(t.similarity))
-          .limit(5);
+          .limit(10);
 
         for (const chunk of similarChunks) {
+          // Freshness boost: recently ingested chunks get a relevance bump
+          const ageHours = chunk.ingestedAt
+            ? (Date.now() - new Date(chunk.ingestedAt).getTime()) / 3_600_000
+            : Infinity;
+          const freshnessBoost = ageHours < 24 ? 0.1 : ageHours < 168 ? 0.05 : 0;
+          const boostedSimilarity = Math.min(1, chunk.similarity + freshnessBoost);
+
           sources.push({
             id: chunk.id,
             type: "repo",
             name: `${chunk.repo}/${chunk.path}`,
             display_name: `${chunk.repo}/${chunk.path}`,
-            relevance: chunk.similarity,
-            freshness: 0.9,
-            confidence: Math.min(1, chunk.similarity * 0.9),
+            relevance: boostedSimilarity,
+            freshness: computeFreshness(chunk.ingestedAt?.toISOString()),
+            confidence: Math.min(1, boostedSimilarity * 0.9),
             snippet: chunk.content,
             url: `/repos/${chunk.repo}/tree/main/${chunk.path}`,
             source_type: "corpus",
@@ -378,6 +391,13 @@ function scoreLexical(repo: Repo, terms: string[]): number {
     if (repo.organ.toLowerCase().includes(term)) score += 8;
     if (repo.tech_stack.some((t) => t.toLowerCase().includes(term))) score += 5;
     if (contextL.includes(term)) score += 2;
+  }
+
+  if (repo.file_index) {
+    const filePathsL = repo.file_index.join(" ").toLowerCase();
+    for (const term of terms) {
+      if (filePathsL.includes(term)) score += 3;
+    }
   }
 
   return score;

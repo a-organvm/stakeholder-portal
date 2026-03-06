@@ -38,7 +38,7 @@ export interface CitedResponse {
 
 export function buildCitations(sources: RetrievalSource[]): Citation[] {
   return sources
-    .filter((s) => s.relevance > 0.1)
+    .filter((s) => s.relevance > 0.25)
     .map((s, i) => ({
       id: `cite-${i + 1}`,
       source_name: s.display_name,
@@ -50,7 +50,8 @@ export function buildCitations(sources: RetrievalSource[]): Citation[] {
       freshness_label: getFreshnessLabel(s.freshness),
       snippet: s.snippet.slice(0, 200),
       retrieved_at: s.retrieved_at,
-    }));
+    }))
+    .slice(0, 8);
 }
 
 function getFreshnessLabel(freshness: number): Citation["freshness_label"] {
@@ -119,21 +120,28 @@ export function analyzeCitations(
   const citedSentences = sentences.filter((s) => /\[cite-\d+\]/.test(s));
   const coverage = sentences.length > 0 ? citedSentences.length / sentences.length : 0;
 
-  // Check for unsupported factual claims (heuristic)
+  // Check for unsupported factual claims (heuristic) — only flag
+  // genuinely falsifiable claims, not common descriptive statements
   const factualPatterns = [
-    /there are \d+/i,
-    /currently has/i,
-    /is deployed at/i,
-    /was created on/i,
-    /uses \w+ framework/i,
-    /has \d+ commits/i,
+    /(?:exactly|precisely)\s+\d+/i,
+    /\b(?:founded|created|launched)\s+(?:in|on)\s+\d{4}/i,
+    /\bgenerat(?:es?|ing)\s+\$[\d,.]+/i,
+    /\b\d+%\s+(?:increase|decrease|growth)/i,
   ];
 
-  const unsupportedClaims = sentences.some((s) => {
-    const isFactual = factualPatterns.some((p) => p.test(s));
-    const isCited = /\[cite-\d+\]/.test(s);
-    return isFactual && !isCited;
-  });
+  const factualSentences = sentences.filter((s) =>
+    factualPatterns.some((p) => p.test(s))
+  );
+  const uncitedFactual = factualSentences.filter(
+    (s) => !/\[cite-\d+\]/.test(s)
+  );
+
+  // Only flag unsupported claims when >2 uncited factual sentences
+  // AND >50% of factual sentences lack citations
+  const unsupportedClaims =
+    uncitedFactual.length > 2 &&
+    factualSentences.length > 0 &&
+    uncitedFactual.length / factualSentences.length > 0.5;
 
   return {
     coverage,

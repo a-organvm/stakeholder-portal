@@ -58,6 +58,7 @@ export interface Repo {
   github_url: string;
   git_stats: GitStats;
   sections: Record<string, string>;
+  file_index?: string[];
   ai_context: string;
   revenue_model: string | null;
   revenue_status: string | null;

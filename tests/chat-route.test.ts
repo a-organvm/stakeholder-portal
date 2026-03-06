@@ -276,7 +276,9 @@ describe("POST /api/chat", () => {
     const body = await res.text();
     expect(body).toContain("ORGANVM Snapshot Response");
     expect(body).toContain("live OSS model path is currently unavailable");
-    expect(body).toContain("Primary provider: `GROQ_API_KEY`");
+    expect(body).toContain("The AI assistant is temporarily unavailable");
+    expect(body).not.toContain("GROQ_API_KEY");
+    expect(body).not.toContain("OSS_LLM_API_URL");
     expect(body).toContain("\"strategy\":\"offline_fallback\"");
     expect(body).toContain("data: [DONE]");
   });
@@ -309,24 +311,32 @@ describe("POST /api/chat", () => {
     expect(body).toContain("\"strategy\":\"deterministic\"");
   });
 
-  it("returns deterministic tech stack fallback when repo is unknown", async () => {
+  it("falls through to LLM when tech stack repo is unknown", async () => {
     const POST = await loadPostHandler();
+    fetchMock.mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          choices: [{ message: { role: "assistant", content: "No repo named Xyzzyx exists. The closest matches are..." } }],
+        }),
+        { status: 200, headers: { "content-type": "application/json" } }
+      )
+    );
+
     const res = await POST(
-      makeRequest("10.0.0.7", { messages: [{ role: "user", content: "What's the tech stack for Styx?" }] })
+      makeRequest("10.0.0.7", { messages: [{ role: "user", content: "What's the tech stack for Xyzzyx?" }] })
     );
 
     expect(res.status).toBe(200);
-    expect(fetchMock).not.toHaveBeenCalled();
+    expect(fetchMock).toHaveBeenCalledTimes(1);
     const body = await res.text();
-    expect(body).toContain("I could not find a repository named **Styx**");
-    expect(body).toContain("repo snapshot");
+    expect(body).toContain("No repo named Xyzzyx exists");
   });
 
   it("returns explicit limitation for live-research queries without calling provider", async () => {
     const POST = await loadPostHandler();
     const res = await POST(
       makeRequest("10.0.0.8", {
-        messages: [{ role: "user", content: "What is the latest competitor news today?" }],
+        messages: [{ role: "user", content: "Give me the latest competitor news about this project" }],
       })
     );
 
@@ -341,7 +351,7 @@ describe("POST /api/chat", () => {
     expect(body).toContain("Which ORGANVM repo or organ should I scope this to?");
   });
 
-  it("blocks unsupported partial answers with insufficient-evidence response", async () => {
+  it("passes through partial answers instead of blocking them", async () => {
     process.env.GROQ_API_KEY = "gsk_test";
     const POST = await loadPostHandler();
     fetchMock.mockResolvedValue(
@@ -363,8 +373,8 @@ describe("POST /api/chat", () => {
     expect(fetchMock).toHaveBeenCalledTimes(1);
 
     const body = await res.text();
-    expect(body).toContain("Insufficient Evidence for Full Answer");
-    expect(body).not.toContain("There are 50 active repos.");
+    // With relaxed guardrails, the LLM response passes through
+    expect(body).toContain("There are 50 active repos.");
     expect(body).toContain("\"answerability\":\"partial\"");
     expect(body).toContain("\"suggestions\":[");
   });

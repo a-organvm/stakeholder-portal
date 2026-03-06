@@ -190,6 +190,99 @@ export class WorkspaceConnector implements ConnectorAdapter {
   }
 
   // -------------------------------------------------------------------------
+  // File-level change detection for vector pipeline
+  // -------------------------------------------------------------------------
+
+  /**
+   * Returns changed files across all repos since a given commit SHA per repo.
+   * Used by the orchestrator to feed the incremental vector pipeline.
+   */
+  getChangedFilesByRepo(cursors: Map<string, string>): Map<string, { repoPath: string; organ: string; files: string[]; headSha: string }> {
+    const result = new Map<string, { repoPath: string; organ: string; files: string[]; headSha: string }>();
+
+    for (const organDir of this.organDirs) {
+      const organPath = join(this.workspaceDir, organDir);
+      if (!existsSync(organPath)) continue;
+
+      const entries = this.safeReaddir(organPath);
+      for (const entry of entries) {
+        const repoPath = join(organPath, entry);
+        if (!this.isGitRepo(repoPath)) continue;
+
+        const headSha = this.getHeadSha(repoPath);
+        if (!headSha) continue;
+
+        const cursor = cursors.get(entry);
+        if (cursor && cursor === headSha) continue; // no changes
+
+        let files: string[];
+        if (cursor) {
+          files = this.getGitDiffFiles(repoPath, cursor);
+        } else {
+          // No cursor — treat as full sync (all embeddable files)
+          files = this.walkEmbeddableFiles(repoPath);
+        }
+
+        if (files.length > 0) {
+          result.set(entry, { repoPath, organ: organDir, files, headSha });
+        }
+      }
+    }
+
+    return result;
+  }
+
+  private getHeadSha(repoPath: string): string | null {
+    try {
+      return execSync("git rev-parse HEAD", {
+        cwd: repoPath,
+        encoding: "utf-8",
+        timeout: 5000,
+      }).trim() || null;
+    } catch {
+      return null;
+    }
+  }
+
+  private getGitDiffFiles(repoPath: string, sinceSha: string): string[] {
+    try {
+      const output = execSync(`git diff --name-only ${sinceSha}..HEAD`, {
+        cwd: repoPath,
+        encoding: "utf-8",
+        timeout: 10000,
+      }).trim();
+      return output.split("\n").filter(Boolean);
+    } catch {
+      // If SHA is gone, return all embeddable files
+      return this.walkEmbeddableFiles(repoPath);
+    }
+  }
+
+  private walkEmbeddableFiles(repoPath: string): string[] {
+    const results: string[] = [];
+    const walk = (dir: string) => {
+      try {
+        for (const file of readdirSync(dir)) {
+          const full = join(dir, file);
+          const stat = statSync(full);
+          if (stat.isDirectory()) {
+            if (!file.startsWith(".") && file !== "node_modules" && file !== "dist") {
+              walk(full);
+            }
+          } else if (
+            file.endsWith(".md") || file.endsWith(".yaml") || file.endsWith(".yml") ||
+            file.endsWith(".ts") || file.endsWith(".py")
+          ) {
+            results.push(full.slice(repoPath.length + 1)); // relative path
+          }
+        }
+      } catch { /* ignore */ }
+    };
+    walk(repoPath);
+    return results;
+  }
+
+  // -------------------------------------------------------------------------
   // File helpers
   // -------------------------------------------------------------------------
 

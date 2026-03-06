@@ -14,6 +14,7 @@
     "maintenance:run": "tsx scripts/run-maintenance.ts",
     "validate-manifest": "tsx scripts/validate-manifest.ts",
     "generate": "tsx src/lib/ingestion/ingest-worker.ts",
+    "generate:incremental": "tsx src/lib/ingestion/ingest-worker.ts --incremental",
     "prebuild": "npm run generate -- --allow-stale-manifest --skip-vector && npm run validate-manifest",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",

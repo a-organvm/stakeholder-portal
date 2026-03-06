@@ -129,9 +129,9 @@ const PATTERNS: QueryPattern[] = [
     strategy: "system_wide",
   },
 
-  // Live research / External queries
+  // Live research / External queries — last resort, requires genuinely external intent
   {
-    pattern: /(?:market|news|competitor|latest|recent|current|today|real-time|search|find\s+out)/i,
+    pattern: /(?:market\s+(?:research|analysis|trends|share)|competitor\s+(?:analysis|news|comparison)|(?:news|headlines)\s+(?:about|on|for)|real-time\s+(?:data|feed)|search\s+(?:the\s+)?(?:web|internet|online))/i,
     strategy: "live_research",
   },
 ];

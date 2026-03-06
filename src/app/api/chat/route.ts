@@ -6,6 +6,9 @@ import { maskPii, buildAccessContext, logAudit } from "@/lib/security";
 import { getManifest } from "@/lib/manifest";
 import { getPlatformConfig } from "@/lib/platform-config";
 import { incrementCounter, recordTiming, withTimingAsync } from "@/lib/observability";
+import { getPersonaConfig } from "@/lib/personas";
+import type { PersonaId } from "@/lib/personas";
+import { getAdminSessionFromRequest } from "@/lib/admin-auth";
 import type { Repo } from "@/lib/types";
 import type { Citation } from "@/lib/citations";
 import type { QueryPlan } from "@/lib/query-planner";
@@ -42,6 +45,7 @@ type ChatMessage = {
 };
 
 interface ChatDiagnostics {
+  persona: PersonaId;
   path: "deterministic" | "live_research_blocked" | "hybrid_retrieval" | "offline_fallback" | "insufficient_evidence";
   planner: {
     strategy: string;
@@ -95,6 +99,20 @@ function scoreRepoHint(repo: Repo, hint: string): number {
     if (display.includes(token)) score += 8;
     if (normalizeText(repo.description).includes(token)) score += 3;
     if (normalizeText(repo.ai_context).includes(token)) score += 1;
+  }
+
+  if (repo.file_index) {
+    for (const filePath of repo.file_index) {
+      if (normalizeText(filePath).includes(normalizedHint)) {
+        score += 5;
+        break;
+      }
+    }
+    for (const token of tokens) {
+      if (repo.file_index.some((f) => normalizeText(f).includes(token))) {
+        score += 2;
+      }
+    }
   }
 
   return score;
@@ -219,13 +237,8 @@ function buildDeterministicAnswer(queryText: string): string | null {
       ].join("\n");
     }
 
-    const suggestions = listTopRepoSuggestions(rawHint);
-    return [
-      `I could not find a repository named **${rawHint}** in the current ${manifest.system.total_repos}-repo snapshot.`,
-      suggestions.length
-        ? `Closest matches:\n${suggestions.map((r) => `- ${repoLink(r)}`).join("\n")}`
-        : "No close name matches were found in the current manifest.",
-    ].join("\n\n");
+    // No exact match — fall through to LLM with fuzzy matching via closestMatchHint
+    return null;
   }
 
   return null;
@@ -284,10 +297,12 @@ function buildInsufficientEvidenceResponse(queryText: string, reason: string): s
 function buildDiagnostics(
   queryPlan: QueryPlan,
   path: ChatDiagnostics["path"],
-  partial?: Omit<ChatDiagnostics, "path" | "planner">
+  partial?: Omit<ChatDiagnostics, "path" | "planner" | "persona">,
+  personaId: PersonaId = "hermeneus"
 ): ChatDiagnostics | undefined {
   if (!CHAT_DIAGNOSTICS_ENABLED) return undefined;
   return {
+    persona: personaId,
     path,
     planner: {
       strategy: queryPlan.strategy,
@@ -386,9 +401,8 @@ function buildOfflineResponse(
     "#### Relevant Repositories",
     repoSection,
     "",
-    reason ? `Provider note: ${reason}` : null,
-    "Primary provider: `GROQ_API_KEY` + `GROQ_MODEL` (default `llama-3.3-70b-versatile`).",
-    "Fallback provider: `OSS_LLM_API_URL=https://text.pollinations.ai/openai`, `OSS_LLM_MODEL=openai-fast`.",
+    reason ? void console.warn("[chat] offline fallback:", reason) : null,
+    "The AI assistant is temporarily unavailable. This response was generated from the cached system snapshot only.",
   ].join("\n");
 }
 
@@ -445,7 +459,8 @@ function extractProviderText(data: OpenAICompatibleResponse): string | null {
 
 async function generateModelResponse(
   messages: ChatMessage[],
-  systemPrompt: string
+  systemPrompt: string,
+  modelConfig?: { temperature?: number; max_tokens?: number }
 ): Promise<{ text: string; providerName: string }> {
   const provider = getProviderConfig();
 
@@ -465,8 +480,8 @@ async function generateModelResponse(
           body: JSON.stringify({
             model: provider.model,
             stream: false,
-            temperature: 0.2,
-            max_tokens: 1200,
+            temperature: modelConfig?.temperature ?? 0.2,
+            max_tokens: modelConfig?.max_tokens ?? 1200,
             messages: [{ role: "system", content: systemPrompt }, ...messages],
           }),
           signal: controller.signal,
@@ -642,6 +657,31 @@ export async function POST(request: Request) {
     );
   }
 
+  // Parse persona mode
+  const rawMode =
+    typeof body === "object" && body !== null && "mode" in body
+      ? (body as { mode?: unknown }).mode
+      : undefined;
+  const personaId: PersonaId = rawMode === "advisor" ? "advisor" : "hermeneus";
+  const persona = getPersonaConfig(personaId);
+
+  // Auth gate for advisor mode
+  if (persona.requiresAuth) {
+    const session = getAdminSessionFromRequest(request);
+    const tokenHeader = request.headers.get("x-admin-token")?.trim();
+    const expectedToken = process.env.ADMIN_API_TOKEN; // allow-secret: env lookup only
+    const hasValidToken = !!(expectedToken && tokenHeader && tokenHeader === expectedToken);
+
+    if (!session && !hasValidToken) {
+      incrementCounter("chat.advisor_unauthorized_total");
+      trackChatPath("advisor_unauthorized", requestStartedAtMs);
+      return new Response(
+        JSON.stringify({ error: "Advisor mode requires admin authentication" }),
+        { status: 403, headers: { "Content-Type": "application/json" } }
+      );
+    }
+  }
+
   const rawMessages =
     typeof body === "object" && body !== null && "messages" in body
       ? (body as { messages?: unknown }).messages
@@ -712,7 +752,7 @@ export async function POST(request: Request) {
       answerability_reason: queryPlan.answerability_reason,
       diagnostics: buildDiagnostics(queryPlan, "deterministic", {
         provider: { name: "none", status: "skipped" },
-      }),
+      }, personaId),
     });
   }
 
@@ -733,7 +773,7 @@ export async function POST(request: Request) {
       answerability_reason: queryPlan.answerability_reason,
       diagnostics: buildDiagnostics(queryPlan, "live_research_blocked", {
         provider: { name: "none", status: "skipped" },
-      }),
+      }, personaId),
     });
   }
 
@@ -769,7 +809,7 @@ export async function POST(request: Request) {
         answerability_reason: "Executed direct database statistical aggregation",
         diagnostics: buildDiagnostics(queryPlan, "hybrid_retrieval", {
           provider: { name: "none", status: "success" },
-        }),
+        }, personaId),
       });
     } catch (e) {
       console.error("Failed to execute analytics strategy:", e);
@@ -785,31 +825,39 @@ export async function POST(request: Request) {
 
   const citations = buildCitations(retrieval.sources);
   const citationInstructions = buildCitationInstructions(citations);
-  const answerabilityInstruction =
-    queryPlan.answerability === "answerable"
-      ? ""
-      : `\n\nANSWERABILITY CONSTRAINT:\nThis query is classified as ${queryPlan.answerability}. Reason: ${queryPlan.answerability_reason}.\nDo not infer facts outside provided context. If evidence is insufficient, state that clearly.`;
+  const hasStrongSources = citations.some((c) => c.relevance > 0.5);
 
-  const systemPrompt = `You are the ORGANVM Intelligence Assistant. You provide information about the ORGANVM eight-organ creative-institutional system to investors, partners, and stakeholders.
-
-Answer using ONLY the context below. Reference specific repo names and deployment URLs when relevant. If you lack information to answer, say so — never fabricate facts. Format responses with markdown. Be concise and professional.
-
-Repo names in your responses should be formatted as links to their detail pages: [Display Name](/repos/slug).
-
-${citationInstructions}
-${answerabilityInstruction}
-
-=== SYSTEM OVERVIEW ===
-${retrieval.tier1}
-
-=== EVIDENCE-GROUNDED CONTEXT ===
-${retrieval.context}`;
+  // When context is thin, append closest-match repo hints so the LLM can offer something useful
+  let closestMatchHint = "";
+  if (!hasStrongSources) {
+    const suggestions = listTopRepoSuggestions(sanitizedQuery, 5);
+    if (suggestions.length > 0) {
+      closestMatchHint = `\n\n=== CLOSEST MATCHING REPOS ===\nNo strong match was found. These repos had the highest relevance to the query:\n` +
+        suggestions.map((r) => `- ${r.display_name} (${r.name}) — ${r.organ}: ${r.description.slice(0, 150)}`).join("\n") +
+        `\nMention these as possible matches if the user may be referring to one of them.`;
+    }
+  }
+  const systemPrompt = persona.buildSystemPrompt({
+    citationInstructions,
+    tier1: retrieval.tier1,
+    context: retrieval.context,
+    closestMatchHint,
+    totalRepos: manifest.system.total_repos,
+    totalOrgans: manifest.system.total_organs,
+  });
 
   try {
-    const providerResponse = await generateModelResponse(messages, systemPrompt);
+    const providerResponse = await generateModelResponse(messages, systemPrompt, persona.modelConfig);
     const responseText = providerResponse.text;
     const cited = buildCitedResponse(responseText, retrieval.sources);
-    if (queryPlan.answerability !== "answerable" && cited.has_unsupported_claims) {
+
+    // Graduated evidence gate:
+    // Block ONLY when zero retrieval sources AND truly unanswerable
+    if (
+      queryPlan.answerability === "unanswerable" &&
+      retrieval.sources.length === 0 &&
+      cited.has_unsupported_claims
+    ) {
       trackChatPath("insufficient_evidence", requestStartedAtMs);
       return createSseResponse(
         buildInsufficientEvidenceResponse(sanitizedQuery, queryPlan.answerability_reason),
@@ -828,13 +876,19 @@ ${retrieval.context}`;
               total_candidates: retrieval.total_candidates,
             },
             provider: { name: providerResponse.providerName, status: "success" },
-          }),
+          }, personaId),
         }
       );
     }
+
+    // Append caveat when answerability is not full and claims are uncited
+    let finalResponseText = responseText;
+    if (queryPlan.answerability !== "answerable" && cited.has_unsupported_claims) {
+      finalResponseText += "\n\n---\n*Note: Some claims in this response could not be verified against indexed sources. Treat unverified details with appropriate caution.*";
+    }
     trackChatPath("hybrid_retrieval", requestStartedAtMs);
     return createSseResponse(
-      maskPii(responseText),
+      maskPii(finalResponseText),
       cited.citations,
       {
         confidence: cited.confidence_score,
@@ -850,7 +904,7 @@ ${retrieval.context}`;
             total_candidates: retrieval.total_candidates,
           },
           provider: { name: providerResponse.providerName, status: "success" },
-        }),
+        }, personaId),
       }
     );
   } catch (error) {
@@ -869,7 +923,7 @@ ${retrieval.context}`;
           total_candidates: retrieval.total_candidates,
         },
         provider: { name: "unknown", status: "error", reason },
-      }),
+      }, personaId),
     });
   }
 }

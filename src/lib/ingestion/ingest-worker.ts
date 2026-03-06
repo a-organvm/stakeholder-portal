@@ -2,12 +2,11 @@ import * as fs from "fs";
 import * as path from "path";
 import { execSync } from "child_process";
 import * as yaml from "yaml";
-import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
-import { documentChunks } from "../db/schema";
 import { sql } from "drizzle-orm";
 import { loadEnvConfig } from "@next/env";
+import { embedChunks, getRepoCursor, setRepoCursor } from "./embed";
 
 loadEnvConfig(process.cwd());
 
@@ -21,16 +20,13 @@ const REGISTRY_PATH = path.join(CORPUS_DIR, "registry-v2.json");
 const METRICS_PATH = path.join(CORPUS_DIR, "system-metrics.json");
 const MANIFEST_OUTPUT = path.join(process.cwd(), "src", "data", "manifest.json");
 
-const EMBEDDING_API_URL = process.env.EMBEDDING_API_URL || "https://api.openai.com/v1/embeddings";
-const EMBEDDING_API_KEY = process.env.EMBEDDING_API_KEY;
-const EMBEDDING_MODEL = process.env.EMBEDDING_MODEL || "text-embedding-3-small";
 const DATABASE_URL = process.env.DATABASE_URL;
 
 if (!DATABASE_URL) {
   console.error("FATAL: DATABASE_URL is not set.");
   process.exit(1);
 }
-if (!EMBEDDING_API_KEY) {
+if (!process.env.EMBEDDING_API_KEY) {
   console.warn("WARNING: EMBEDDING_API_KEY is not set. Ingestion may fail if the provider requires auth.");
 }
 
@@ -398,33 +394,28 @@ function buildAiContext(
   return words.length > 500 ? words.slice(0, 500).join(" ") + "..." : combined;
 }
 
-// ----------------------------------------------------------------------------
-// Embedding Logic using LangChain
-// ----------------------------------------------------------------------------
+// Embedding logic is now in ./embed.ts (shared with incremental pipeline)
 
-async function fetchEmbedding(text: string): Promise<number[]> {
-  const response = await fetch(EMBEDDING_API_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      ...(EMBEDDING_API_KEY ? { Authorization: `Bearer ${EMBEDDING_API_KEY}` } : {}),
-    },
-    body: JSON.stringify({
-      input: text,
-      model: EMBEDDING_MODEL,
-    }),
-  });
-
-  if (!response.ok) {
-    const err = await response.text();
-    throw new Error(`Embedding API failed: ${response.status} ${err}`);
+function getHeadSha(repoPath: string): string | null {
+  try {
+    return execSync("git rev-parse HEAD", { cwd: repoPath, stdio: "pipe", timeout: 5000 }).toString().trim();
+  } catch {
+    return null;
   }
+}
 
-  const data = await response.json();
-  if (!data?.data?.[0]?.embedding) {
-    throw new Error("Invalid format returned by embedding API.");
+function getChangedFiles(repoPath: string, sinceSha: string): Set<string> {
+  try {
+    const output = execSync(`git diff --name-only ${sinceSha}..HEAD`, {
+      cwd: repoPath,
+      stdio: "pipe",
+      timeout: 10000,
+    }).toString().trim();
+    return new Set(output.split("\n").filter(Boolean));
+  } catch {
+    // If diff fails (e.g. SHA no longer exists), treat all files as changed
+    return new Set(["*"]);
   }
-  return data.data[0].embedding;
 }
 
 function walkRepoForEmbeddings(dir: string): string[] {
@@ -442,10 +433,12 @@ function walkRepoForEmbeddings(dir: string): string[] {
       } else {
         const isValidFile =
           file.endsWith(".md") ||
+          file.endsWith(".yaml") || file.endsWith(".yml") ||
+          file.endsWith(".ts") || file.endsWith(".py") ||
           (dir.includes("conductor") && !file.endsWith(".json")) ||
           (dir.includes("research") && file.endsWith(".md")) ||
           (dir.includes("intake") && file.endsWith(".md")) ||
-          (dir.includes("scripts") && file.endsWith(".py"));
+          (dir.includes("scripts") && (file.endsWith(".py") || file.endsWith(".ts") || file.endsWith(".sh")));
 
         if (isValidFile) {
           results.push(fullPath);
@@ -669,7 +662,7 @@ export async function runIngestionWorker(allowStaleManifest = false, skipVector 
   console.log(`Generated manifest: ${manifestTotalProcessed} repos, ${depEdges.length} dep edges -> ${MANIFEST_OUTPUT}`);
 
   // ----------------------------------------------------------------------------
-  // Vector Embeddings Ingestion (LangChain text_splitter)
+  // Vector Embeddings Ingestion (shared embedChunks)
   // ----------------------------------------------------------------------------
 
   if (skipVector) {
@@ -679,61 +672,59 @@ export async function runIngestionWorker(allowStaleManifest = false, skipVector 
 
   await db.execute(sql`CREATE EXTENSION IF NOT EXISTS vector`);
 
+  const incremental = process.argv.includes("--incremental");
   let totalChunksInserted = 0;
-
-  const textSplitter = new RecursiveCharacterTextSplitter({
-    chunkSize: 1000,
-    chunkOverlap: 200,
-  });
+  let totalErrors = 0;
 
   for (const { repoInfo, repoPath, organKey } of manifestReposWithPaths) {
+    // For incremental mode, only process files changed since last cursor
+    let changedFiles: Set<string> | null = null;
+    if (incremental) {
+      const cursor = await getRepoCursor(repoInfo.name);
+      const headSha = getHeadSha(repoPath);
+      if (cursor && headSha && cursor === headSha) {
+        console.log(`[Ingest] Skipping ${repoInfo.name} (no changes since ${cursor.slice(0, 8)})`);
+        continue;
+      }
+      if (cursor && headSha) {
+        changedFiles = getChangedFiles(repoPath, cursor);
+        console.log(`[Ingest] Incremental: ${repoInfo.name} — ${changedFiles.size} changed files since ${cursor.slice(0, 8)}`);
+      }
+    }
+
     console.log(`[Ingest] Chunking and embedding ${repoInfo.name} at ${repoPath}`);
+    const headSha = getHeadSha(repoPath);
     const files = walkRepoForEmbeddings(repoPath);
 
     for (const f of files) {
       const relativePath = path.relative(repoPath, f);
+
+      // In incremental mode, skip files not in the changed set (wildcard "*" means all changed)
+      if (changedFiles && !changedFiles.has("*") && !changedFiles.has(relativePath)) continue;
+
       const content = fs.readFileSync(f, "utf-8");
-      if (!content.trim()) continue;
+      const stat = fs.statSync(f);
 
-      // Use langchain text splitter instead of naive paragraph splitter
-      const chunks = await textSplitter.createDocuments([content]);
+      const result = await embedChunks({
+        repo: repoInfo.name,
+        organ: organKey || "unknown",
+        filePath: relativePath,
+        content,
+        fileMtime: stat.mtime,
+        commitSha: headSha || undefined,
+      });
 
-      for (let i = 0; i < chunks.length; i++) {
-        const textChunk = chunks[i].pageContent;
-        if (textChunk.length < 50) continue;
+      totalChunksInserted += result.inserted;
+      totalErrors += result.errors;
+    }
 
-        try {
-          const embedding = await fetchEmbedding(textChunk);
-          const chunkId = `${repoInfo.name}:${relativePath}:${i}`;
-
-          await db
-            .insert(documentChunks)
-            .values({
-              id: chunkId,
-              repo: repoInfo.name,
-              organ: organKey || "unknown",
-              path: relativePath,
-              content: textChunk,
-              embedding: embedding,
-            })
-            .onConflictDoUpdate({
-              target: documentChunks.id,
-              set: {
-                content: textChunk,
-                embedding: embedding,
-              },
-            });
-
-          totalChunksInserted++;
-        } catch (err: unknown) {
-          const msg = (err as Error).message || String(err);
-          console.error(`[Error] Failed to ingest chunk in ${relativePath}: ${msg}`);
-        }
-      }
+    // Update cursor after processing repo
+    if (headSha) {
+      await setRepoCursor(repoInfo.name, headSha);
     }
   }
 
-  console.log(`\nIngestion complete! Inserted/Updated ${totalChunksInserted} chunks.`);
+  console.log(`\nIngestion complete! Inserted/Updated ${totalChunksInserted} chunks, ${totalErrors} errors.`);
   await pool.end();
 }
 

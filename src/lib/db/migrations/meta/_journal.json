@@ -22,6 +22,20 @@
       "when": 1772755492501,
       "tag": "0002_flat_tarot",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1772813981564,
+      "tag": "0003_abandoned_brother_voodoo",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1772828324745,
+      "tag": "0004_ambitious_bullseye",
+      "breakpoints": true
     }
   ]
 }

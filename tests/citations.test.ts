@@ -89,10 +89,18 @@ describe("analyzeCitations", () => {
 
   it("detects unsupported factual claims", () => {
     const citations = buildCitations([makeSource()]);
-    const text = "There are 50 active repos. The system uses Python.";
+    const text = "The system was founded in 2019. It generates $5M annually. The project launched in 2020.";
 
     const analysis = analyzeCitations(text, citations);
     expect(analysis.unsupported_claims).toBe(true);
+  });
+
+  it("does not flag common descriptive statements as unsupported", () => {
+    const citations = buildCitations([makeSource()]);
+    const text = "There are 50 active repos. The system uses Python.";
+
+    const analysis = analyzeCitations(text, citations);
+    expect(analysis.unsupported_claims).toBe(false);
   });
 });
 

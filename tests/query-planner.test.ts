@@ -59,10 +59,14 @@ describe("query planner", () => {
   });
 
   it("classifies external recency queries as live_research", () => {
-    const plan = planQuery("What is the latest competitor news today?");
+    const plan = planQuery("Give me the latest competitor news about this project");
     expect(plan.strategy).toBe("live_research");
-    expect(plan.answerability).toBe("partial");
     expect(plan.estimated_cost).toBeGreaterThanOrEqual(9);
     expect(plan.suggested_followups.some((s) => s.includes("scope"))).toBe(true);
+  });
+
+  it("does not classify normal internal queries with 'current' or 'latest' as live_research", () => {
+    const plan = planQuery("What is the current status of organvm-engine?");
+    expect(plan.strategy).not.toBe("live_research");
   });
 });

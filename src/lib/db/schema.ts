@@ -146,8 +146,11 @@ export const documentChunks = pgTable(
     organ: text("organ").notNull(),
     path: text("path").notNull(),
     content: text("content").notNull(),
-    embedding: vector("embedding", { dimensions: 1536 }),
+    embedding: vector("embedding", { dimensions: 384 }),
     searchVector: tsvector("search_vector").generatedAlwaysAs(sql`to_tsvector('english', content)`),
+    fileMtime: timestamp("file_mtime", { withTimezone: true }),
+    commitSha: text("commit_sha"),
+    ingestedAt: timestamp("ingested_at", { withTimezone: true }).notNull().defaultNow(),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => ({

@@ -5,14 +5,16 @@
  * and persists dead-letter diagnostics for operator review.
  */
 
-import { appendFileSync, mkdirSync } from "fs";
+import { appendFileSync, mkdirSync, readFileSync, statSync } from "fs";
 import { dirname, join } from "path";
 import { ingestRecords } from "../ingestion";
+import { embedChunks, getRepoCursor, setRepoCursor } from "../ingestion/embed";
 import { incrementCounter, recordTiming, withTimingAsync } from "../observability";
 import { getPlatformConfig } from "../platform-config";
 import type { IngestRecord, ConnectorAdapter, ConnectorConfig } from "./types";
 import { getConnector, listConnectors } from "./types";
 import { ensureDefaultConnectorsRegistered } from "./index";
+import { WorkspaceConnector } from "./workspace";
 
 export interface DeadLetterEvent {
   connector_id: string;
@@ -50,6 +52,8 @@ export interface IngestionCycleOptions {
   since?: string;
   connector_ids?: string[];
   persist_dead_letters?: boolean;
+  /** Also refresh the vector store for changed files. */
+  refreshVectors?: boolean;
 }
 
 function getDeadLetterPath(): string {
@@ -204,6 +208,56 @@ export async function runIngestionCycle(
 
   if (options.persist_dead_letters !== false && deadLetters.length > 0) {
     persistDeadLetters(deadLetters);
+  }
+
+  // -------------------------------------------------------------------------
+  // Incremental vector refresh: re-embed changed files via workspace connector
+  // -------------------------------------------------------------------------
+  if (options.refreshVectors) {
+    try {
+      const wsConnector = connectors.find((c) => c instanceof WorkspaceConnector) as WorkspaceConnector | undefined;
+      if (wsConnector) {
+        const cursorMap = new Map<string, string>();
+        // Load existing cursors for all known repos
+        // We fetch them lazily per-repo inside the loop below
+        const changedByRepo = wsConnector.getChangedFilesByRepo(cursorMap);
+
+        // Load actual cursors and re-check
+        for (const [repoName] of changedByRepo) {
+          const cursor = await getRepoCursor(repoName);
+          if (cursor) cursorMap.set(repoName, cursor);
+        }
+        // Re-run with actual cursors
+        const actualChanged = wsConnector.getChangedFilesByRepo(cursorMap);
+
+        let vectorChunks = 0;
+        for (const [repoName, info] of actualChanged) {
+          for (const filePath of info.files) {
+            const absPath = join(info.repoPath, filePath);
+            try {
+              const content = readFileSync(absPath, "utf-8");
+              const stat = statSync(absPath);
+              const result = await embedChunks({
+                repo: repoName,
+                organ: info.organ,
+                filePath,
+                content,
+                fileMtime: stat.mtime,
+                commitSha: info.headSha,
+              });
+              vectorChunks += result.inserted;
+            } catch {
+              // File may have been deleted — skip
+            }
+          }
+          await setRepoCursor(repoName, info.headSha);
+        }
+        incrementCounter("ingestion.vector_chunks_refreshed", vectorChunks);
+      }
+    } catch (error) {
+      console.warn("Vector refresh failed:", error);
+      incrementCounter("ingestion.vector_refresh_error_total", 1);
+    }
   }
 
   const completedAt = new Date().toISOString();
