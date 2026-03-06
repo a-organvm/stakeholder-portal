@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300..800;1,14..32,300..800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════
+   ORGANVM DESIGN SYSTEM — REDESIGN OVERRIDE
+   Visual hierarchy · Whitespace · Accessibility
+   ═══════════════════════════════════════════════ */
+
+/* ─── Reset & Base ─── */
+*, *::before, *::after { box-sizing: border-box; }
+
+:root {
+  /* Palette */
+  --bg:           #080c12;
+  --surface:      #0e1420;
+  --surface-2:    #131b28;
+  --surface-3:    #1a2436;
+  --border:       rgba(255,255,255,0.07);
+  --border-focus: rgba(99,161,255,0.5);
+
+  /* Text */
+  --text:         #e2e8f1;
+  --text-secondary: rgba(226,232,241,0.62);
+  --text-muted:   rgba(226,232,241,0.38);
+  --text-dim:     rgba(226,232,241,0.22);
+
+  /* Accent */
+  --accent:        #3b82f6;
+  --accent-dim:    rgba(59,130,246,0.18);
+  --accent-bright: #60a5fa;
+  --user-from:     #2563eb;
+  --user-to:       #4338ca;
+
+  /* Semantic */
+  --fresh:     #34d399;
+  --fresh-dim: rgba(52,211,153,0.15);
+  --warn:      #f59e0b;
+  --error:     #f87171;
+
+  /* Radii */
+  --r-sm:  6px;
+  --r-md:  10px;
+  --r-lg:  14px;
+  --r-xl:  20px;
+  --r-pill: 999px;
+
+  /* Spacing */
+  --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px;
+  --sp-5: 20px; --sp-6: 24px; --sp-8: 32px; --sp-10: 40px;
+
+  /* Type */
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+  --font-size-xs:   0.6875rem; /* 11px */
+  --font-size-sm:   0.8125rem; /* 13px */
+  --font-size-base: 0.9375rem; /* 15px */
+  --font-size-md:   1rem;      /* 16px */
+  --font-size-lg:   1.0625rem; /* 17px */
+  --font-size-xl:   1.25rem;   /* 20px */
+
+  /* Shadow */
+  --shadow-card: 0 1px 3px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.05);
+  --shadow-glow: 0 0 20px rgba(59,130,246,0.12);
+}
+
+html, body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: var(--font-size-base);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+/* ─── Nav ─── */
+nav {
+  background: rgba(8,12,18,0.9);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border) !important;
+  position: sticky;
+  top: 0;
+  z-index: 40;
+}
+nav > div {
+  max-width: 900px !important;
+  margin-inline: auto;
+  padding: var(--sp-4) var(--sp-6) !important;
+}
+nav a:first-of-type,
+nav .text-lg {
+  font-size: var(--font-size-lg) !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.03em !important;
+  background: linear-gradient(135deg, #fff 30%, var(--accent-bright));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+nav .flex.gap-6 {
+  gap: var(--sp-5) !important;
+}
+nav .flex.gap-6 a {
+  font-size: var(--font-size-sm) !important;
+  font-weight: 500;
+  color: var(--text-muted) !important;
+  text-decoration: none;
+  padding: 2px 0;
+  position: relative;
+  transition: color 0.18s;
+}
+nav .flex.gap-6 a:hover {
+  color: var(--text) !important;
+}
+nav .flex.gap-6 a[href*="/ask"] {
+  color: var(--accent-bright) !important;
+}
+nav .flex.gap-6 a[href*="/ask"]::after {
+  content: '';
+  display: block;
+  position: absolute;
+  bottom: -2px; left: 0; right: 0;
+  height: 2px;
+  background: var(--accent);
+  border-radius: 2px;
+}
+
+/* ─── Main Layout ─── */
+main {
+  max-width: 900px !important;
+  margin-inline: auto;
+  padding: var(--sp-6) var(--sp-6) var(--sp-4) !important;
+}
+
+/* ─── Chat Container ─── */
+.flex.h-\[calc\(100vh-8rem\)\].flex-col {
+  height: calc(100vh - 7rem) !important;
+}
+.flex-1.overflow-y-auto.space-y-4 {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5) !important;
+  padding-right: var(--sp-1);
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+.flex-1.overflow-y-auto.space-y-4::-webkit-scrollbar { width: 6px; }
+.flex-1.overflow-y-auto.space-y-4::-webkit-scrollbar-track { background: transparent; }
+.flex-1.overflow-y-auto.space-y-4::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* ─── Message Rows ─── */
+.flex.justify-end,
+.flex.justify-start { width: 100%; }
+
+/* ─── User Bubble ─── */
+.flex.justify-end > div {
+  max-width: 68% !important;
+  background: linear-gradient(135deg, var(--user-from), var(--user-to)) !important;
+  color: #fff !important;
+  border-radius: var(--r-xl) var(--r-xl) var(--r-sm) var(--r-xl) !important;
+  padding: var(--sp-3) var(--sp-5) !important;
+  font-size: var(--font-size-sm) !important;
+  font-weight: 450;
+  line-height: 1.55;
+  box-shadow: 0 2px 12px rgba(37,99,235,0.35), var(--shadow-card);
+  border: none !important;
+  letter-spacing: 0.01em;
+}
+
+/* ─── Assistant Bubble ─── */
+.flex.justify-start > div {
+  max-width: 88% !important;
+  background: var(--surface) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--r-sm) var(--r-xl) var(--r-xl) var(--r-xl) !important;
+  padding: var(--sp-5) var(--sp-6) !important;
+  box-shadow: var(--shadow-card);
+}
+
+/* ─── Prose (answer body) ─── */
+.prose {
+  color: var(--text) !important;
+  font-size: var(--font-size-sm) !important;
+  line-height: 1.75 !important;
+  max-width: none !important;
+}
+.prose p {
+  margin-block: 0.65em !important;
+}
+.prose p:first-child { margin-top: 0 !important; }
+.prose p:last-child  { margin-bottom: 0 !important; }
+
+.prose strong { color: #fff; font-weight: 600; }
+.prose em     { color: var(--text-secondary); }
+
+.prose h3 {
+  font-size: var(--font-size-md) !important;
+  font-weight: 700 !important;
+  color: #fff !important;
+  letter-spacing: -0.02em;
+  margin: 1.25em 0 0.4em !important;
+  padding-bottom: 0.3em;
+  border-bottom: 1px solid var(--border);
+}
+.prose h4 {
+  font-size: var(--font-size-sm) !important;
+  font-weight: 600 !important;
+  color: var(--text-secondary) !important;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin: 1em 0 0.3em !important;
+}
+.prose h3:first-child,
+.prose h4:first-child { margin-top: 0 !important; }
+
+.prose ul, .prose ol {
+  padding-left: 1.3em !important;
+  margin-block: 0.5em !important;
+}
+.prose li {
+  margin-block: 0.25em !important;
+  color: var(--text-secondary);
+}
+.prose li strong { color: var(--text); }
+
+/* Inline code */
+.prose code {
+  font-family: var(--font-mono) !important;
+  font-size: 0.82em !important;
+  background: var(--surface-3) !important;
+  color: var(--accent-bright) !important;
+  padding: 0.1em 0.38em !important;
+  border-radius: var(--r-sm) !important;
+  border: 1px solid var(--border);
+}
+
+/* Links inside prose */
+.prose a,
+.text-\[var\(--color-accent\)\] {
+  color: var(--accent-bright) !important;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(96,165,250,0.3);
+  transition: border-color 0.15s, color 0.15s;
+}
+.prose a:hover,
+.text-\[var\(--color-accent\)\]:hover {
+  color: #fff !important;
+  border-color: rgba(96,165,250,0.7);
+}
+
+/* Blockquotes */
+.prose blockquote {
+  border-left: 3px solid var(--accent);
+  padding-left: var(--sp-4);
+  margin: 0.75em 0 !important;
+  color: var(--text-secondary) !important;
+  font-style: normal !important;
+  background: var(--accent-dim);
+  border-radius: 0 var(--r-sm) var(--r-sm) 0;
+  padding-block: var(--sp-3);
+}
+
+/* ─── Tables ─── */
+.prose table {
+  width: 100% !important;
+  border-collapse: collapse !important;
+  font-size: var(--font-size-xs) !important;
+  margin-block: var(--sp-4) !important;
+  border-radius: var(--r-md);
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.prose thead {
+  background: var(--surface-3);
+}
+.prose th {
+  padding: var(--sp-2) var(--sp-3) !important;
+  text-align: left;
+  font-size: 0.68rem !important;
+  font-weight: 600 !important;
+  color: var(--text-muted) !important;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+.prose td {
+  padding: var(--sp-2) var(--sp-3) !important;
+  vertical-align: top;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+.prose tr:last-child td { border-bottom: none; }
+.prose tbody tr:hover { background: rgba(255,255,255,0.02); }
+
+/* hr */
+.prose hr {
+  border: none !important;
+  border-top: 1px solid var(--border) !important;
+  margin-block: var(--sp-5) !important;
+}
+
+/* ─── Provider/Error Notes ─── */
+/* We target .prose > p containing "Provider note:" text via a wrapper class added below */
+.provider-note {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-2);
+  margin-top: var(--sp-4) !important;
+  padding: var(--sp-3) var(--sp-4);
+  background: rgba(248,113,113,0.06);
+  border: 1px solid rgba(248,113,113,0.15);
+  border-radius: var(--r-md);
+  font-size: var(--font-size-xs) !important;
+  color: var(--text-muted) !important;
+  line-height: 1.55;
+}
+.provider-note::before {
+  content: '⚠';
+  font-size: 0.75rem;
+  flex-shrink: 0;
+  margin-top: 1px;
+  opacity: 0.5;
+}
+.provider-note code {
+  font-size: 0.75em !important;
+  background: rgba(248,113,113,0.08) !important;
+  color: rgba(248,113,113,0.8) !important;
+  border-color: rgba(248,113,113,0.2) !important;
+}
+
+/* ─── Sources / Evidence Panel ─── */
+/* The outer container */
+.mt-3.rounded-lg.border.border-\[var\(--color-border\)\].bg-\[var\(--color-surface\)\].p-3 {
+  margin-top: var(--sp-5) !important;
+  background: var(--surface-2) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--r-lg) !important;
+  padding: 0 !important;
+  overflow: hidden;
+}
+
+/* Sources header button */
+.mt-3.rounded-lg.border.border-\[var\(--color-border\)\].bg-\[var\(--color-surface\)\].p-3 > button {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  width: 100% !important;
+  padding: var(--sp-3) var(--sp-4) !important;
+  font-size: var(--font-size-xs) !important;
+  color: var(--text-muted) !important;
+  background: transparent !important;
+  cursor: pointer;
+  gap: var(--sp-3);
+}
+.mt-3.rounded-lg.border.border-\[var\(--color-border\)\].bg-\[var\(--color-surface\)\].p-3 > button:hover {
+  background: rgba(255,255,255,0.02) !important;
+}
+.mt-3.rounded-lg.border.border-\[var\(--color-border\)\].bg-\[var\(--color-surface\)\].p-3 > button .font-medium {
+  font-weight: 500 !important;
+  font-size: var(--font-size-xs) !important;
+}
+/* "Expand" text */
+.mt-3.rounded-lg.border.border-\[var\(--color-border\)\].bg-\[var\(--color-surface\)\].p-3 > button > span:last-child {
+  font-size: var(--font-size-xs) !important;
+  color: var(--accent-bright) !important;
+  font-weight: 500;
+}
+
+/* Source list wrapper */
+.mt-2.space-y-2 {
+  padding: 0 var(--sp-3) var(--sp-3) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: var(--sp-2) !important;
+}
+
+/* Individual source card */
+.rounded.border.border-\[var\(--color-border\)\].bg-\[var\(--color-bg\)\].p-2 {
+  background: var(--surface-3) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--r-md) !important;
+  padding: var(--sp-2) var(--sp-3) !important;
+  transition: border-color 0.15s;
+}
+.rounded.border.border-\[var\(--color-border\)\].bg-\[var\(--color-bg\)\].p-2:hover {
+  border-color: rgba(255,255,255,0.12);
+}
+
+/* cite-N pill */
+.font-mono.text-\[var\(--color-accent\)\] {
+  font-family: var(--font-mono) !important;
+  font-size: 0.68rem !important;
+  font-weight: 500;
+  color: var(--accent-bright) !important;
+  background: var(--accent-dim);
+  padding: 1px 6px !important;
+  border-radius: var(--r-pill) !important;
+  border: 1px solid rgba(59,130,246,0.25);
+  line-height: 1.6;
+  display: inline-block;
+}
+
+/* Fresh badge */
+.text-green-300 {
+  color: var(--fresh) !important;
+  font-size: 0.65rem !important;
+  font-weight: 600 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  background: var(--fresh-dim);
+  padding: 1px 5px !important;
+  border-radius: var(--r-pill);
+  border: 1px solid rgba(52,211,153,0.25);
+}
+
+/* Score next to fresh badge */
+.flex.items-center.gap-2 > span:last-child {
+  font-size: 0.72rem !important;
+  color: var(--text-muted) !important;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Source title row */
+.mt-1 { margin-top: var(--sp-1) !important; }
+.mt-1 a {
+  font-size: var(--font-size-xs) !important;
+  font-weight: 500;
+}
+/* (manifest) tag */
+.ml-2.text-\[var\(--color-text-muted\)\] {
+  font-size: 0.65rem !important;
+  color: var(--text-dim) !important;
+  margin-left: var(--sp-2) !important;
+  font-style: italic;
+}
+
+/* +N more sources button */
+.mt-2.text-xs.text-\[var\(--color-accent\)\].hover\:underline {
+  display: inline-block;
+  margin: var(--sp-1) 0 var(--sp-1) var(--sp-3) !important;
+  font-size: var(--font-size-xs) !important;
+  color: var(--accent-bright) !important;
+  font-weight: 500;
+  text-decoration: none;
+  border-bottom: 1px dashed rgba(96,165,250,0.4);
+  background: none;
+  cursor: pointer;
+}
+
+/* ─── Feedback Buttons ("Was this helpful?") ─── */
+.mt-2.flex.items-center.gap-1 {
+  padding-top: var(--sp-4) !important;
+  border-top: 1px solid var(--border) !important;
+  margin-top: var(--sp-4) !important;
+  flex-wrap: wrap;
+  gap: var(--sp-2) !important;
+}
+.mt-2.flex.items-center.gap-1 .text-xs.text-\[var\(--color-text-muted\)\].mr-1 {
+  font-size: var(--font-size-xs) !important;
+  color: var(--text-dim) !important;
+  margin-right: var(--sp-2) !important;
+  align-self: center;
+}
+.mt-2.flex.items-center.gap-1 button {
+  font-size: var(--font-size-xs) !important;
+  font-weight: 500;
+  padding: 3px var(--sp-3) !important;
+  border-radius: var(--r-pill) !important;
+  border: 1px solid var(--border) !important;
+  color: var(--text-muted) !important;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.mt-2.flex.items-center.gap-1 button:hover {
+  background: var(--accent-dim) !important;
+  border-color: rgba(59,130,246,0.35) !important;
+  color: var(--accent-bright) !important;
+}
+
+/* ─── Input Form ─── */
+form.flex.gap-3 {
+  gap: var(--sp-3) !important;
+  padding: var(--sp-4) 0 0 !important;
+  border-top: 1px solid var(--border) !important;
+  align-items: center;
+}
+form.flex.gap-3 input[type="text"] {
+  flex: 1;
+  background: var(--surface) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--r-xl) !important;
+  padding: var(--sp-3) var(--sp-5) !important;
+  font-size: var(--font-size-sm) !important;
+  color: var(--text) !important;
+  font-family: var(--font-sans) !important;
+  outline: none;
+  box-shadow: none;
+  transition: border-color 0.18s, box-shadow 0.18s;
+}
+form.flex.gap-3 input[type="text"]:focus {
+  border-color: var(--border-focus) !important;
+  box-shadow: 0 0 0 3px rgba(59,130,246,0.08) !important;
+}
+form.flex.gap-3 input[type="text"]::placeholder {
+  color: var(--text-dim) !important;
+}
+form.flex.gap-3 button[type="submit"] {
+  background: linear-gradient(135deg, #2563eb, #4338ca) !important;
+  color: #fff !important;
+  font-size: var(--font-size-sm) !important;
+  font-weight: 600;
+  padding: var(--sp-3) var(--sp-6) !important;
+  border-radius: var(--r-xl) !important;
+  border: none !important;
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.12s, box-shadow 0.15s;
+  box-shadow: 0 2px 12px rgba(37,99,235,0.4);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+form.flex.gap-3 button[type="submit"]:hover:not(:disabled) {
+  opacity: 0.9;
+  box-shadow: 0 4px 18px rgba(37,99,235,0.55);
+  transform: translateY(-1px);
+}
+form.flex.gap-3 button[type="submit"]:active:not(:disabled) {
+  transform: translateY(0);
+}
+form.flex.gap-3 button[type="submit"]:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* ─── Confidence/Coverage stat bar ─── */
+/* We pull the confidence/source count into a nicer visual via the button text alone */
+.mt-3.rounded-lg.border.border-\[var\(--color-border\)\].bg-\[var\(--color-surface\)\].p-3 > button .font-medium {
+  color: var(--text-secondary) !important;
+}
+
+/* ─── Accessibility ─── */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* ─── Prose: snap final provider-note paragraphs ─── */
+/*
+   The saved HTML has "Provider note: ..." inside .prose > p
+   We visually dim all paragraphs that *start* with code elements and
+   also immediately follow a <hr> (the pollinations ad block)
+*/
+.prose hr ~ p,
+.prose hr ~ hr,
+.prose hr ~ p strong,
+.prose p:last-of-type:has(code:first-child) {
+  font-size: var(--font-size-xs) !important;
+  color: var(--text-dim) !important;
+}
+.prose p:has(code):last-of-type code {
+  font-size: 0.72em !important;
+}
+
+/* ─── SingleFile infobar: hide it ─── */
+single-file-infobar { display: none !important; }
+
+/* ─── Scrollbar: global ─── */
+* { scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.08) transparent; }
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.18); }
+</style>
+<!--
+ Page saved with SingleFile
+ url: http://localhost:3000/ask
+ saved date: Thu Mar 05 2026 20:51:23 GMT-0500 (Eastern Standard Time)
+--><meta charset=utf-8><meta name=viewport content="width=device-width, initial-scale=1"><style>/*!*****************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!./src/app/globals.css ***!
+  \*****************************************************************************************************************************************************************************************************************************************************************//*! tailwindcss v4.2.1 | MIT License | https://tailwindcss.com */@layer properties;@layer theme,base,components,utilities;@layer theme{:root,:host{--font-sans:ui-sans-serif,system-ui,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";--font-mono:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;--color-red-300:oklch(80.8%0.114 19.571);--color-red-400:oklch(70.4%0.191 22.216);--color-red-600:oklch(57.7%0.245 27.325);--color-red-800:oklch(44.4%0.177 26.899);--color-red-950:oklch(25.8%0.092 26.042);--color-orange-300:oklch(83.7%0.128 66.29);--color-amber-300:oklch(87.9%0.169 91.605);--color-amber-600:oklch(66.6%0.179 58.318);--color-amber-700:oklch(55.5%0.163 48.998);--color-amber-800:oklch(47.3%0.137 46.201);--color-amber-900:oklch(41.4%0.112 45.904);--color-amber-950:oklch(27.9%0.077 45.635);--color-yellow-300:oklch(90.5%0.182 98.111);--color-yellow-700:oklch(55.4%0.135 66.442);--color-yellow-900:oklch(42.1%0.095 57.708);--color-green-300:oklch(87.1%0.15 154.449);--color-green-400:oklch(79.2%0.209 151.711);--color-green-500:oklch(72.3%0.219 149.579);--color-green-700:oklch(52.7%0.154 150.069);--color-green-900:oklch(39.3%0.095 152.535);--color-emerald-600:oklch(59.6%0.145 163.225);--color-emerald-800:oklch(43.2%0.095 166.913);--color-emerald-950:oklch(26.2%0.051 172.552);--color-blue-300:oklch(80.9%0.105 251.813);--color-blue-600:oklch(54.6%0.245 262.881);--color-blue-700:oklch(48.8%0.243 264.376);--color-blue-800:oklch(42.4%0.199 265.638);--color-blue-900:oklch(37.9%0.146 265.522);--color-blue-950:oklch(28.2%0.091 267.935);--color-indigo-800:oklch(39.8%0.195 277.366);--color-indigo-950:oklch(25.7%0.09 281.288);--color-violet-800:oklch(43.2%0.232 292.759);--color-violet-950:oklch(28.3%0.141 291.089);--color-pink-800:oklch(45.9%0.187 3.815);--color-pink-950:oklch(28.4%0.109 3.907);--color-slate-700:oklch(37.2%0.044 257.287);--color-slate-900:oklch(20.8%0.042 265.755);--color-gray-300:oklch(87.2%0.01 258.338);--color-gray-400:oklch(70.7%0.022 261.325);--color-gray-500:oklch(55.1%0.027 264.364);--color-gray-600:oklch(44.6%0.03 256.802);--color-gray-700:oklch(37.3%0.034 259.733);--color-gray-800:oklch(27.8%0.033 256.848);--color-gray-900:oklch(21%0.034 264.665);--color-white:#fff;--spacing:0.25rem;--container-md:28rem;--container-lg:32rem;--container-2xl:42rem;--container-3xl:48rem;--container-7xl:80rem;--text-xs:0.75rem;--text-xs--line-height:calc(1/0.75);--text-sm:0.875rem;--text-sm--line-height:calc(1.25/0.875);--text-base:1rem;--text-base--line-height:calc(1.5/1);--text-lg:1.125rem;--text-lg--line-height:calc(1.75/1.125);--text-xl:1.25rem;--text-xl--line-height:calc(1.75/1.25);--text-2xl:1.5rem;--text-2xl--line-height:calc(2/1.5);--text-3xl:1.875rem;--text-3xl--line-height:calc(2.25/1.875);--text-4xl:2.25rem;--text-4xl--line-height:calc(2.5/2.25);--text-5xl:3rem;--text-5xl--line-height:1;--font-weight-medium:500;--font-weight-semibold:600;--font-weight-bold:700;--tracking-tight:-0.025em;--leading-relaxed:1.625;--radius-lg:0.5rem;--default-transition-duration:150ms;--default-transition-timing-function:cubic-bezier(0.4,0,0.2,1);--default-font-family:var(--font-sans);--default-mono-font-family:var(--font-mono)}}@layer base{*,::after,::before,::backdrop,::file-selector-button{box-sizing:border-box;margin:0;padding:0;border:0 solid}html,:host{line-height:1.5;-webkit-text-size-adjust:100%;tab-size:4;font-family:var(--default-font-family,ui-sans-serif,system-ui,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji");font-feature-settings:var(--default-font-feature-settings,normal);font-variation-settings:var(--default-font-variation-settings,normal);-webkit-tap-highlight-color:transparent}hr{height:0;color:inherit;border-top-width:1px}h3,h4{font-size:inherit;font-weight:inherit}a{color:inherit;-webkit-text-decoration:inherit;text-decoration:inherit}strong{font-weight:bolder}code{font-family:var(--default-mono-font-family,ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace);font-feature-settings:var(--default-mono-font-feature-settings,normal);font-variation-settings:var(--default-mono-font-variation-settings,normal);font-size:1em}:-moz-focusring{outline:auto}ol,ul{list-style:none}button,input,::file-selector-button{font:inherit;font-feature-settings:inherit;font-variation-settings:inherit;letter-spacing:inherit;color:inherit;border-radius:0;background-color:transparent;opacity:1}::file-selector-button{margin-inline-end:4px}::placeholder{opacity:1}@supports (not (-webkit-appearance:-apple-pay-button)) or (contain-intrinsic-size:1px){::placeholder{color:currentcolor;@supports (color:color-mix(in lab,red,red)){color:color-mix(in oklab,currentcolor 50%,transparent)}}}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-date-and-time-value{min-height:1lh;text-align:inherit}::-webkit-datetime-edit{display:inline-flex}::-webkit-datetime-edit-fields-wrapper{padding:0}::-webkit-datetime-edit,::-webkit-datetime-edit-year-field,::-webkit-datetime-edit-month-field,::-webkit-datetime-edit-day-field,::-webkit-datetime-edit-hour-field,::-webkit-datetime-edit-minute-field,::-webkit-datetime-edit-second-field,::-webkit-datetime-edit-millisecond-field,::-webkit-datetime-edit-meridiem-field{padding-block:0}::-webkit-calendar-picker-indicator{line-height:1}:-moz-ui-invalid{box-shadow:none}button,::file-selector-button{appearance:button}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[hidden]:where(:not([hidden="until-found"])){display:none!important}}@layer utilities{.mx-auto{margin-inline:auto}.mt-1{margin-top:calc(var(--spacing)*1)}.mt-2{margin-top:calc(var(--spacing)*2)}.mt-3{margin-top:calc(var(--spacing)*3)}.mr-1{margin-right:calc(var(--spacing)*1)}.ml-2{margin-left:calc(var(--spacing)*2)}.flex{display:flex}.h-\[calc\(100vh-8rem\)\]{height:calc(100vh - 8rem)}.min-h-screen{min-height:100vh}.w-full{width:100%}.max-w-7xl{max-width:var(--container-7xl)}.max-w-\[80\%\]{max-width:80%}.max-w-none{max-width:none}.flex-1{flex:1}.flex-col{flex-direction:column}.items-center{align-items:center}.justify-between{justify-content:space-between}.justify-end{justify-content:flex-end}.justify-start{justify-content:flex-start}.gap-1{gap:calc(var(--spacing)*1)}.gap-2{gap:calc(var(--spacing)*2)}.gap-3{gap:calc(var(--spacing)*3)}.gap-6{gap:calc(var(--spacing)*6)}.space-y-2{:where(&>:not(:last-child)){--tw-space-y-reverse: 0;margin-block-start:calc(calc(var(--spacing)*2)*var(--tw-space-y-reverse));margin-block-end:calc(calc(var(--spacing)*2)*calc(1 - var(--tw-space-y-reverse)))}}.space-y-4{:where(&>:not(:last-child)){--tw-space-y-reverse: 0;margin-block-start:calc(calc(var(--spacing)*4)*var(--tw-space-y-reverse));margin-block-end:calc(calc(var(--spacing)*4)*calc(1 - var(--tw-space-y-reverse)))}}.overflow-y-auto{overflow-y:auto}.rounded{border-radius:0.25rem}.rounded-lg{border-radius:var(--radius-lg)}.border{border-style:var(--tw-border-style);border-width:1px}.border-t{border-top-style:var(--tw-border-style);border-top-width:1px}.border-b{border-bottom-style:var(--tw-border-style);border-bottom-width:1px}.border-\[var\(--color-border\)\]{border-color:var(--color-border)}.bg-\[var\(--color-accent\)\]{background-color:var(--color-accent)}.bg-\[var\(--color-bg\)\]{background-color:var(--color-bg)}.bg-\[var\(--color-surface\)\]{background-color:var(--color-surface)}.p-2{padding:calc(var(--spacing)*2)}.p-3{padding:calc(var(--spacing)*3)}.px-2{padding-inline:calc(var(--spacing)*2)}.px-4{padding-inline:calc(var(--spacing)*4)}.px-6{padding-inline:calc(var(--spacing)*6)}.py-0\.5{padding-block:calc(var(--spacing)*0.5)}.py-2\.5{padding-block:calc(var(--spacing)*2.5)}.py-3{padding-block:calc(var(--spacing)*3)}.py-4{padding-block:calc(var(--spacing)*4)}.py-8{padding-block:calc(var(--spacing)*8)}.pt-4{padding-top:calc(var(--spacing)*4)}.pb-4{padding-bottom:calc(var(--spacing)*4)}.font-mono{font-family:var(--font-mono)}.text-lg{font-size:var(--text-lg);line-height:var(--tw-leading,var(--text-lg--line-height))}.text-sm{font-size:var(--text-sm);line-height:var(--tw-leading,var(--text-sm--line-height))}.text-xs{font-size:var(--text-xs);line-height:var(--tw-leading,var(--text-xs--line-height))}.font-bold{--tw-font-weight:var(--font-weight-bold);font-weight:var(--font-weight-bold)}.font-medium{--tw-font-weight:var(--font-weight-medium);font-weight:var(--font-weight-medium)}.tracking-tight{--tw-tracking:var(--tracking-tight);letter-spacing:var(--tracking-tight)}.text-\[var\(--color-accent\)\]{color:var(--color-accent)}.text-\[var\(--color-text\)\]{color:var(--color-text)}.text-\[var\(--color-text-muted\)\]{color:var(--color-text-muted)}.text-green-300{color:var(--color-green-300)}.text-white{color:var(--color-white)}.antialiased{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}.transition-colors{transition-property:color,background-color,border-color,outline-color,text-decoration-color,fill,stroke,--tw-gradient-from,--tw-gradient-via,--tw-gradient-to;transition-timing-function:var(--tw-ease,var(--default-transition-timing-function));transition-duration:var(--tw-duration,var(--default-transition-duration))}.placeholder\:text-\[var\(--color-text-muted\)\]{&::placeholder{color:var(--color-text-muted)}}.hover\:border-\[var\(--color-accent\)\]{&:hover{@media (hover:hover){border-color:var(--color-accent)}}}.hover\:bg-blue-600{&:hover{@media (hover:hover){background-color:var(--color-blue-600)}}}.hover\:text-\[var\(--color-accent\)\]{&:hover{@media (hover:hover){color:var(--color-accent)}}}.hover\:text-white{&:hover{@media (hover:hover){color:var(--color-white)}}}.hover\:underline{&:hover{@media (hover:hover){text-decoration-line:underline}}}.focus\:border-\[var\(--color-accent\)\]{&:focus{border-color:var(--color-accent)}}.focus\:outline-none{&:focus{--tw-outline-style:none;outline-style:none}}.disabled\:opacity-50{&:disabled{opacity:50%}}}:root{--color-bg:#0a0a0a;--color-surface:#141414;--color-surface-2:#1e1e1e;--color-border:#2a2a2a;--color-text:#e5e5e5;--color-text-muted:#999999;--color-accent:#3b82f6;--color-accent-dim:#1e3a5f}body{background:var(--color-bg);color:var(--color-text);font-family:system-ui,-apple-system,sans-serif}@property --tw-space-y-reverse{syntax:"*";inherits:false;initial-value:0}@property --tw-border-style{syntax:"*";inherits:false;initial-value:solid}@property --tw-leading{syntax:"*";inherits:false}@property --tw-font-weight{syntax:"*";inherits:false}@property --tw-tracking{syntax:"*";inherits:false}@property --tw-blur{syntax:"*";inherits:false}@property --tw-brightness{syntax:"*";inherits:false}@property --tw-contrast{syntax:"*";inherits:false}@property --tw-grayscale{syntax:"*";inherits:false}@property --tw-hue-rotate{syntax:"*";inherits:false}@property --tw-invert{syntax:"*";inherits:false}@property --tw-opacity{syntax:"*";inherits:false}@property --tw-saturate{syntax:"*";inherits:false}@property --tw-sepia{syntax:"*";inherits:false}@property --tw-drop-shadow{syntax:"*";inherits:false}@property --tw-drop-shadow-color{syntax:"*";inherits:false}@property --tw-drop-shadow-alpha{syntax:"<percentage>";inherits:false;initial-value:100%}@property --tw-drop-shadow-size{syntax:"*";inherits:false}@layer properties{@supports ((-webkit-hyphens:none) and (not (margin-trim:inline))) or ((-moz-orient:inline) and (not (color:rgb(from red r g b)))){*,::before,::after,::backdrop{--tw-space-y-reverse:0;--tw-border-style:solid;--tw-leading:initial;--tw-font-weight:initial;--tw-tracking:initial;--tw-blur:initial;--tw-brightness:initial;--tw-contrast:initial;--tw-grayscale:initial;--tw-hue-rotate:initial;--tw-invert:initial;--tw-opacity:initial;--tw-saturate:initial;--tw-sepia:initial;--tw-drop-shadow:initial;--tw-drop-shadow-color:initial;--tw-drop-shadow-alpha:100%;--tw-drop-shadow-size:initial}}}</style><title>ORGANVM — Stakeholder Intelligence Portal</title><meta name=description content="Real-time intelligence on the ORGANVM eight-organ creative-institutional system. 111 repos, 8 organs, one vision."><meta name=referrer content=no-referrer><link rel=icon href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCIgcm9sZT0iaW1nIiBhcmlhLWxhYmVsPSJPUkdBTlZNIj4KICA8cmVjdCB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHJ4PSIxMiIgZmlsbD0iIzBBMEYxQyIgLz4KICA8Y2lyY2xlIGN4PSIzMiIgY3k9IjMyIiByPSIyMiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMjU2M0VCIiBzdHJva2Utd2lkdGg9IjQiIC8+CiAgPGNpcmNsZSBjeD0iMzIiIGN5PSIzMiIgcj0iMTEiIGZpbGw9IiMyMkQzRUUiIC8+Cjwvc3ZnPgo=" type=image/svg+xml sizes=any><link rel=canonical href=http://localhost:3000/ask><meta http-equiv=content-security-policy content="default-src 'none'; font-src 'self' data:; img-src 'self' data:; style-src 'unsafe-inline'; media-src 'self' data:; script-src 'unsafe-inline' data:; object-src 'self' data:; frame-src 'self' data:;"><body class="min-h-screen antialiased"><div hidden class=sf-hidden></div><nav class="border-b border-[var(--color-border)] px-6 py-4"><div class="mx-auto flex max-w-7xl items-center justify-between"><a class="text-lg font-bold tracking-tight" href=http://localhost:3000/>ORGANVM</a><div class="flex gap-6 text-sm text-[var(--color-text-muted)]"><a class="hover:text-white transition-colors" href=http://localhost:3000/repos>Repos</a><a class="hover:text-white transition-colors" href=http://localhost:3000/organs>Organs</a><a class="hover:text-white transition-colors" href=http://localhost:3000/dashboard>Dashboard</a><a class="hover:text-white transition-colors" href=http://localhost:3000/ask>Ask</a><a class="hover:text-white transition-colors" href=http://localhost:3000/admin/intel>Admin</a><a class="hover:text-white transition-colors" href=http://localhost:3000/about>About</a></div></div></nav><main class="mx-auto max-w-7xl px-6 py-8"><div class="flex h-[calc(100vh-8rem)] flex-col"><div class="flex-1 overflow-y-auto space-y-4 pb-4"><div class="flex justify-end"><div class="max-w-[80%] rounded-lg px-4 py-3 text-sm bg-[var(--color-accent)] text-white">Which ORGAN-I theoretical framework is the philosophical ancestor of the gamification model used in classroom-rpg-aetheria (ORGAN-III), and what specific concept bridges them?</div></div><div class="flex justify-start"><div class="max-w-[80%] rounded-lg px-4 py-3 text-sm bg-[var(--color-surface)] border border-[var(--color-border)]"><div class="prose prose-invert prose-sm max-w-none"><p><strong>Answer</strong></p>
+<p>Based on the information available in the provided sources, there is no explicit statement that identifies a specific ORGAN‑I theoretical framework as the philosophical ancestor of the gamification model used in <strong>classroom‑rpg‑aetheria</strong> (ORGAN‑III), nor is there a cited concept that directly bridges the two. The only documented links are:</p>
+<p>| Repository | Org | Description |
+|------------|-----|-------------|
+| <a href=http://localhost:3000/repos/classroom-rpg-aetheria class="text-[var(--color-accent)] hover:underline" rel="noopener noreferrer nofollow">Classroom Rpg Aetheria</a> | ORGAN‑III | Educational RPG system for classroom engagement【cite-1】 |
+| <a href=http://localhost:3000/repos/linguistic-atomization-framework class="text-[var(--color-accent)] hover:underline" rel="noopener noreferrer nofollow">Linguistic Atomization Framework</a> | ORGAN‑I | Computational rhetoric platform with hierarchical text atomization【cite-3】 |</p>
+<p>No source in the current evidence explicitly connects the gamification model of <em>classroom‑rpg‑aetheria</em> to any particular ORGAN‑I framework or concept. Therefore, the question cannot be answered definitively with the available data.</p></div><div class="mt-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-3"><button class="flex w-full items-center justify-between text-xs text-[var(--color-text-muted)]"><span class=font-medium>Sources (15) | Confidence: 58% | Coverage: 0%</span><span>Expand</span></button><div class="mt-2 space-y-2"><div class="rounded border border-[var(--color-border)] bg-[var(--color-bg)] p-2 text-xs"><div class="flex items-center justify-between"><span class="font-mono text-[var(--color-accent)]">[cite-1]</span><div class="flex items-center gap-2"><span class="font-medium text-green-300">fresh</span><span class=text-[var(--color-text-muted)]>98%</span></div></div><div class=mt-1><a href=http://localhost:3000/repos/classroom-rpg-aetheria class="text-[var(--color-accent)] hover:underline">Classroom Rpg Aetheria</a><span class="ml-2 text-[var(--color-text-muted)]">(manifest)</span></div></div><div class="rounded border border-[var(--color-border)] bg-[var(--color-bg)] p-2 text-xs"><div class="flex items-center justify-between"><span class="font-mono text-[var(--color-accent)]">[cite-2]</span><div class="flex items-center gap-2"><span class="font-medium text-green-300">fresh</span><span class=text-[var(--color-text-muted)]>71%</span></div></div><div class=mt-1><a href=http://localhost:3000/repos/organvm-engine class="text-[var(--color-accent)] hover:underline">Organvm Engine</a><span class="ml-2 text-[var(--color-text-muted)]">(manifest)</span></div></div><div class="rounded border border-[var(--color-border)] bg-[var(--color-bg)] p-2 text-xs"><div class="flex items-center justify-between"><span class="font-mono text-[var(--color-accent)]">[cite-3]</span><div class="flex items-center gap-2"><span class="font-medium text-green-300">fresh</span><span class=text-[var(--color-text-muted)]>65%</span></div></div><div class=mt-1><a href=http://localhost:3000/repos/linguistic-atomization-framework class="text-[var(--color-accent)] hover:underline">Linguistic Atomization Framework</a><span class="ml-2 text-[var(--color-text-muted)]">(manifest)</span></div></div></div><button class="mt-2 text-xs text-[var(--color-accent)] hover:underline">+12 more sources</button></div></div></div><div class="flex justify-end"><div class="max-w-[80%] rounded-lg px-4 py-3 text-sm bg-[var(--color-accent)] text-white">Name every repo across the entire system that implements a 4-phase recursive process loop, and explain how each instance adapts the pattern for its organ's domain.</div></div><div class="flex justify-start"><div class="max-w-[80%] rounded-lg px-4 py-3 text-sm bg-[var(--color-surface)] border border-[var(--color-border)]"><div class="prose prose-invert prose-sm max-w-none"><p><strong>Repo(s) that explicitly implement a 4‑phase recursive process loop</strong></p>
+<p>| Repo | Organ | How the 4‑phase pattern is adapted to the organ’s domain |
+|------|-------|--------------------------------------------------------|
+| <a href=http://localhost:3000/repos/organon-noumenon--ontogenetic-morphe class="text-[var(--color-accent)] hover:underline" rel="noopener noreferrer nofollow">Organon Noumenon: Ontogenetic Morphe</a> | <strong>ORGAN‑I (Theoria)</strong> | The repo contains a 22‑subsystem symbolic‑processing architecture that relies on <em>recursive 4‑phase process loops</em> to cycle symbolic values through <strong>(1) acquisition, (2) transformation, (3) evaluation, (4) propagation</strong>. This pattern underpins the foundational theory of the system, enabling recursive reasoning, symbolic manipulation, and asynchronous message passing that feed into the higher‑level recursive engines of ORGAN‑I. |</p>
+<p><strong>Why no other repos are listed</strong></p>
+<p>The evidence base only documents the 4‑phase loop in <em>Organon Noumenon: Ontogenetic Morphe</em>; other repos (e.g., <em>Recursive Engine: Generative Entity</em>, <em>Reverse Engine Recursive Run</em>, etc.) do not explicitly state that they use a 4‑phase recursive process loop. Therefore, based on the available sources, this is the sole repo that implements the pattern across the entire ORGANVM system.</p>
+<p>[Cite‑2]</p></div><div class="mt-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-3"><button class="flex w-full items-center justify-between text-xs text-[var(--color-text-muted)]"><span class=font-medium>Sources (15) | Confidence: 70% | Coverage: 0%</span><span>Expand</span></button><div class="mt-2 space-y-2"><div class="rounded border border-[var(--color-border)] bg-[var(--color-bg)] p-2 text-xs"><div class="flex items-center justify-between"><span class="font-mono text-[var(--color-accent)]">[cite-1]</span><div class="flex items-center gap-2"><span class="font-medium text-green-300">fresh</span><span class=text-[var(--color-text-muted)]>98%</span></div></div><div class=mt-1><a href=http://localhost:3000/repos/a-recursive-root class="text-[var(--color-accent)] hover:underline">A Recursive Root</a><span class="ml-2 text-[var(--color-text-muted)]">(manifest)</span></div></div><div class="rounded border border-[var(--color-border)] bg-[var(--color-bg)] p-2 text-xs"><div class="flex items-center justify-between"><span class="font-mono text-[var(--color-accent)]">[cite-2]</span><div class="flex items-center gap-2"><span class="font-medium text-green-300">fresh</span><span class=text-[var(--color-text-muted)]>93%</span></div></div><div class=mt-1><a href=http://localhost:3000/repos/organon-noumenon--ontogenetic-morphe class="text-[var(--color-accent)] hover:underline">Organon Noumenon: Ontogenetic Morphe</a><span class="ml-2 text-[var(--color-text-muted)]">(manifest)</span></div></div><div class="rounded border border-[var(--color-border)] bg-[var(--color-bg)] p-2 text-xs"><div class="flex items-center justify-between"><span class="font-mono text-[var(--color-accent)]">[cite-3]</span><div class="flex items-center gap-2"><span class="font-medium text-green-300">fresh</span><span class=text-[var(--color-text-muted)]>80%</span></div></div><div class=mt-1><a href=http://localhost:3000/repos/organvm-mcp-server class="text-[var(--color-accent)] hover:underline">Organvm Mcp Server</a><span class="ml-2 text-[var(--color-text-muted)]">(manifest)</span></div></div></div><button class="mt-2 text-xs text-[var(--color-accent)] hover:underline">+12 more sources</button></div></div></div><div class="flex justify-end"><div class="max-w-[80%] rounded-lg px-4 py-3 text-sm bg-[var(--color-accent)] text-white">What is the dependency path from schema-definitions (META-ORGANVM) through ORGAN-IV's orchestration layer into ORGAN-III's commercial products? Trace every intermediate repo.</div></div><div class="flex justify-start"><div class="max-w-[80%] rounded-lg px-4 py-3 text-sm bg-[var(--color-surface)] border border-[var(--color-border)]"><div class="prose prose-invert prose-sm max-w-none"><h3>ORGANVM Snapshot Response</h3>
+<p>The live OSS model path is currently unavailable, so this answer is generated from local manifest context for <strong>What is the dependency path from schema-definitions (META-ORGANVM) through ORGAN-IV's orchestration layer into ORGAN-III's commercial products? Trace every intermediate repo.</strong>.</p>
+<h4>System Overview</h4>
+<ul>
+<li>ORGANVM System Summary</li>
+<li>======================</li>
+<li>Name: ORGANVM — Eight-organ creative-institutional system</li>
+<li>Total repos: 103 | Active: 94 | Archived: 9</li>
+<li>Organs: 8</li>
+<li>Sprints completed: 33 (since 2026-02-11)</li>
+<li>CI workflows: 94</li>
+</ul>
+<h4>Relevant Repositories</h4>
+<ul>
+<li><strong>Recursive Engine: Generative Entity</strong> (recursive-engine--generative-entity) [ORGAN-I/flagship]: Recursive Engine: Generative Entity (recursive-engine--generative-entity) — ORGAN-I. RE:GE — A symbolic operating system for myth, identity, ritual, and recursive systems. 21 organ handlers, ritual syntax DSL, workflow orchestration, external bridges (Obsidian/Git/Max-MSP).</li>
+<li><strong>Organon Noumenon: Ontogenetic Morphe</strong> (organon-noumenon--ontogenetic-morphe) [ORGAN-I/standard]: Organon Noumenon: Ontogenetic Morphe (organon-noumenon--ontogenetic-morphe) — ORGAN-I. Ontogenetic Morphe — 22-subsystem symbolic processing architecture with recursive 4-phase process loops, async message bus, and typed symbolic values</li>
+<li><strong>Auto Revision Epistemic Engine</strong> (auto-revision-epistemic-engine) [ORGAN-I/standard]: Auto Revision Epistemic Engine (auto-revision-epistemic-engine) — ORGAN-I. Self-governing orchestration framework with 8 phases, 4 human review gates, BLAKE3 audit chain, and ethical axiom enforcement</li>
+<li><strong>Narratological Algorithmic Lenses</strong> (narratological-algorithmic-lenses) [ORGAN-I/standard]: Narratological Algorithmic Lenses (narratological-algorithmic-lenses) — ORGAN-I. 14 narratological studies × 92 algorithms — formalizing narrative principles from Aristotle to Pixar as executable code, with CLI, API, web dashboard, and real screenplay analysis <strong>Hybrid: Python core + TypeScript web app</strong></li>
+<li><strong>Call Function: Ontological</strong> (call-function--ontological) [ORGAN-I/standard]: Call Function: Ontological (call-function--ontological) — ORGAN-I. Ontological function-calling framework — 12-concept philosophical architecture for grounded AI tool use via Heideggerian Dasein, Aristotelian four causes, and Peircean semiotics</li>
+<li><strong>Sema Metra: Alchemica Mundi</strong> (sema-metra--alchemica-mundi) [ORGAN-I/standard]: Sema Metra: Alchemica Mundi (sema-metra--alchemica-mundi) — ORGAN-I. Three-engine alchemical transformation framework — 22 operations mapping classical alchemy (Nigredo→Rubedo) onto computational semantics via distillation, fermentation, and projection engines <strong>Sema-Metra: Alchemica Mundi</strong> is a TypeScript framework implementing an axiom-driven signal-matrix system. It functions as a programmable creative engine — a modular synthesis patchbay that routes a</li>
+<li><strong>System Governance Framework</strong> (system-governance-framework) [ORGAN-I/standard]: System Governance Framework (system-governance-framework) — ORGAN-I. Multi-organ governance rules and promotion criteria</li>
+<li><strong>Cognitive Archaelogy Tribunal</strong> (cognitive-archaelogy-tribunal) [ORGAN-I/standard]: Cognitive Archaelogy Tribunal (cognitive-archaelogy-tribunal) — ORGAN-I. Audit tool for cognitive systems and organizational coherence</li>
+</ul>
+<p>Provider note: OSS provider returned no assistant text.
+Primary provider: <code>GROQ_API_KEY</code> + <code>GROQ_MODEL</code> (default <code>llama-3.3-70b-versatile</code>).
+Fallback provider: <code>OSS_LLM_API_URL=https://text.pollinations.ai/openai</code>, <code>OSS_LLM_MODEL=openai-fast</code>.</p></div></div></div><div class="flex justify-end"><div class="max-w-[80%] rounded-lg px-4 py-3 text-sm bg-[var(--color-accent)] text-white">The RE:GE system has 21 organ handlers. The Omni-Dromenon engine in metasystem-master also has a modular subsystem architecture. Compare the two: which subsystem categories overlap, and which are unique to each?</div></div><div class="flex justify-start"><div class="max-w-[80%] rounded-lg px-4 py-3 text-sm bg-[var(--color-surface)] border border-[var(--color-border)]"><div class="prose prose-invert prose-sm max-w-none"><p><strong>Subsystem comparison</strong></p>
+<p>| Category | Recursive Engine: Generative Entity (RE:GE) | Metasystem Master (Omni‑Dromenon) | Overlap? |
+|----------|-------------------------------------------|------------------------------------|----------|
+| <strong>Orchestration</strong> | “workflow orchestration” – the engine coordinates recursive workflows across its 21 organ handlers. [cite‑1] | “orchestrate CLI” – a command‑line tool that orchestrates the performance stack. [cite‑2] | <strong>Yes</strong> – both provide orchestration layers, though RE:GE is embedded in the organ‑handler runtime while the CLI is a separate tool. |
+| <strong>External bridging</strong> | “external bridges (Obsidian/Git/Max‑MSP)” – connectors to external tools and data sources. [cite‑1] | “audio‑synthesis‑bridge” – a bridge that connects the engine to external audio synthesizers. [cite‑2] | <strong>Yes</strong> – both include bridge modules that expose the engine to external systems, albeit with different target domains (general‑purpose vs audio). |
+| <strong>Performance</strong> | Not explicitly listed in the RE:GE description. | “performance‑sdk” – a runtime for real‑time performance. [cite‑2] | <strong>No</strong> – RE:GE does not expose a dedicated performance SDK. |
+| <strong>Core engine</strong> | Not named; the 21 organ handlers collectively form the core. | “core‑engine” – the foundational runtime shared by the other subsystems. [cite‑2] | <strong>No</strong> – RE:GE’s core is implicit in its organ handlers; metasystem‑master has an explicit core‑engine repo. |
+| <strong>Client SDK</strong> | Not mentioned. | “client‑sdk” – a library for building client applications. [cite‑2] | <strong>No</strong> – RE:GE does not provide a separate client SDK. |
+| <strong>Examples / demos</strong> | Not listed. | “4 examples” – sample projects demonstrating the stack. [cite‑2] | <strong>No</strong> – RE:GE’s documentation does not list example repos. |
+| <strong>Ritual syntax DSL</strong> | “ritual syntax DSL” – a domain‑specific language for defining rituals. [cite‑1] | Not present. | <strong>Unique to RE:GE</strong> |
+| <strong>Organ handlers</strong> | 21 organ handlers – modular units that implement the eight organs of ORGANVM. [cite‑1] | Not present. | <strong>Unique to RE:GE</strong> |</p>
+<p><strong>Summary</strong></p>
+<ul>
+<li><strong>Shared concepts</strong>: both systems provide orchestration mechanisms and bridge modules that connect to external tools or services.</li>
+<li><strong>RE:GE unique</strong>: its 21 organ handlers, ritual‑syntax DSL, and general‑purpose external bridges (Obsidian, Git, Max‑MSP).</li>
+<li><strong>Metasystem‑Master unique</strong>: a dedicated core‑engine, performance‑SDK, client‑SDK, audio‑synthesis‑bridge, and example projects that showcase real‑time performance.</li>
+</ul></div><div class="mt-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-3"><button class="flex w-full items-center justify-between text-xs text-[var(--color-text-muted)]"><span class=font-medium>Sources (15) | Confidence: 74% | Coverage: 0%</span><span>Expand</span></button><div class="mt-2 space-y-2"><div class="rounded border border-[var(--color-border)] bg-[var(--color-bg)] p-2 text-xs"><div class="flex items-center justify-between"><span class="font-mono text-[var(--color-accent)]">[cite-1]</span><div class="flex items-center gap-2"><span class="font-medium text-green-300">fresh</span><span class=text-[var(--color-text-muted)]>98%</span></div></div><div class=mt-1><a href=http://localhost:3000/repos/recursive-engine--generative-entity class="text-[var(--color-accent)] hover:underline">Recursive Engine: Generative Entity</a><span class="ml-2 text-[var(--color-text-muted)]">(manifest)</span></div></div><div class="rounded border border-[var(--color-border)] bg-[var(--color-bg)] p-2 text-xs"><div class="flex items-center justify-between"><span class="font-mono text-[var(--color-accent)]">[cite-2]</span><div class="flex items-center gap-2"><span class="font-medium text-green-300">fresh</span><span class=text-[var(--color-text-muted)]>89%</span></div></div><div class=mt-1><a href=http://localhost:3000/repos/metasystem-master class="text-[var(--color-accent)] hover:underline">Metasystem Master</a><span class="ml-2 text-[var(--color-text-muted)]">(manifest)</span></div></div><div class="rounded border border-[var(--color-border)] bg-[var(--color-bg)] p-2 text-xs"><div class="flex items-center justify-between"><span class="font-mono text-[var(--color-accent)]">[cite-3]</span><div class="flex items-center gap-2"><span class="font-medium text-green-300">fresh</span><span class=text-[var(--color-text-muted)]>88%</span></div></div><div class=mt-1><a href=http://localhost:3000/repos/core-engine class="text-[var(--color-accent)] hover:underline">Core Engine</a><span class="ml-2 text-[var(--color-text-muted)]">(manifest)</span></div></div></div><button class="mt-2 text-xs text-[var(--color-accent)] hover:underline">+12 more sources</button></div></div></div><div class="flex justify-end"><div class="max-w-[80%] rounded-lg px-4 py-3 text-sm bg-[var(--color-accent)] text-white">Three repos have been archived from ORGAN-II (core-engine, performance-sdk, example-generative-visual). What functionality from each was absorbed into metasystem-master, and what was deprecated entirely?</div></div><div class="flex justify-start"><div class="max-w-[80%] rounded-lg px-4 py-3 text-sm bg-[var(--color-surface)] border border-[var(--color-border)]"><div class="prose prose-invert prose-sm max-w-none"><p><strong>Absorption into metasystem‑master</strong></p>
+<p>| Archived repo | Functionality absorbed into metasystem‑master | Notes |
+|---------------|----------------------------------------------|-------|
+| <strong>core‑engine</strong> | • Consensus logic (weighted voting, parameter aggregation) &lt;br&gt;• Bus (parameter routing, pub/sub) &lt;br&gt;• OSC bridge for external synthesizers &lt;br&gt;• Express‑Socket.io server &lt;br&gt;• Shared TypeScript interfaces | These modules form the low‑level runtime that the metasystem‑master uses for all real‑time performance and orchestration tasks. [cite-3] |
+| <strong>performance‑sdk</strong> | • Real‑time performance system that coordinates audio, visuals, and interactive inputs &lt;br&gt;• Runtime support for live‑coding and live‑performance workflows | The SDK’s core runtime is now part of the metasystem‑master’s “Omni‑Dromenon Engine” and is used by the orchestrate CLI and other subsystems. [cite-3] |
+| <strong>example‑generative‑visual</strong> | • Visual generative example (consolidated into the metasystem‑master’s 4 example projects) | The example was merged into the metasystem‑master’s example suite rather than kept as a separate repo. [cite-3] |</p>
+<p><strong>Deprecated functionality</strong></p>
+<p>No functionality from these three repos was marked as deprecated in the available documentation. All core features were retained and integrated into the metasystem‑master; the only change was the consolidation of the visual example into the metasystem‑master’s example collection. [cite-3]</p></div><div class="mt-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-3"><button class="flex w-full items-center justify-between text-xs text-[var(--color-text-muted)]"><span class=font-medium>Sources (15) | Confidence: 52% | Coverage: 50%</span><span>Expand</span></button><div class="mt-2 space-y-2"><div class="rounded border border-[var(--color-border)] bg-[var(--color-bg)] p-2 text-xs"><div class="flex items-center justify-between"><span class="font-mono text-[var(--color-accent)]">[cite-1]</span><div class="flex items-center gap-2"><span class="font-medium text-green-300">fresh</span><span class=text-[var(--color-text-muted)]>98%</span></div></div><div class=mt-1><a href=http://localhost:3000/repos/example-generative-visual class="text-[var(--color-accent)] hover:underline">Example Generative Visual</a><span class="ml-2 text-[var(--color-text-muted)]">(manifest)</span></div></div><div class="rounded border border-[var(--color-border)] bg-[var(--color-bg)] p-2 text-xs"><div class="flex items-center justify-between"><span class="font-mono text-[var(--color-accent)]">[cite-2]</span><div class="flex items-center gap-2"><span class="font-medium text-green-300">fresh</span><span class=text-[var(--color-text-muted)]>78%</span></div></div><div class=mt-1><a href=http://localhost:3000/repos/performance-sdk class="text-[var(--color-accent)] hover:underline">Performance Sdk</a><span class="ml-2 text-[var(--color-text-muted)]">(manifest)</span></div></div><div class="rounded border border-[var(--color-border)] bg-[var(--color-bg)] p-2 text-xs"><div class="flex items-center justify-between"><span class="font-mono text-[var(--color-accent)]">[cite-3]</span><div class="flex items-center gap-2"><span class="font-medium text-green-300">fresh</span><span class=text-[var(--color-text-muted)]>73%</span></div></div><div class=mt-1><a href=http://localhost:3000/repos/metasystem-master class="text-[var(--color-accent)] hover:underline">Metasystem Master</a><span class="ml-2 text-[var(--color-text-muted)]">(manifest)</span></div></div></div><button class="mt-2 text-xs text-[var(--color-accent)] hover:underline">+12 more sources</button></div></div></div><div class="flex justify-end"><div class="max-w-[80%] rounded-lg px-4 py-3 text-sm bg-[var(--color-accent)] text-white">auto-revision-epistemic-engine uses BLAKE3 audit chains and 4 human review gates. Does any other repo in the entire system use content-addressed hashing for audit trails? If so, compare the implementations.</div></div><div class="flex justify-start"><div class="max-w-[80%] rounded-lg px-4 py-3 text-sm bg-[var(--color-surface)] border border-[var(--color-border)]"><div class="prose prose-invert prose-sm max-w-none"><p><strong>Answer</strong></p>
+<p>Based on the current evidence, <strong>only the Auto Revision Epistemic Engine</strong> repo explicitly implements a content‑addressed audit trail using BLAKE3 hash chains and a 4‑gate human review workflow【cite-1】. No other repository in the ORGANVM system lists or documents the use of content‑addressed hashing (e.g., BLAKE3, SHA‑256, or similar) for audit trails or provenance tracking.</p>
+<p>If a future repo were to adopt a similar mechanism, the comparison would focus on:</p>
+<p>| Feature | Auto Revision Epistemic Engine | Hypothetical other repo |
+|---------|--------------------------------|-------------------------|
+| <strong>Hash algorithm</strong> | BLAKE3 | (e.g., SHA‑256, SHA‑3) |
+| <strong>Audit chain</strong> | Immutable, append‑only chain of BLAKE3 digests | (content‑addressed chain) |
+| <strong>Human review gates</strong> | 4 explicit gates (e.g., review, approve, sign, publish) | (number and type of gates) |
+| <strong>Integration</strong> | Embedded in recursive engine orchestration | (could be separate audit service or integrated into core engine) |</p>
+<p>Until a repository explicitly documents such a feature, the Auto Revision Epistemic Engine remains the sole example of content‑addressed hashing for audit trails in the system.</p></div><div class="mt-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-3"><button class="flex w-full items-center justify-between text-xs text-[var(--color-text-muted)]"><span class=font-medium>Sources (15) | Confidence: 51% | Coverage: 0%</span><span>Expand</span></button><div class="mt-2 space-y-2"><div class="rounded border border-[var(--color-border)] bg-[var(--color-bg)] p-2 text-xs"><div class="flex items-center justify-between"><span class="font-mono text-[var(--color-accent)]">[cite-1]</span><div class="flex items-center gap-2"><span class="font-medium text-green-300">fresh</span><span class=text-[var(--color-text-muted)]>98%</span></div></div><div class=mt-1><a href=http://localhost:3000/repos/auto-revision-epistemic-engine class="text-[var(--color-accent)] hover:underline">Auto Revision Epistemic Engine</a><span class="ml-2 text-[var(--color-text-muted)]">(manifest)</span></div></div><div class="rounded border border-[var(--color-border)] bg-[var(--color-bg)] p-2 text-xs"><div class="flex items-center justify-between"><span class="font-mono text-[var(--color-accent)]">[cite-2]</span><div class="flex items-center gap-2"><span class="font-medium text-green-300">fresh</span><span class=text-[var(--color-text-muted)]>81%</span></div></div><div class=mt-1><a href=http://localhost:3000/repos/art-from--auto-revision-epistemic-engine class="text-[var(--color-accent)] hover:underline">Art From: Auto Revision Epistemic Engine</a><span class="ml-2 text-[var(--color-text-muted)]">(manifest)</span></div></div><div class="rounded border border-[var(--color-border)] bg-[var(--color-bg)] p-2 text-xs"><div class="flex items-center justify-between"><span class="font-mono text-[var(--color-accent)]">[cite-3]</span><div class="flex items-center gap-2"><span class="font-medium text-green-300">fresh</span><span class=text-[var(--color-text-muted)]>50%</span></div></div><div class=mt-1><a href=http://localhost:3000/repos/sovereign-ecosystem--real-estate-luxury class="text-[var(--color-accent)] hover:underline">Sovereign Ecosystem: Real Estate Luxury</a><span class="ml-2 text-[var(--color-text-muted)]">(manifest)</span></div></div></div><button class="mt-2 text-xs text-[var(--color-accent)] hover:underline">+12 more sources</button></div></div></div><div class="flex justify-end"><div class="max-w-[80%] rounded-lg px-4 py-3 text-sm bg-[var(--color-accent)] text-white">organvm-corpvs-testamentvm has the highest weekly velocity (52.8) while public-process (ORGAN-V) has 38.2 with only 2 repos in its organ. What does this velocity disparity tell us about the governance corpus vs. the public essay pipeline? Are they duplicating editorial effort?</div></div><div class="flex justify-start"><div class="max-w-[80%] rounded-lg px-4 py-3 text-sm bg-[var(--color-surface)] border border-[var(--color-border)]"><div class="prose prose-invert prose-sm max-w-none"><p><strong>Velocity comparison</strong></p>
+<p>| Repo | Weekly velocity | Repo count | Organ | Source |
+|------|-----------------|------------|-------|--------|
+| <a href=http://localhost:3000/repos/organvm-corpvs-testamentvm class="text-[var(--color-accent)] hover:underline" rel="noopener noreferrer nofollow">Organvm Corpvs Testamentvm</a> | 52.8 | 81 | META‑ORGANVM | [cite-1] |
+| <a href=http://localhost:3000/repos/public-process class="text-[var(--color-accent)] hover:underline" rel="noopener noreferrer nofollow">Public Process</a> | 38.2 | 2 | ORGAN‑V | [cite-3] |</p>
+<p><strong>Interpretation</strong></p>
+<ol>
+<li><strong>Scope &amp; complexity</strong> – The governance corpus (META‑ORGANVM) contains 81 repos that cover planning, policy, and cross‑organ coordination. Its higher velocity reflects the larger codebase and the need to iterate on governance rules, schemas, and dashboards.</li>
+<li><strong>Editorial pipeline</strong> – Public‑Process is a focused editorial engine with only two repos (the essay platform and analytics). Its velocity is lower simply because the scope is narrower and the number of moving parts is smaller.</li>
+<li><strong>No duplication of editorial effort</strong> –
+<ul>
+<li>The governance corpus is concerned with <em>how</em> the system is governed (rules, schemas, audit trails).</li>
+<li>Public‑Process is concerned with <em>what</em> is published (essays, commentary, analytics).<br>
+Because the two repos serve distinct domains, the overlap in editorial work is minimal. The governance corpus does not re‑implement the essay‑publishing logic; instead, it provides the policy framework that the public‑process repo enforces.</li>
+</ul>
+</li>
+</ol>
+<p><strong>Bottom line</strong></p>
+<p>The velocity gap mainly signals a difference in <strong>scope and repo count</strong>, not a duplication of editorial work. The governance corpus drives policy and infrastructure, while the public‑process repo handles the actual essay pipeline.</p></div><div class="mt-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-3"><button class="flex w-full items-center justify-between text-xs text-[var(--color-text-muted)]"><span class=font-medium>Sources (15) | Confidence: 49% | Coverage: 15%</span><span>Expand</span></button><div class="mt-2 space-y-2"><div class="rounded border border-[var(--color-border)] bg-[var(--color-bg)] p-2 text-xs"><div class="flex items-center justify-between"><span class="font-mono text-[var(--color-accent)]">[cite-1]</span><div class="flex items-center gap-2"><span class="font-medium text-green-300">fresh</span><span class=text-[var(--color-text-muted)]>98%</span></div></div><div class=mt-1><a href=http://localhost:3000/repos/organvm-corpvs-testamentvm class="text-[var(--color-accent)] hover:underline">Organvm Corpvs Testamentvm</a><span class="ml-2 text-[var(--color-text-muted)]">(manifest)</span></div></div><div class="rounded border border-[var(--color-border)] bg-[var(--color-bg)] p-2 text-xs"><div class="flex items-center justify-between"><span class="font-mono text-[var(--color-accent)]">[cite-2]</span><div class="flex items-center gap-2"><span class="font-medium text-green-300">fresh</span><span class=text-[var(--color-text-muted)]>68%</span></div></div><div class=mt-1><a href=http://localhost:3000/repos/organvm-engine class="text-[var(--color-accent)] hover:underline">Organvm Engine</a><span class="ml-2 text-[var(--color-text-muted)]">(manifest)</span></div></div><div class="rounded border border-[var(--color-border)] bg-[var(--color-bg)] p-2 text-xs"><div class="flex items-center justify-between"><span class="font-mono text-[var(--color-accent)]">[cite-3]</span><div class="flex items-center gap-2"><span class="font-medium text-green-300">fresh</span><span class=text-[var(--color-text-muted)]>62%</span></div></div><div class=mt-1><a href=http://localhost:3000/repos/public-process class="text-[var(--color-accent)] hover:underline">Public Process</a><span class="ml-2 text-[var(--color-text-muted)]">(manifest)</span></div></div></div><button class="mt-2 text-xs text-[var(--color-accent)] hover:underline">+12 more sources</button></div></div></div><div class="flex justify-end"><div class="max-w-[80%] rounded-lg px-4 py-3 text-sm bg-[var(--color-accent)] text-white">There are 94 CI workflows across 94 active repos. Identify any repo that does NOT have a CI workflow and explain whether this is intentional (design-only/stub repos) or a gap.</div></div><div class="flex justify-start"><div class="max-w-[80%] rounded-lg px-4 py-3 text-sm bg-[var(--color-surface)] border border-[var(--color-border)]"><div class="prose prose-invert prose-sm max-w-none"><h3>ORGANVM Snapshot Response</h3>
+<p>The live OSS model path is currently unavailable, so this answer is generated from local manifest context for <strong>There are 94 CI workflows across 94 active repos. Identify any repo that does NOT have a CI workflow and explain whether this is intentional (design-only/stub repos) or a gap.</strong>.</p>
+<h4>System Overview</h4>
+<ul>
+<li>ORGANVM System Summary</li>
+<li>======================</li>
+<li>Name: ORGANVM — Eight-organ creative-institutional system</li>
+<li>Total repos: 103 | Active: 94 | Archived: 9</li>
+<li>Organs: 8</li>
+<li>Sprints completed: 33 (since 2026-02-11)</li>
+<li>CI workflows: 94</li>
+</ul>
+<h4>Relevant Repositories</h4>
+<ul>
+<li><strong>A I Council: Coliseum</strong> (a-i-council--coliseum) [ORGAN-II/standard]: A I Council: Coliseum (a-i-council--coliseum) — ORGAN-II. Decentralized live-streaming platform where AI agents debate with viewer crypto participation</li>
+<li><strong>Card Trade Social</strong> (card-trade-social) [ORGAN-III/standard]: Card Trade Social (card-trade-social) — ORGAN-III. Hydra Trading Card Ecosystem — financial-grade portfolio tracking, social commerce, gamification, and AI-powered generative content for the TCG asset class <strong>Hydra TCG Platform</strong> — vertical SaaS treating trading cards (MTG, Pokémon, Yu-Gi-Oh!, Lorcana) as a financial asset class. Combines portfolio tracking, price discovery, creator monetization, and gam Pure TypeScript type library — domain model stubs in <code>src/</code>: Deployed at: https://organvm-iii-ergon.github.io/card-trade-social/.</li>
+<li><strong>A I Chat: Exporter</strong> (a-i-chat--exporter) [ORGAN-III/standard]: A I Chat: Exporter (a-i-chat--exporter) — ORGAN-III. Export and share AI chat conversation history (fork of chatgpt-exporter) <strong>@pionxzh/chatgpt-exporter</strong> — browser extension to export ChatGPT and other AI chat conversation history. Supports multiple export formats. Fork of the original chatgpt-exporter, extended to cover a Browser extension built with TypeScript + Vite. Output in <code>dist/</code> — load as unpacked extension in <code>chrome://extensions</code>.</li>
+<li><strong>Art From: Auto Revision Epistemic Engine</strong> (art-from--auto-revision-epistemic-engine) [ORGAN-II/standard]: Art From: Auto Revision Epistemic Engine (art-from--auto-revision-epistemic-engine) — ORGAN-II. Interactive visualization of self-governing orchestration — governance as performance art</li>
+<li><strong>Art From: Narratological Algorithmic Lenses</strong> (art-from--narratological-algorithmic-lenses) [ORGAN-II/standard]: Art From: Narratological Algorithmic Lenses (art-from--narratological-algorithmic-lenses) — ORGAN-II. Interactive web experience exploring narrative structures via visual algorithmic lenses</li>
+<li><strong>The Invisible Ledger</strong> (the-invisible-ledger) [ORGAN-III/standard]: The Invisible Ledger (the-invisible-ledger) — ORGAN-III. Private financial tracking and accounting system <strong>The Invisible Ledger</strong> — financial compliance and wealth management intelligence platform. Tracks high-net-worth clients, documents, custody events, and money flows. Features ML-based anomaly detect GitHub Spark app: React 19, TypeScript, Vite, Tailwind CSS, shadcn/ui, Radix UI, Framer Motion. Deployed at: https://the-invisible-ledger.netlify.app.</li>
+<li><strong>Organvm Mcp Server</strong> (organvm-mcp-server) [META-ORGANVM/infrastructure]: Organvm Mcp Server (organvm-mcp-server) — META-ORGANVM. MCP server exposing full ORGANVM system context to Claude Code sessions. Provides real-time registry queries, dependency graph traversal, and contextual awareness for any repo in the system.</li>
+<li><strong>Select Or Left Or Right Or</strong> (select-or-left-or-right-or) [ORGAN-III/standard]: Select Or Left Or Right Or (select-or-left-or-right-or) — ORGAN-III. Satirical social network platform — static HTML site with affiliation-based content <strong>Pepe Social Network</strong> — satirical affiliation-based social network. Users join political/cultural "bubbles" (affiliations); content is filtered and colored by affiliation. Full-stack Node.js + SQLit <strong>Backend</strong> (<code>server.js</code>): Express.js + Socket.io + SQLite3 monolith. - Auth: JWT + bcryptjs + speakeasy (TOTP 2FA) + QRCode - Real-time: Socket.io for feed/notifications - Media: multer (uploads) + s</li>
+</ul>
+<p>Provider note: This operation was aborted
+Primary provider: <code>GROQ_API_KEY</code> + <code>GROQ_MODEL</code> (default <code>llama-3.3-70b-versatile</code>).
+Fallback provider: <code>OSS_LLM_API_URL=https://text.pollinations.ai/openai</code>, <code>OSS_LLM_MODEL=openai-fast</code>.</p></div></div></div><div class="flex justify-end"><div class="max-w-[80%] rounded-lg px-4 py-3 text-sm bg-[var(--color-accent)] text-white">Across all 48 published essays, which essays reference repos from more than one organ? For each, list the organs touched.</div></div><div class="flex justify-start"><div class="max-w-[80%] rounded-lg px-4 py-3 text-sm bg-[var(--color-surface)] border border-[var(--color-border)]"><div class="prose prose-invert prose-sm max-w-none"><h3>ORGANVM Snapshot Response</h3>
+<p>The live OSS model path is currently unavailable, so this answer is generated from local manifest context for <strong>Across all 48 published essays, which essays reference repos from more than one organ? For each, list the organs touched.</strong>.</p>
+<h4>System Overview</h4>
+<ul>
+<li>ORGANVM System Summary</li>
+<li>======================</li>
+<li>Name: ORGANVM — Eight-organ creative-institutional system</li>
+<li>Total repos: 103 | Active: 94 | Archived: 9</li>
+<li>Organs: 8</li>
+<li>Sprints completed: 33 (since 2026-02-11)</li>
+<li>CI workflows: 94</li>
+</ul>
+<h4>Relevant Repositories</h4>
+<ul>
+<li><strong>Chthon Oneiros</strong> (chthon-oneiros) [ORGAN-II/standard]: Chthon Oneiros (chthon-oneiros) — ORGAN-II. CHTHON-ONEIROS — Underworld-dream: psychological horror theory corpus. Field II (Present Dreaming). Surrealism, found footage, digital paranoia, the unconscious as compositional engine. CHTHON-ONEIROS is a psychological horror theory corpus and narrative engine — the "Underworld-dream" of the ORGANVM system (Organ II / Art). It treats horror as epistemology, not genre decoration. All</li>
+<li><strong>Example Interactive Installation</strong> (example-interactive-installation) [ORGAN-II/standard]: Example Interactive Installation (example-interactive-installation) — ORGAN-II. Reference implementation for sensor-driven interactive art installations with depth cameras, LIDAR, and spatial audio</li>
+<li><strong>Organvm Corpvs Testamentvm</strong> (organvm-corpvs-testamentvm) [META-ORGANVM/flagship]: Organvm Corpvs Testamentvm (organvm-corpvs-testamentvm) — META-ORGANVM. The authoritative planning and governance corpus for the eight-organ creative-institutional system. 81 repos, ~339K words, 8 organizations, 21 essays.</li>
+<li><strong>Organvm Mcp Server</strong> (organvm-mcp-server) [META-ORGANVM/infrastructure]: Organvm Mcp Server (organvm-mcp-server) — META-ORGANVM. MCP server exposing full ORGANVM system context to Claude Code sessions. Provides real-time registry queries, dependency graph traversal, and contextual awareness for any repo in the system.</li>
+<li><strong>Call Function: Ontological</strong> (call-function--ontological) [ORGAN-I/standard]: Call Function: Ontological (call-function--ontological) — ORGAN-I. Ontological function-calling framework — 12-concept philosophical architecture for grounded AI tool use via Heideggerian Dasein, Aristotelian four causes, and Peircean semiotics</li>
+<li><strong>Organon Noumenon: Ontogenetic Morphe</strong> (organon-noumenon--ontogenetic-morphe) [ORGAN-I/standard]: Organon Noumenon: Ontogenetic Morphe (organon-noumenon--ontogenetic-morphe) — ORGAN-I. Ontogenetic Morphe — 22-subsystem symbolic processing architecture with recursive 4-phase process loops, async message bus, and typed symbolic values</li>
+<li><strong>Showcase Portfolio</strong> (showcase-portfolio) [ORGAN-II/standard]: Showcase Portfolio (showcase-portfolio) — ORGAN-II. Living portfolio aggregating all ORGAN-II generative art, interactive installations, and AI-human collaborative works The portfolio system is built as a static site generator with dynamic data sources. The core architecture separates content (artwork metadata, images, documentation) from presentation (templates, layo</li>
+<li><strong>Schema Definitions</strong> (schema-definitions) [META-ORGANVM/standard]: Schema Definitions (schema-definitions) — META-ORGANVM. Canonical JSON Schema definitions for all eight-organ system data contracts — registry, seed.yaml, governance rules, dispatch payloads, soak tests, and system metrics.</li>
+</ul>
+<p>Provider note: This operation was aborted
+Primary provider: <code>GROQ_API_KEY</code> + <code>GROQ_MODEL</code> (default <code>llama-3.3-70b-versatile</code>).
+Fallback provider: <code>OSS_LLM_API_URL=https://text.pollinations.ai/openai</code>, <code>OSS_LLM_MODEL=openai-fast</code>.</p></div></div></div><div class="flex justify-end"><div class="max-w-[80%] rounded-lg px-4 py-3 text-sm bg-[var(--color-accent)] text-white">agentic-titan (ORGAN-IV) describes a polymorphic agent swarm architecture. organvm-engine (META-ORGANVM) is the core governance engine. In a future where agentic-titan orchestrates autonomous CI across all organs, which governance constraints from organvm-engine would it need to respect, and which repos would it need write access to?</div></div><div class="flex justify-start"><div class="max-w-[80%] rounded-lg px-4 py-3 text-sm bg-[var(--color-surface)] border border-[var(--color-border)]"><div class="prose prose-invert prose-sm max-w-none"><h3>ORGANVM Snapshot Response</h3>
+<p>The live OSS model path is currently unavailable, so this answer is generated from local manifest context for <strong>agentic-titan (ORGAN-IV) describes a polymorphic agent swarm architecture. organvm-engine (META-ORGANVM) is the core governance engine. In a future where agentic-titan orchestrates autonomous CI across all organs, which governance constraints from organvm-engine would it need to respect, and which repos would it need write access to?</strong>.</p>
+<h4>System Overview</h4>
+<ul>
+<li>ORGANVM System Summary</li>
+<li>======================</li>
+<li>Name: ORGANVM — Eight-organ creative-institutional system</li>
+<li>Total repos: 103 | Active: 94 | Archived: 9</li>
+<li>Organs: 8</li>
+<li>Sprints completed: 33 (since 2026-02-11)</li>
+<li>CI workflows: 94</li>
+</ul>
+<h4>Relevant Repositories</h4>
+<ul>
+<li><strong>Recursive Engine: Generative Entity</strong> (recursive-engine--generative-entity) [ORGAN-I/flagship]: Recursive Engine: Generative Entity (recursive-engine--generative-entity) — ORGAN-I. RE:GE — A symbolic operating system for myth, identity, ritual, and recursive systems. 21 organ handlers, ritual syntax DSL, workflow orchestration, external bridges (Obsidian/Git/Max-MSP).</li>
+<li><strong>Organon Noumenon: Ontogenetic Morphe</strong> (organon-noumenon--ontogenetic-morphe) [ORGAN-I/standard]: Organon Noumenon: Ontogenetic Morphe (organon-noumenon--ontogenetic-morphe) — ORGAN-I. Ontogenetic Morphe — 22-subsystem symbolic processing architecture with recursive 4-phase process loops, async message bus, and typed symbolic values</li>
+<li><strong>Auto Revision Epistemic Engine</strong> (auto-revision-epistemic-engine) [ORGAN-I/standard]: Auto Revision Epistemic Engine (auto-revision-epistemic-engine) — ORGAN-I. Self-governing orchestration framework with 8 phases, 4 human review gates, BLAKE3 audit chain, and ethical axiom enforcement</li>
+<li><strong>Narratological Algorithmic Lenses</strong> (narratological-algorithmic-lenses) [ORGAN-I/standard]: Narratological Algorithmic Lenses (narratological-algorithmic-lenses) — ORGAN-I. 14 narratological studies × 92 algorithms — formalizing narrative principles from Aristotle to Pixar as executable code, with CLI, API, web dashboard, and real screenplay analysis <strong>Hybrid: Python core + TypeScript web app</strong></li>
+<li><strong>Call Function: Ontological</strong> (call-function--ontological) [ORGAN-I/standard]: Call Function: Ontological (call-function--ontological) — ORGAN-I. Ontological function-calling framework — 12-concept philosophical architecture for grounded AI tool use via Heideggerian Dasein, Aristotelian four causes, and Peircean semiotics</li>
+<li><strong>Sema Metra: Alchemica Mundi</strong> (sema-metra--alchemica-mundi) [ORGAN-I/standard]: Sema Metra: Alchemica Mundi (sema-metra--alchemica-mundi) — ORGAN-I. Three-engine alchemical transformation framework — 22 operations mapping classical alchemy (Nigredo→Rubedo) onto computational semantics via distillation, fermentation, and projection engines <strong>Sema-Metra: Alchemica Mundi</strong> is a TypeScript framework implementing an axiom-driven signal-matrix system. It functions as a programmable creative engine — a modular synthesis patchbay that routes a</li>
+<li><strong>System Governance Framework</strong> (system-governance-framework) [ORGAN-I/standard]: System Governance Framework (system-governance-framework) — ORGAN-I. Multi-organ governance rules and promotion criteria</li>
+<li><strong>Cognitive Archaelogy Tribunal</strong> (cognitive-archaelogy-tribunal) [ORGAN-I/standard]: Cognitive Archaelogy Tribunal (cognitive-archaelogy-tribunal) — ORGAN-I. Audit tool for cognitive systems and organizational coherence</li>
+</ul>
+<p>Provider note: This operation was aborted
+Primary provider: <code>GROQ_API_KEY</code> + <code>GROQ_MODEL</code> (default <code>llama-3.3-70b-versatile</code>).
+Fallback provider: <code>OSS_LLM_API_URL=https://text.pollinations.ai/openai</code>, <code>OSS_LLM_MODEL=openai-fast</code>.</p></div></div></div><div class="flex justify-end"><div class="max-w-[80%] rounded-lg px-4 py-3 text-sm bg-[var(--color-accent)] text-white">life-my--midst--in (ORGAN-III) has the second-highest velocity at 42.0 with 223 commits. What is it, why is it in Commerce, and how does its commit velocity compare to every other ORGAN-III repo? Is it an outlier or representative?</div></div><div class="flex justify-start"><div class="max-w-[80%] rounded-lg px-4 py-3 text-sm bg-[var(--color-surface)] border border-[var(--color-border)]"><div class="prose prose-invert prose-sm max-w-none"><h3>ORGANVM Snapshot Response</h3>
+<p>The live OSS model path is currently unavailable, so this answer is generated from local manifest context for <strong>life-my--midst--in (ORGAN-III) has the second-highest velocity at 42.0 with 223 commits. What is it, why is it in Commerce, and how does its commit velocity compare to every other ORGAN-III repo? Is it an outlier or representative?</strong>.</p>
+<h4>System Overview</h4>
+<ul>
+<li>ORGANVM System Summary</li>
+<li>======================</li>
+<li>Name: ORGANVM — Eight-organ creative-institutional system</li>
+<li>Total repos: 103 | Active: 94 | Archived: 9</li>
+<li>Organs: 8</li>
+<li>Sprints completed: 33 (since 2026-02-11)</li>
+<li>CI workflows: 94</li>
+</ul>
+<h4>Relevant Repositories</h4>
+<ul>
+<li><strong>Recursive Engine: Generative Entity</strong> (recursive-engine--generative-entity) [ORGAN-I/flagship]: Recursive Engine: Generative Entity (recursive-engine--generative-entity) — ORGAN-I. RE:GE — A symbolic operating system for myth, identity, ritual, and recursive systems. 21 organ handlers, ritual syntax DSL, workflow orchestration, external bridges (Obsidian/Git/Max-MSP).</li>
+<li><strong>Organon Noumenon: Ontogenetic Morphe</strong> (organon-noumenon--ontogenetic-morphe) [ORGAN-I/standard]: Organon Noumenon: Ontogenetic Morphe (organon-noumenon--ontogenetic-morphe) — ORGAN-I. Ontogenetic Morphe — 22-subsystem symbolic processing architecture with recursive 4-phase process loops, async message bus, and typed symbolic values</li>
+<li><strong>Auto Revision Epistemic Engine</strong> (auto-revision-epistemic-engine) [ORGAN-I/standard]: Auto Revision Epistemic Engine (auto-revision-epistemic-engine) — ORGAN-I. Self-governing orchestration framework with 8 phases, 4 human review gates, BLAKE3 audit chain, and ethical axiom enforcement</li>
+<li><strong>Narratological Algorithmic Lenses</strong> (narratological-algorithmic-lenses) [ORGAN-I/standard]: Narratological Algorithmic Lenses (narratological-algorithmic-lenses) — ORGAN-I. 14 narratological studies × 92 algorithms — formalizing narrative principles from Aristotle to Pixar as executable code, with CLI, API, web dashboard, and real screenplay analysis <strong>Hybrid: Python core + TypeScript web app</strong></li>
+<li><strong>Call Function: Ontological</strong> (call-function--ontological) [ORGAN-I/standard]: Call Function: Ontological (call-function--ontological) — ORGAN-I. Ontological function-calling framework — 12-concept philosophical architecture for grounded AI tool use via Heideggerian Dasein, Aristotelian four causes, and Peircean semiotics</li>
+<li><strong>Sema Metra: Alchemica Mundi</strong> (sema-metra--alchemica-mundi) [ORGAN-I/standard]: Sema Metra: Alchemica Mundi (sema-metra--alchemica-mundi) — ORGAN-I. Three-engine alchemical transformation framework — 22 operations mapping classical alchemy (Nigredo→Rubedo) onto computational semantics via distillation, fermentation, and projection engines <strong>Sema-Metra: Alchemica Mundi</strong> is a TypeScript framework implementing an axiom-driven signal-matrix system. It functions as a programmable creative engine — a modular synthesis patchbay that routes a</li>
+<li><strong>System Governance Framework</strong> (system-governance-framework) [ORGAN-I/standard]: System Governance Framework (system-governance-framework) — ORGAN-I. Multi-organ governance rules and promotion criteria</li>
+<li><strong>Cognitive Archaelogy Tribunal</strong> (cognitive-archaelogy-tribunal) [ORGAN-I/standard]: Cognitive Archaelogy Tribunal (cognitive-archaelogy-tribunal) — ORGAN-I. Audit tool for cognitive systems and organizational coherence</li>
+</ul>
+<p>Provider note: anonymous OSS fallback HTTP 429: {"error":"Queue full for IP: 174.229.37.151: 1 requests already queued (max: 1). Get unlimited access at https://enter.pollinations.ai","status":429,"deprecation_notice":"NOTE: The Pollinations legacy text API is being deprecated for authenticated users. Please migrate to https://enter.pollinations.ai for better performance and access to all the la
+Primary provider: <code>GROQ_API_KEY</code> + <code>GROQ_MODEL</code> (default <code>llama-3.3-70b-versatile</code>).
+Fallback provider: <code>OSS_LLM_API_URL=https://text.pollinations.ai/openai</code>, <code>OSS_LLM_MODEL=openai-fast</code>.</p></div></div></div><div class="flex justify-end"><div class="max-w-[80%] rounded-lg px-4 py-3 text-sm bg-[var(--color-accent)] text-white">If I deleted orchestration-start-here (ORGAN-IV flagship) tomorrow, which repos across ALL organs would break, which governance processes would stall, and what would the blast radius look like?</div></div><div class="flex justify-start"><div class="max-w-[80%] rounded-lg px-4 py-3 text-sm bg-[var(--color-surface)] border border-[var(--color-border)]"><div class="prose prose-invert prose-sm max-w-none"><h3>ORGANVM Snapshot Response</h3>
+<p>The live OSS model path is currently unavailable, so this answer is generated from local manifest context for <strong>If I deleted orchestration-start-here (ORGAN-IV flagship) tomorrow, which repos across ALL organs would break, which governance processes would stall, and what would the blast radius look like?</strong>.</p>
+<h4>System Overview</h4>
+<ul>
+<li>ORGANVM System Summary</li>
+<li>======================</li>
+<li>Name: ORGANVM — Eight-organ creative-institutional system</li>
+<li>Total repos: 103 | Active: 94 | Archived: 9</li>
+<li>Organs: 8</li>
+<li>Sprints completed: 33 (since 2026-02-11)</li>
+<li>CI workflows: 94</li>
+</ul>
+<h4>Relevant Repositories</h4>
+<ul>
+<li><strong>Recursive Engine: Generative Entity</strong> (recursive-engine--generative-entity) [ORGAN-I/flagship]: Recursive Engine: Generative Entity (recursive-engine--generative-entity) — ORGAN-I. RE:GE — A symbolic operating system for myth, identity, ritual, and recursive systems. 21 organ handlers, ritual syntax DSL, workflow orchestration, external bridges (Obsidian/Git/Max-MSP).</li>
+<li><strong>Organon Noumenon: Ontogenetic Morphe</strong> (organon-noumenon--ontogenetic-morphe) [ORGAN-I/standard]: Organon Noumenon: Ontogenetic Morphe (organon-noumenon--ontogenetic-morphe) — ORGAN-I. Ontogenetic Morphe — 22-subsystem symbolic processing architecture with recursive 4-phase process loops, async message bus, and typed symbolic values</li>
+<li><strong>Auto Revision Epistemic Engine</strong> (auto-revision-epistemic-engine) [ORGAN-I/standard]: Auto Revision Epistemic Engine (auto-revision-epistemic-engine) — ORGAN-I. Self-governing orchestration framework with 8 phases, 4 human review gates, BLAKE3 audit chain, and ethical axiom enforcement</li>
+<li><strong>Narratological Algorithmic Lenses</strong> (narratological-algorithmic-lenses) [ORGAN-I/standard]: Narratological Algorithmic Lenses (narratological-algorithmic-lenses) — ORGAN-I. 14 narratological studies × 92 algorithms — formalizing narrative principles from Aristotle to Pixar as executable code, with CLI, API, web dashboard, and real screenplay analysis <strong>Hybrid: Python core + TypeScript web app</strong></li>
+<li><strong>Call Function: Ontological</strong> (call-function--ontological) [ORGAN-I/standard]: Call Function: Ontological (call-function--ontological) — ORGAN-I. Ontological function-calling framework — 12-concept philosophical architecture for grounded AI tool use via Heideggerian Dasein, Aristotelian four causes, and Peircean semiotics</li>
+<li><strong>Sema Metra: Alchemica Mundi</strong> (sema-metra--alchemica-mundi) [ORGAN-I/standard]: Sema Metra: Alchemica Mundi (sema-metra--alchemica-mundi) — ORGAN-I. Three-engine alchemical transformation framework — 22 operations mapping classical alchemy (Nigredo→Rubedo) onto computational semantics via distillation, fermentation, and projection engines <strong>Sema-Metra: Alchemica Mundi</strong> is a TypeScript framework implementing an axiom-driven signal-matrix system. It functions as a programmable creative engine — a modular synthesis patchbay that routes a</li>
+<li><strong>System Governance Framework</strong> (system-governance-framework) [ORGAN-I/standard]: System Governance Framework (system-governance-framework) — ORGAN-I. Multi-organ governance rules and promotion criteria</li>
+<li><strong>Cognitive Archaelogy Tribunal</strong> (cognitive-archaelogy-tribunal) [ORGAN-I/standard]: Cognitive Archaelogy Tribunal (cognitive-archaelogy-tribunal) — ORGAN-I. Audit tool for cognitive systems and organizational coherence</li>
+</ul>
+<p>Provider note: This operation was aborted
+Primary provider: <code>GROQ_API_KEY</code> + <code>GROQ_MODEL</code> (default <code>llama-3.3-70b-versatile</code>).
+Fallback provider: <code>OSS_LLM_API_URL=https://text.pollinations.ai/openai</code>, <code>OSS_LLM_MODEL=openai-fast</code>.</p></div></div></div><div class="flex justify-end"><div class="max-w-[80%] rounded-lg px-4 py-3 text-sm bg-[var(--color-accent)] text-white">narratological-algorithmic-lenses claims 14 narratological studies × 92 algorithms formalizing narrative principles from Aristotle to Pixar. Which of those 92 algorithms are reused or referenced by any ORGAN-II performance system or ORGAN-III product? Name them.</div></div><div class="flex justify-start"><div class="max-w-[80%] rounded-lg px-4 py-3 text-sm bg-[var(--color-surface)] border border-[var(--color-border)]"><div class="prose prose-invert prose-sm max-w-none"><p><strong>Answer</strong></p>
+<p>Based on the information available in the current repository metadata, there is <strong>no documented evidence</strong> that any of the 92 algorithms from the <em>Narratological Algorithmic Lenses</em> repository are explicitly reused or referenced by:</p>
+<ul>
+<li><strong>ORGAN‑II performance systems</strong> (e.g., the archived <em>Performance Sdk</em> or the live <em>Art From: Narratological Algorithmic Lenses</em> demo)</li>
+<li><strong>ORGAN‑III commercial products</strong> (e.g., <em>trade‑perpetual‑future</em>, <em>fetch‑familiar‑friends</em>, <em>the‑invisible‑ledger</em>, etc.)</li>
+</ul>
+<p>The <em>Narratological Algorithmic Lenses</em> repo itself lists the 92 algorithms in its <code>specs/</code> directory, but none of the other active repos in ORGAN‑II or ORGAN‑III contain import statements, documentation, or references that point to those algorithm modules.</p>
+<blockquote>
+<p><strong>Citation</strong>: The repository description and file structure are taken from the <em>Narratological Algorithmic Lenses</em> repo ([cite-1]).</p>
+</blockquote>
+<p>If future commits or documentation add explicit imports or usage examples, those would need to be re‑examined. For now, the cross‑repo reuse of those algorithms remains unverified.</p></div><div class="mt-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-3"><button class="flex w-full items-center justify-between text-xs text-[var(--color-text-muted)]"><span class=font-medium>Sources (15) | Confidence: 53% | Coverage: 14%</span><span>Expand</span></button><div class="mt-2 space-y-2"><div class="rounded border border-[var(--color-border)] bg-[var(--color-bg)] p-2 text-xs"><div class="flex items-center justify-between"><span class="font-mono text-[var(--color-accent)]">[cite-1]</span><div class="flex items-center gap-2"><span class="font-medium text-green-300">fresh</span><span class=text-[var(--color-text-muted)]>98%</span></div></div><div class=mt-1><a href=http://localhost:3000/repos/narratological-algorithmic-lenses class="text-[var(--color-accent)] hover:underline">Narratological Algorithmic Lenses</a><span class="ml-2 text-[var(--color-text-muted)]">(manifest)</span></div></div><div class="rounded border border-[var(--color-border)] bg-[var(--color-bg)] p-2 text-xs"><div class="flex items-center justify-between"><span class="font-mono text-[var(--color-accent)]">[cite-2]</span><div class="flex items-center gap-2"><span class="font-medium text-green-300">fresh</span><span class=text-[var(--color-text-muted)]>83%</span></div></div><div class=mt-1><a href=http://localhost:3000/repos/art-from--narratological-algorithmic-lenses class="text-[var(--color-accent)] hover:underline">Art From: Narratological Algorithmic Lenses</a><span class="ml-2 text-[var(--color-text-muted)]">(manifest)</span></div></div><div class="rounded border border-[var(--color-border)] bg-[var(--color-bg)] p-2 text-xs"><div class="flex items-center justify-between"><span class="font-mono text-[var(--color-accent)]">[cite-3]</span><div class="flex items-center gap-2"><span class="font-medium text-green-300">fresh</span><span class=text-[var(--color-text-muted)]>57%</span></div></div><div class=mt-1><a href=http://localhost:3000/repos/organvm-mcp-server class="text-[var(--color-accent)] hover:underline">Organvm Mcp Server</a><span class="ml-2 text-[var(--color-text-muted)]">(manifest)</span></div></div></div><button class="mt-2 text-xs text-[var(--color-accent)] hover:underline">+12 more sources</button></div></div></div><div class="flex justify-end"><div class="max-w-[80%] rounded-lg px-4 py-3 text-sm bg-[var(--color-accent)] text-white">Across all 103 repos: what is the single most-depended-upon file, function, or type definition in the entire ORGANVM system? Justify your answer with evidence."</div></div><div class="flex justify-start"><div class="max-w-[80%] rounded-lg px-4 py-3 text-sm bg-[var(--color-surface)] border border-[var(--color-border)]"><div class="prose prose-invert prose-sm max-w-none"><h3>ORGANVM Snapshot Response</h3>
+<p>The live OSS model path is currently unavailable, so this answer is generated from local manifest context for <strong>Across all 103 repos: what is the single most-depended-upon file, function, or type definition in the entire ORGANVM system? Justify your answer with evidence."</strong>.</p>
+<h4>System Overview</h4>
+<ul>
+<li>ORGANVM System Summary</li>
+<li>======================</li>
+<li>Name: ORGANVM — Eight-organ creative-institutional system</li>
+<li>Total repos: 103 | Active: 94 | Archived: 9</li>
+<li>Organs: 8</li>
+<li>Sprints completed: 33 (since 2026-02-11)</li>
+<li>CI workflows: 94</li>
+</ul>
+<h4>Relevant Repositories</h4>
+<ul>
+<li><strong>Schema Definitions</strong> (schema-definitions) [META-ORGANVM/standard]: Schema Definitions (schema-definitions) — META-ORGANVM. Canonical JSON Schema definitions for all eight-organ system data contracts — registry, seed.yaml, governance rules, dispatch payloads, soak tests, and system metrics.</li>
+<li><strong>Organvm Mcp Server</strong> (organvm-mcp-server) [META-ORGANVM/infrastructure]: Organvm Mcp Server (organvm-mcp-server) — META-ORGANVM. MCP server exposing full ORGANVM system context to Claude Code sessions. Provides real-time registry queries, dependency graph traversal, and contextual awareness for any repo in the system.</li>
+<li><strong>The Invisible Ledger</strong> (the-invisible-ledger) [ORGAN-III/standard]: The Invisible Ledger (the-invisible-ledger) — ORGAN-III. Private financial tracking and accounting system <strong>The Invisible Ledger</strong> — financial compliance and wealth management intelligence platform. Tracks high-net-worth clients, documents, custody events, and money flows. Features ML-based anomaly detect GitHub Spark app: React 19, TypeScript, Vite, Tailwind CSS, shadcn/ui, Radix UI, Framer Motion. Deployed at: https://the-invisible-ledger.netlify.app.</li>
+<li><strong>Linguistic Atomization Framework</strong> (linguistic-atomization-framework) [ORGAN-I/standard]: Linguistic Atomization Framework (linguistic-atomization-framework) — ORGAN-I. LingFrame — computational rhetoric platform: hierarchical text atomization, 6 analysis modules, 46-text multilingual corpus, interactive visualizations</li>
+<li><strong>Call Function: Ontological</strong> (call-function--ontological) [ORGAN-I/standard]: Call Function: Ontological (call-function--ontological) — ORGAN-I. Ontological function-calling framework — 12-concept philosophical architecture for grounded AI tool use via Heideggerian Dasein, Aristotelian four causes, and Peircean semiotics</li>
+<li><strong>Art From: Auto Revision Epistemic Engine</strong> (art-from--auto-revision-epistemic-engine) [ORGAN-II/standard]: Art From: Auto Revision Epistemic Engine (art-from--auto-revision-epistemic-engine) — ORGAN-II. Interactive visualization of self-governing orchestration — governance as performance art</li>
+<li><strong>Enterprise Plugin</strong> (enterprise-plugin) [ORGAN-III/archive]: Enterprise Plugin (enterprise-plugin) — ORGAN-III. [ARCHIVED] Enterprise integration layer — concept absorbable into existing products <strong>ARCHIVED</strong> — Claude Code plugin reference implementation. No longer maintained.</li>
+<li><strong>Alchemia Ingestvm</strong> (alchemia-ingestvm) [META-ORGANVM/standard]: Alchemia Ingestvm (alchemia-ingestvm) — META-ORGANVM. The Alchemical Forge — Material ingestion pipeline and aesthetic nervous system. Three-stage pipeline (INTAKE → ABSORB → ALCHEMIZE) for deploying source materials, plus cascading taste profiles (taste.yaml → organ-aesthetic.yaml → repo-aesthetic.yaml) for autonomous aesthetic propagation. Alchemia operates as a three-stage pipeline with a parallel aesthetic subsystem:</li>
+</ul>
+<p>Provider note: This operation was aborted
+Primary provider: <code>GROQ_API_KEY</code> + <code>GROQ_MODEL</code> (default <code>llama-3.3-70b-versatile</code>).
+Fallback provider: <code>OSS_LLM_API_URL=https://text.pollinations.ai/openai</code>, <code>OSS_LLM_MODEL=openai-fast</code>.</p></div></div></div><div class="flex justify-end"><div class="max-w-[80%] rounded-lg px-4 py-3 text-sm bg-[var(--color-accent)] text-white">Three repos have been archived from ORGAN-II (core-engine, performance-sdk, example-generative-visual). What functionality from each was absorbed into metasystem-master, and what was deprecated entirely?</div></div><div class="flex justify-start"><div class="max-w-[80%] rounded-lg px-4 py-3 text-sm bg-[var(--color-surface)] border border-[var(--color-border)]"><div class="prose prose-invert prose-sm max-w-none"><p><strong>Absorption into <code>metasystem-master</code></strong></p>
+<p>| Archived repo | Functionality absorbed into <code>metasystem-master</code> | What was deprecated |
+|---------------|-----------------------------------------------|---------------------|
+| <strong>core‑engine</strong> | The core runtime that handles parameter routing, OSC bridging, consensus, and the Express‑Socket.io server was merged into the new monorepo’s <em>core</em> package. This includes the <code>bus</code>, <code>osc</code>, <code>server</code>, and shared <code>types</code> modules that were previously exposed as a standalone repo. | The separate <code>core‑engine</code> repo was <strong>deprecated</strong> and removed from the public list of active repos. |
+| <strong>performance‑sdk</strong> | The SDK that provided a public API for building real‑time performance systems (e.g., client‑side utilities, event handling, and performance‑specific helpers) was folded into the <code>metasystem-master</code>’s SDK layer. | The old <code>performance‑sdk</code> repo was <strong>deprecated</strong> and no longer maintained. |
+| <strong>example‑generative‑visual</strong> | The visual generative example (a demo of the engine in action) was incorporated as one of the four bundled examples in <code>metasystem-master</code>. Its code, assets, and documentation were moved into the monorepo’s <code>examples/visual</code> directory. | The standalone <code>example‑generative‑visual</code> repo was <strong>deprecated</strong> and archived. |</p>
+<p><strong>Sources</strong></p>
+<ul>
+<li>Metasystem Master consolidates 12 repos, including <code>core‑engine</code>, <code>performance‑sdk</code>, and the visual example [cite-3].</li>
+<li>Core Engine’s functionality (bus, OSC, server, types) is described in its repo [cite-4].</li>
+<li>Performance Sdk is an archived SDK for real‑time performance systems [cite-2].</li>
+<li>Example Generative Visual is an archived visual generative example consolidated into metasystem‑master [cite-1].</li>
+</ul>
+<hr>
+<p><strong>Support Pollinations.AI:</strong></p>
+<hr>
+<p>🌸 <strong>Ad</strong> 🌸
+Powered by Pollinations.AI free text APIs. <a href=https://pollinations.ai/redirect/kofi class="text-[var(--color-accent)] hover:underline" rel="noopener noreferrer nofollow" target=_blank>Support our mission</a> to keep AI accessible for everyone.</p></div><div class="mt-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-3"><button class="flex w-full items-center justify-between text-xs text-[var(--color-text-muted)]"><span class=font-medium>Sources (15) | Confidence: 52% | Coverage: 21%</span><span>Expand</span></button><div class="mt-2 space-y-2"><div class="rounded border border-[var(--color-border)] bg-[var(--color-bg)] p-2 text-xs"><div class="flex items-center justify-between"><span class="font-mono text-[var(--color-accent)]">[cite-1]</span><div class="flex items-center gap-2"><span class="font-medium text-green-300">fresh</span><span class=text-[var(--color-text-muted)]>98%</span></div></div><div class=mt-1><a href=http://localhost:3000/repos/example-generative-visual class="text-[var(--color-accent)] hover:underline">Example Generative Visual</a><span class="ml-2 text-[var(--color-text-muted)]">(manifest)</span></div></div><div class="rounded border border-[var(--color-border)] bg-[var(--color-bg)] p-2 text-xs"><div class="flex items-center justify-between"><span class="font-mono text-[var(--color-accent)]">[cite-2]</span><div class="flex items-center gap-2"><span class="font-medium text-green-300">fresh</span><span class=text-[var(--color-text-muted)]>78%</span></div></div><div class=mt-1><a href=http://localhost:3000/repos/performance-sdk class="text-[var(--color-accent)] hover:underline">Performance Sdk</a><span class="ml-2 text-[var(--color-text-muted)]">(manifest)</span></div></div><div class="rounded border border-[var(--color-border)] bg-[var(--color-bg)] p-2 text-xs"><div class="flex items-center justify-between"><span class="font-mono text-[var(--color-accent)]">[cite-3]</span><div class="flex items-center gap-2"><span class="font-medium text-green-300">fresh</span><span class=text-[var(--color-text-muted)]>73%</span></div></div><div class=mt-1><a href=http://localhost:3000/repos/metasystem-master class="text-[var(--color-accent)] hover:underline">Metasystem Master</a><span class="ml-2 text-[var(--color-text-muted)]">(manifest)</span></div></div></div><button class="mt-2 text-xs text-[var(--color-accent)] hover:underline">+12 more sources</button></div></div></div><div class="flex justify-end"><div class="max-w-[80%] rounded-lg px-4 py-3 text-sm bg-[var(--color-accent)] text-white">What is the dependency path from schema-definitions (META-ORGANVM) through ORGAN-IV's orchestration layer into ORGAN-III's commercial products? Trace every intermediate repo.</div></div><div class="flex justify-start"><div class="max-w-[80%] rounded-lg px-4 py-3 text-sm bg-[var(--color-surface)] border border-[var(--color-border)]"><div class="prose prose-invert prose-sm max-w-none"><h3>ORGANVM Snapshot Response</h3>
+<p>The live OSS model path is currently unavailable, so this answer is generated from local manifest context for <strong>What is the dependency path from schema-definitions (META-ORGANVM) through ORGAN-IV's orchestration layer into ORGAN-III's commercial products? Trace every intermediate repo.</strong>.</p>
+<h4>System Overview</h4>
+<ul>
+<li>ORGANVM System Summary</li>
+<li>======================</li>
+<li>Name: ORGANVM — Eight-organ creative-institutional system</li>
+<li>Total repos: 103 | Active: 94 | Archived: 9</li>
+<li>Organs: 8</li>
+<li>Sprints completed: 33 (since 2026-02-11)</li>
+<li>CI workflows: 94</li>
+</ul>
+<h4>Relevant Repositories</h4>
+<ul>
+<li><strong>Recursive Engine: Generative Entity</strong> (recursive-engine--generative-entity) [ORGAN-I/flagship]: Recursive Engine: Generative Entity (recursive-engine--generative-entity) — ORGAN-I. RE:GE — A symbolic operating system for myth, identity, ritual, and recursive systems. 21 organ handlers, ritual syntax DSL, workflow orchestration, external bridges (Obsidian/Git/Max-MSP).</li>
+<li><strong>Organon Noumenon: Ontogenetic Morphe</strong> (organon-noumenon--ontogenetic-morphe) [ORGAN-I/standard]: Organon Noumenon: Ontogenetic Morphe (organon-noumenon--ontogenetic-morphe) — ORGAN-I. Ontogenetic Morphe — 22-subsystem symbolic processing architecture with recursive 4-phase process loops, async message bus, and typed symbolic values</li>
+<li><strong>Auto Revision Epistemic Engine</strong> (auto-revision-epistemic-engine) [ORGAN-I/standard]: Auto Revision Epistemic Engine (auto-revision-epistemic-engine) — ORGAN-I. Self-governing orchestration framework with 8 phases, 4 human review gates, BLAKE3 audit chain, and ethical axiom enforcement</li>
+<li><strong>Narratological Algorithmic Lenses</strong> (narratological-algorithmic-lenses) [ORGAN-I/standard]: Narratological Algorithmic Lenses (narratological-algorithmic-lenses) — ORGAN-I. 14 narratological studies × 92 algorithms — formalizing narrative principles from Aristotle to Pixar as executable code, with CLI, API, web dashboard, and real screenplay analysis <strong>Hybrid: Python core + TypeScript web app</strong></li>
+<li><strong>Call Function: Ontological</strong> (call-function--ontological) [ORGAN-I/standard]: Call Function: Ontological (call-function--ontological) — ORGAN-I. Ontological function-calling framework — 12-concept philosophical architecture for grounded AI tool use via Heideggerian Dasein, Aristotelian four causes, and Peircean semiotics</li>
+<li><strong>Sema Metra: Alchemica Mundi</strong> (sema-metra--alchemica-mundi) [ORGAN-I/standard]: Sema Metra: Alchemica Mundi (sema-metra--alchemica-mundi) — ORGAN-I. Three-engine alchemical transformation framework — 22 operations mapping classical alchemy (Nigredo→Rubedo) onto computational semantics via distillation, fermentation, and projection engines <strong>Sema-Metra: Alchemica Mundi</strong> is a TypeScript framework implementing an axiom-driven signal-matrix system. It functions as a programmable creative engine — a modular synthesis patchbay that routes a</li>
+<li><strong>System Governance Framework</strong> (system-governance-framework) [ORGAN-I/standard]: System Governance Framework (system-governance-framework) — ORGAN-I. Multi-organ governance rules and promotion criteria</li>
+<li><strong>Cognitive Archaelogy Tribunal</strong> (cognitive-archaelogy-tribunal) [ORGAN-I/standard]: Cognitive Archaelogy Tribunal (cognitive-archaelogy-tribunal) — ORGAN-I. Audit tool for cognitive systems and organizational coherence</li>
+</ul>
+<p>Provider note: OSS provider returned no assistant text.
+Primary provider: <code>GROQ_API_KEY</code> + <code>GROQ_MODEL</code> (default <code>llama-3.3-70b-versatile</code>).
+Fallback provider: <code>OSS_LLM_API_URL=https://text.pollinations.ai/openai</code>, <code>OSS_LLM_MODEL=openai-fast</code>.</p></div><div class="mt-2 flex items-center gap-1"><span class="text-xs text-[var(--color-text-muted)] mr-1">Was this helpful?</span><button title=Helpful class="rounded border border-[var(--color-border)] px-2 py-0.5 text-xs text-[var(--color-text-muted)] transition-colors hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] disabled:opacity-50">+ Helpful</button><button title="Missing info" class="rounded border border-[var(--color-border)] px-2 py-0.5 text-xs text-[var(--color-text-muted)] transition-colors hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] disabled:opacity-50">? Missing info</button><button title="Not relevant" class="rounded border border-[var(--color-border)] px-2 py-0.5 text-xs text-[var(--color-text-muted)] transition-colors hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] disabled:opacity-50">- Not relevant</button><button title=Unsafe class="rounded border border-[var(--color-border)] px-2 py-0.5 text-xs text-[var(--color-text-muted)] transition-colors hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] disabled:opacity-50">! Unsafe</button></div></div></div><div></div></div><form class="flex gap-3 border-t border-[var(--color-border)] pt-4"><input type=text placeholder="Ask about ORGANVM..." class="flex-1 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-2.5 text-sm text-[var(--color-text)] placeholder:text-[var(--color-text-muted)] focus:border-[var(--color-accent)] focus:outline-none disabled:opacity-50" value><template shadowrootmode=user-agent><div useragentpart=placeholder>Ask about ORGANVM...</div><div contenteditable=plaintext-only></div></template><button type=submit class="rounded-lg bg-[var(--color-accent)] px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-600 disabled:opacity-50" disabled>Send</button></form></div></main><next-route-announcer style=position:absolute><template shadowrootmode=open><div aria-live=assertive id=__next-route-announcer__ role=alert style=position:absolute;border:0px;height:1px;margin:-1px;padding:0px;width:1px;clip:rect(0px,0px,0px,0px);overflow:hidden;white-space:nowrap;overflow-wrap:normal></div></template></next-route-announcer><single-file-infobar style="accent-color: initial !important; place-content: initial !important; place-items: initial !important; place-self: initial !important; alignment-baseline: initial !important; anchor-name: initial !important; anchor-scope: initial !important; animation-composition: initial !important; animation: initial !important; appearance: initial !important; aspect-ratio: initial !important; backdrop-filter: initial !important; backface-visibility: initial !important; background: initial !important; background-blend-mode: initial !important; baseline-shift: initial !important; block-size: initial !important; border-block: initial !important; border: initial !important; border-radius: initial !important; border-collapse: initial !important; border-end-end-radius: initial !important; border-end-start-radius: initial !important; border-inline: initial !important; border-start-end-radius: initial !important; border-start-start-radius: initial !important; inset: initial !important; box-shadow: initial !important; box-sizing: initial !important; break-after: initial !important; break-before: initial !important; break-inside: initial !important; buffered-rendering: initial !important; caption-side: initial !important; caret-color: initial !important; clear: initial !important; clip: initial !important; clip-path: initial !important; clip-rule: initial !important; color: initial !important; color-interpolation: initial !important; color-interpolation-filters: initial !important; color-scheme: initial !important; column-count: initial !important; column-fill: initial !important; gap: initial !important; column-rule-color: initial !important; column-rule-style: initial !important; column-rule-width: initial !important; column-span: initial !important; column-width: initial !important; contain: initial !important; contain-intrinsic-block-size: initial !important; contain-intrinsic-size: initial !important; contain-intrinsic-inline-size: initial !important; container-name: initial !important; container-type: initial !important; content: initial !important; content-visibility: initial !important; counter-increment: initial !important; counter-reset: initial !important; counter-set: initial !important; cursor: initial !important; cx: initial !important; cy: initial !important; direction: initial !important; display: initial !important; dominant-baseline: initial !important; dynamic-range-limit: initial !important; empty-cells: initial !important; field-sizing: initial !important; fill: initial !important; fill-opacity: initial !important; fill-rule: initial !important; filter: initial !important; flex: initial !important; flex-flow: initial !important; float: initial !important; flood-color: initial !important; flood-opacity: initial !important; flow-tolerance: initial !important; font-family: initial !important; font-feature-settings: initial !important; font-kerning: initial !important; font-optical-sizing: initial !important; font-palette: initial !important; font-size: initial !important; font-size-adjust: initial !important; font-style: initial !important; font-synthesis-small-caps: initial !important; font-synthesis-style: initial !important; font-synthesis-weight: initial !important; font-variant-alternates: initial !important; font-variant-caps: initial !important; font-variant-east-asian: initial !important; font-variant-ligatures: initial !important; font-variant-numeric: initial !important; font-variant-position: initial !important; font-variation-settings: initial !important; font-weight: initial !important; font-width: initial !important; glyph-orientation-horizontal: initial !important; glyph-orientation-vertical: initial !important; grid: initial !important; grid-column-end: initial !important; grid-column-start: initial !important; grid-row-end: initial !important; grid-row-start: initial !important; hanging-punctuation: initial !important; height: initial !important; hyphenate-character: initial !important; hyphens: initial !important; image-orientation: initial !important; image-rendering: initial !important; inline-size: initial !important; inset-block: initial !important; inset-inline: initial !important; isolation: initial !important; letter-spacing: initial !important; lighting-color: initial !important; line-break: initial !important; line-height: initial !important; list-style: initial !important; margin-block: initial !important; margin: initial !important; margin-inline: initial !important; margin-trim: initial !important; marker: initial !important; mask: initial !important; mask-composite: initial !important; mask-mode: initial !important; mask-size: initial !important; mask-type: initial !important; math-depth: initial !important; math-shift: initial !important; math-style: initial !important; max-block-size: initial !important; max-height: initial !important; max-inline-size: initial !important; max-width: initial !important; min-block-size: initial !important; min-height: initial !important; min-inline-size: initial !important; min-width: initial !important; mix-blend-mode: initial !important; object-fit: initial !important; object-position: initial !important; offset-anchor: initial !important; offset-distance: initial !important; offset-path: initial !important; offset-position: initial !important; offset-rotate: initial !important; opacity: initial !important; order: initial !important; orphans: initial !important; outline: initial !important; outline-offset: initial !important; overflow-block: initial !important; overflow-inline: initial !important; overflow-wrap: initial !important; overflow: initial !important; overscroll-behavior-block: initial !important; overscroll-behavior-inline: initial !important; overscroll-behavior: initial !important; padding-block: initial !important; padding: initial !important; padding-inline: initial !important; paint-order: initial !important; perspective: initial !important; perspective-origin: initial !important; pointer-events: initial !important; position: initial !important; position-anchor: initial !important; position-area: initial !important; position-try: initial !important; position-visibility: initial !important; print-color-adjust: initial !important; quotes: initial !important; r: initial !important; resize: initial !important; rotate: initial !important; ruby-align: initial !important; ruby-overhang: initial !important; ruby-position: initial !important; rx: initial !important; ry: initial !important; scale: initial !important; scroll-behavior: initial !important; scroll-margin-block: initial !important; scroll-margin: initial !important; scroll-margin-inline: initial !important; scroll-padding-block: initial !important; scroll-padding: initial !important; scroll-padding-inline: initial !important; scroll-snap-align: initial !important; scroll-snap-stop: initial !important; scroll-snap-type: initial !important; scroll-timeline: initial !important; scrollbar-color: initial !important; scrollbar-gutter: initial !important; scrollbar-width: initial !important; shape-image-threshold: initial !important; shape-margin: initial !important; shape-outside: initial !important; shape-rendering: initial !important; speak-as: initial !important; stop-color: initial !important; stop-opacity: initial !important; stroke: initial !important; stroke-color: initial !important; stroke-dasharray: initial !important; stroke-dashoffset: initial !important; stroke-linecap: initial !important; stroke-linejoin: initial !important; stroke-miterlimit: initial !important; stroke-opacity: initial !important; stroke-width: initial !important; tab-size: initial !important; table-layout: initial !important; text-align: initial !important; text-align-last: initial !important; text-anchor: initial !important; text-autospace: initial !important; text-box: initial !important; text-combine-upright: initial !important; text-decoration: initial !important; text-decoration-skip-ink: initial !important; text-emphasis-color: initial !important; text-emphasis-position: initial !important; text-emphasis-style: initial !important; text-indent: initial !important; text-orientation: initial !important; text-overflow: initial !important; text-rendering: initial !important; text-shadow: initial !important; text-transform: initial !important; text-underline-offset: initial !important; text-underline-position: initial !important; text-wrap: initial !important; timeline-scope: initial !important; touch-action: initial !important; transform: initial !important; transform-box: initial !important; transform-origin: initial !important; transform-style: initial !important; transition: initial !important; translate: initial !important; unicode-bidi: initial !important; vector-effect: initial !important; vertical-align: initial !important; view-timeline: initial !important; view-transition-class: initial !important; view-transition-name: initial !important; visibility: initial !important; white-space: initial !important; widows: initial !important; width: initial !important; will-change: initial !important; word-break: initial !important; word-spacing: initial !important; writing-mode: initial !important; x: initial !important; y: initial !important; z-index: initial !important; zoom: initial !important; -apple-pay-button-style: initial !important; -apple-pay-button-type: initial !important; border-spacing: initial !important; -webkit-box-align: initial !important; -webkit-box-decoration-break: initial !important; -webkit-box-direction: initial !important; -webkit-box-flex: initial !important; -webkit-box-flex-group: initial !important; -webkit-box-lines: initial !important; -webkit-box-ordinal-group: initial !important; -webkit-box-orient: initial !important; -webkit-box-pack: initial !important; -webkit-box-reflect: initial !important; -webkit-column-axis: initial !important; -webkit-column-progression: initial !important; -webkit-cursor-visibility: initial !important; -webkit-font-smoothing: initial !important; -webkit-hyphenate-limit-after: initial !important; -webkit-hyphenate-limit-before: initial !important; -webkit-hyphenate-limit-lines: initial !important; -webkit-initial-letter: initial !important; -webkit-line-align: initial !important; -webkit-line-box-contain: initial !important; -webkit-line-clamp: initial !important; -webkit-line-grid: initial !important; -webkit-line-snap: initial !important; -webkit-locale: initial !important; -webkit-nbsp-mode: initial !important; -webkit-rtl-ordering: initial !important; -webkit-text-fill-color: initial !important; -webkit-text-security: initial !important; -webkit-text-stroke-color: initial !important; -webkit-text-stroke-width: initial !important; -webkit-text-zoom: initial !important; -webkit-user-drag: initial !important; -webkit-user-modify: initial !important; -webkit-user-select: initial !important;"><template shadowrootmode=open><div><style>.infobar,.infobar .infobar-icon,.infobar .infobar-link-icon {min-inline-size:28px;min-block-size:28px;box-sizing:border-box;}.infobar,.infobar .infobar-close-icon,.infobar .infobar-link-icon {opacity:0.7;transition:opacity 250ms;}.infobar:hover,.infobar .infobar-close-icon:hover,.infobar .infobar-link-icon:hover {opacity:1;}.infobar,.infobar-content {display:flex;}.infobar {position:fixed;max-height:calc(100% - 32px);top:16px;right:16px;margin-inline-start:16px;margin-block-end:16px;color:#2d2d2d;background-color:#737373;border:2px solid;border-color:#eee;border-radius:16px;z-index:2147483647;animation-name:flash;animation-duration:.5s;animation-timing-function:cubic-bezier(0.39,0.58,0.57,1);animation-delay:1s;animation-iteration-count:2;}.infobar:valid,.infobar:not(:focus-within):not(.infobar-focus) .infobar-content {display:none;}.infobar:focus-within,.infobar.infobar-focus {background-color:#f9f9f9;border-color:#878787;border-radius:8px;opacity:1;transition-property:opacity,background-color,border-color,border-radius,color;}.infobar-content {border:2px solid;border-color:#f9f9f9;border-radius:6px;background-color:#f9f9f9;overflow:auto;}.infobar-content span {font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:18px;word-break:break-word;white-space:pre-wrap;margin-inline:4px;margin-block:4px;}.infobar .infobar-icon,.infobar .infobar-close-icon,.infobar .infobar-link-icon {cursor:pointer;background-position:center;background-repeat:no-repeat;}.infobar .infobar-close-icon,.infobar .infobar-link-icon {align-self:flex-start;}.infobar .infobar-icon {position:absolute;min-inline-size:24px;min-block-size:24px;}@keyframes flash {0%,100% {	background-color:#737373;}50% {	background-color:#dd6a00;}}.infobar:focus-within .infobar-icon,.infobar.infobar-focus .infobar-icon {z-index:-1;background-image:none;margin:4px;}.infobar .infobar-close-icon {min-inline-size:22px;min-block-size:22px;}.infobar .infobar-icon {background-color:transparent;background-size:70%;background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABABAMAAABYR2ztAAABhmlDQ1BJQ0MgcHJvZmlsZQAAKJF9kj1Iw0AYht+mSkUrDnYQcchQnSyIijqWKhbBQmkrtOpgcukfNGlIUlwcBdeCgz+LVQcXZ10dXAVB8AfEydFJ0UVK/C4ptIjx4LiH9+59+e67A4RGhalm1wSgapaRisfEbG5VDLyiDwEAvZiVmKkn0osZeI6ve/j4ehfhWd7n/hz9St5kgE8kjjLdsIg3iGc2LZ3zPnGIlSSF+Jx43KACiR+5Lrv8xrnosMAzQ0YmNU8cIhaLHSx3MCsZKvE0cVhRNcoXsi4rnLc4q5Uaa9XJbxjMaytprtMcQRxLSCAJETJqKKMCCxFaNVJMpGg/5uEfdvxJcsnkKoORYwFVqJAcP/gb/O6tWZiadJOCMaD7xbY/RoHALtCs2/b3sW03TwD/M3Cltf3VBjD3SXq9rYWPgIFt4OK6rcl7wOUOMPSkS4bkSH6aQqEAvJ/RM+WAwVv6EGtu31r7OH0AMtSr5Rvg4BAYK1L2use9ezr79u+ZVv9+AFlNcp0UUpiqAAAACXBIWXMAAC4jAAAuIwF4pT92AAAAB3RJTUUH5AsHADIRLMaOHwAAABl0RVh0Q29tbWVudABDcmVhdGVkIHdpdGggR0lNUFeBDhcAAAAPUExURQAAAIqKioyNjY2OjvDw8L2y1DEAAAABdFJOUwBA5thmAAAAAWJLR0QB/wIt3gAAAGNJREFUSMdjYCAJsLi4OBCQx6/CBQwIGIDPCBcXAkYQUsACU+AwlBVQHg6Eg5pgZBGOboIJZugDFwRwoJECJCUOhJI1wZwzqmBUwagCuipgIqTABG9h7YIKaKGAURAFEF/6AQAO4HqSoDP8bgAAAABJRU5ErkJggg==);}.infobar .infobar-link-icon {right:4px;background-size:60%;background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABAAgMAAADXB5lNAAABhmlDQ1BJQ0MgcHJvZmlsZQAAKJF9kj1Iw0AYht+mSkUrDnYQcchQnSyIijqWKhbBQmkrtOpgcukfNGlIUlwcBdeCgz+LVQcXZ10dXAVB8AfEydFJ0UVK/C4ptIjx4LiH9+59+e67A4RGhalm1wSgapaRisfEbG5VDLyiDwEAvZiVmKkn0osZeI6ve/j4ehfhWd7n/hz9St5kgE8kjjLdsIg3iGc2LZ3zPnGIlSSF+Jx43KACiR+5Lrv8xrnosMAzQ0YmNU8cIhaLHSx3MCsZKvE0cVhRNcoXsi4rnLc4q5Uaa9XJbxjMaytprtMcQRxLSCAJETJqKKMCCxFaNVJMpGg/5uEfdvxJcsnkKoORYwFVqJAcP/gb/O6tWZiadJOCMaD7xbY/RoHALtCs2/b3sW03TwD/M3Cltf3VBjD3SXq9rYWPgIFt4OK6rcl7wOUOMPSkS4bkSH6aQqEAvJ/RM+WAwVv6EGtu31r7OH0AMtSr5Rvg4BAYK1L2use9ezr79u+ZVv9+AFlNcp0UUpiqAAAACXBIWXMAAC4jAAAuIwF4pT92AAAAB3RJTUUH5AsHAB8H+DhhoQAAABl0RVh0Q29tbWVudABDcmVhdGVkIHdpdGggR0lNUFeBDhcAAAAJUExURQAAAICHi4qKioTuJAkAAAABdFJOUwBA5thmAAAAAWJLR0QCZgt8ZAAAAJJJREFUOI3t070NRCEMA2CnYAOyDyPwpHj/Va7hJ3FzV7zy3ET5JIwoAF6Jk4wzAJAkzxAYG9YRTgB+24wBgKmfrGAKTcEfAY4KRlRoIeBTgKOCERVaCPgU4Khge2GqKOBTgKOCERVaAEC/4PNcnyoSWHpjqkhwKxbcig0Q6AorXYF/+A6eIYD1lVbwG/jdA6/kA2THRAURVubcAAAAAElFTkSuQmCC);}.infobar .infobar-close-icon {appearance:none;background-size:80%;background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABAAgMAAADXB5lNAAABhmlDQ1BJQ0MgcHJvZmlsZQAAKJF9kj1Iw0AYht+mSkUrDnYQcchQnSyIijqWKhbBQmkrtOpgcukfNGlIUlwcBdeCgz+LVQcXZ10dXAVB8AfEydFJ0UVK/C4ptIjx4LiH9+59+e67A4RGhalm1wSgapaRisfEbG5VDLyiDwEAvZiVmKkn0osZeI6ve/j4ehfhWd7n/hz9St5kgE8kjjLdsIg3iGc2LZ3zPnGIlSSF+Jx43KACiR+5Lrv8xrnosMAzQ0YmNU8cIhaLHSx3MCsZKvE0cVhRNcoXsi4rnLc4q5Uaa9XJbxjMaytprtMcQRxLSCAJETJqKKMCCxFaNVJMpGg/5uEfdvxJcsnkKoORYwFVqJAcP/gb/O6tWZiadJOCMaD7xbY/RoHALtCs2/b3sW03TwD/M3Cltf3VBjD3SXq9rYWPgIFt4OK6rcl7wOUOMPSkS4bkSH6aQqEAvJ/RM+WAwVv6EGtu31r7OH0AMtSr5Rvg4BAYK1L2use9ezr79u+ZVv9+AFlNcp0UUpiqAAAACXBIWXMAAC4jAAAuIwF4pT92AAAAB3RJTUUH5AsHAB8VC4EQ6QAAABl0RVh0Q29tbWVudABDcmVhdGVkIHdpdGggR0lNUFeBDhcAAAAJUExURQAAAICHi4qKioTuJAkAAAABdFJOUwBA5thmAAAAAWJLR0QCZgt8ZAAAAJtJREFUOI3NkrsBgCAMRLFwBPdxBArcfxXFkO8rbKWAAJfHJ9faf9vuYX/749T5NmShm3bEwbe2SxeuM4+2oxDL1cDoKtVUjRy+tH78Cv2CS+wIiQNC1AEhk4AQeUTMWUJMfUJMSEJMSEY8kIx4IONroaYAimNxsXp1PA7PxwfVL8QnowwoVC0lig07wDDVUjAdbAnjwtow/z/bDW7eI4M2KruJAAAAAElFTkSuQmCC);}.infobar { top:16px; bottom:auto; }.infobar { right:16px; left:auto; }</style><form class="infobar"><span tabindex="-1" class="infobar-icon"></span><span tabindex="-1" class="infobar-content"><input type="checkbox" required="" class="infobar-close-icon" title="Close"><span>Thu Mar 05 2026 20:51:23 GMT-0500 (Eastern Standard Time)</span><a class="infobar-link-icon" target="_blank" rel="noopener noreferrer" title="Open source URL: http://localhost:3000/ask" href="http://localhost:3000/ask"></a></span></form><script>function Wo(n,{saveUrl:e,infobarContent:t,saveDate:a}){if(e){const o=n.querySelector("single-file-infobar").shadowRoot;o.querySelector(".infobar-content span").textContent=t||a;const i=o.querySelector(".infobar-content .infobar-link-icon");i.href=e,i.title="Open source URL: "+e}};function Ho(n,e=_o){const t=n.evaluate("//comment()",n,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null);let a=t&&t.singleNodeValue;if(a&&a.nodeType==Node.COMMENT_NODE&&a.textContent.includes(e)){const n=a.textContent.split("\n"),[,,e,...t]=n,o=e.match(/^ url: (.*) ?$/),i=o&&o[1];if(i){let n,e;if(t.length&&(e=t[0].split("saved date: ")[1],e&&t.shift(),t.length>1)){let e=t[0].split("info: ")[1].trim();for(let n=1;n<t.length-1;n++)e+="\n"+t[n].trim();n=e.trim()}return{saveUrl:i,infobarContent:n,saveDate:e}}}};(function Go(n,e){const t=Ho(n,e);t&&t.saveUrl&&Wo(n,t)})(document, "SingleFile");</script></div></template></single-file-infobar>
