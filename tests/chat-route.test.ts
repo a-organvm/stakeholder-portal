@@ -5,6 +5,18 @@ vi.mock("@/lib/retrieval", () => ({
   buildTier2Context: () => "tier2",
 }));
 
+vi.mock("@/lib/hybrid-retrieval", () => ({
+  hybridRetrieve: vi.fn().mockResolvedValue({
+    query: "test",
+    sources: [],
+    context: "mocked hybrid context",
+    tier1: "tier1",
+    strategy: "hybrid",
+    total_candidates: 0,
+  }),
+  resetHybridRetrievalCache: vi.fn(),
+}));
+
 const fetchMock = vi.fn();
 
 async function loadPostHandler() {
