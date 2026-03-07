@@ -9,6 +9,7 @@ import {
   index,
   vector,
   customType,
+  bigint,
 } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 
@@ -157,6 +158,75 @@ export const documentChunks = pgTable(
     embeddingIndex: index("embedding_idx").using("hnsw", table.embedding.op("vector_cosine_ops")),
     searchIndex: index("search_idx").using("gin", table.searchVector),
     repoPathIndex: index("chunk_repo_path_idx").on(table.repo, table.path),
+  })
+);
+
+// ─────────────────────────────────────────────
+// Repository file trees (Phase 1A)
+// ─────────────────────────────────────────────
+
+export const fileTypeEnum = pgEnum("file_type", ["file", "directory"]);
+
+export const repoFileTrees = pgTable(
+  "repo_file_trees",
+  {
+    id: text("id").primaryKey(), // repo:path
+    repo: text("repo").notNull(),
+    organ: text("organ").notNull(),
+    path: text("path").notNull(),
+    fileType: fileTypeEnum("file_type").notNull(),
+    extension: text("extension"),
+    sizeBytes: bigint("size_bytes", { mode: "number" }),
+    lastModified: timestamp("last_modified", { withTimezone: true }),
+    commitSha: text("commit_sha"),
+    ingestedAt: timestamp("ingested_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    repoIndex: index("file_tree_repo_idx").on(table.repo),
+    extensionIndex: index("file_tree_ext_idx").on(table.extension),
+    pathIndex: index("file_tree_path_idx").using("gin", sql`${table.path} gin_trgm_ops`),
+  })
+);
+
+// ─────────────────────────────────────────────
+// Code symbols (Phase 2A)
+// ─────────────────────────────────────────────
+
+export const symbolTypeEnum = pgEnum("symbol_type", [
+  "function",
+  "class",
+  "interface",
+  "type",
+  "const",
+]);
+
+export const codeSymbols = pgTable(
+  "code_symbols",
+  {
+    id: text("id").primaryKey(), // repo:path:type:name
+    repo: text("repo").notNull(),
+    organ: text("organ").notNull(),
+    path: text("path").notNull(),
+    symbolType: symbolTypeEnum("symbol_type").notNull(),
+    name: text("name").notNull(),
+    signature: text("signature"),
+    lineStart: integer("line_start"),
+    lineEnd: integer("line_end"),
+    docComment: text("doc_comment"),
+    parentSymbol: text("parent_symbol"),
+    visibility: text("visibility"), // 'export' | 'public' | 'private' | null
+    embedding: vector("embedding", { dimensions: 384 }),
+    commitSha: text("commit_sha"),
+    ingestedAt: timestamp("ingested_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    repoIndex: index("symbol_repo_idx").on(table.repo),
+    nameIndex: index("symbol_name_idx").using("gin", sql`${table.name} gin_trgm_ops`),
+    typeIndex: index("symbol_type_idx").on(table.symbolType),
+    embeddingIndex: index("symbol_embedding_idx").using(
+      "hnsw",
+      table.embedding.op("vector_cosine_ops")
+    ),
   })
 );
 

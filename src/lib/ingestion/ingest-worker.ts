@@ -7,6 +7,8 @@ import { Pool } from "pg";
 import { sql } from "drizzle-orm";
 import { loadEnvConfig } from "@next/env";
 import { embedChunks, getRepoCursor, setRepoCursor } from "./embed";
+import { extractSymbols } from "./symbol-extractor";
+import { repoFileTrees, codeSymbols } from "../db/schema";
 
 loadEnvConfig(process.cwd());
 
@@ -345,17 +347,58 @@ function getFileIndex(repoPath: string): string[] {
     const highValue = new Set<string>();
 
     for (const f of allFiles) {
-      if (!f.includes("/") && (f.endsWith(".md") || ["package.json", "Cargo.toml", "seed.yaml"].includes(f))) {
+      const depth = f.split("/").length - 1;
+
+      // All top-level files
+      if (depth === 0) {
         highValue.add(f);
-      } else if (f.endsWith(".md")) {
-        highValue.add(f);
-      } else if (f.startsWith("conductor/") || f.startsWith("archetypes/") || f.startsWith("src/core/")) {
-        highValue.add(f);
-      } else if (f.startsWith("scripts/") && (f.endsWith(".py") || f.endsWith(".ts") || f.endsWith(".sh"))) {
-        highValue.add(f);
+        continue;
       }
-      if (f.includes("/")) {
-        highValue.add(f.split("/")[0] + "/");
+
+      // Directory names at depth 1-2
+      const parts = f.split("/");
+      highValue.add(parts[0] + "/");
+      if (parts.length > 2) {
+        highValue.add(parts[0] + "/" + parts[1] + "/");
+      }
+
+      // Config files at any depth
+      const basename = path.basename(f);
+      const configFiles = [
+        "package.json", "Cargo.toml", "seed.yaml", "pyproject.toml",
+        "tsconfig.json", "Dockerfile", "Makefile", "Justfile",
+        ".eslintrc.json", "vitest.config.ts", "drizzle.config.ts",
+      ];
+      if (configFiles.includes(basename)) {
+        highValue.add(f);
+        continue;
+      }
+
+      // All markdown files
+      if (f.endsWith(".md")) {
+        highValue.add(f);
+        continue;
+      }
+
+      // .github/ workflow files
+      if (f.startsWith(".github/")) {
+        highValue.add(f);
+        continue;
+      }
+
+      // Source files at shallow depth
+      if (depth <= 2 && (f.endsWith(".ts") || f.endsWith(".py") || f.endsWith(".rs") || f.endsWith(".go"))) {
+        highValue.add(f);
+        continue;
+      }
+
+      // Key directories
+      if (f.startsWith("conductor/") || f.startsWith("archetypes/") || f.startsWith("src/core/")) {
+        highValue.add(f);
+        continue;
+      }
+      if (f.startsWith("scripts/") && (f.endsWith(".py") || f.endsWith(".ts") || f.endsWith(".sh"))) {
+        highValue.add(f);
       }
     }
     return Array.from(highValue).sort().slice(0, 500);
@@ -418,6 +461,23 @@ function getChangedFiles(repoPath: string, sinceSha: string): Set<string> {
   }
 }
 
+const EMBEDDABLE_EXTENSIONS = new Set([
+  ".md", ".yaml", ".yml", ".ts", ".tsx", ".js", ".jsx",
+  ".py", ".json", ".toml", ".sh", ".css", ".scss",
+  ".html", ".sql", ".graphql", ".rs", ".go",
+]);
+
+const EMBEDDABLE_NAMED_FILES = new Set([
+  "Dockerfile", "Makefile", "Procfile", "Justfile",
+]);
+
+const SKIP_DIRS = new Set([
+  "node_modules", "dist", "build", ".output", "__pycache__",
+  ".venv", "venv", ".tox", "coverage", ".next",
+]);
+
+const MAX_FILE_SIZE_BYTES = 100 * 1024; // 100KB
+
 function walkRepoForEmbeddings(dir: string): string[] {
   let results: string[] = [];
   try {
@@ -427,21 +487,31 @@ function walkRepoForEmbeddings(dir: string): string[] {
       const stat = fs.statSync(fullPath);
 
       if (stat && stat.isDirectory()) {
-        if (!file.startsWith(".") && file !== "node_modules" && file !== "dist") {
-          results = results.concat(walkRepoForEmbeddings(fullPath));
-        }
+        // Skip dot dirs except .github
+        if (file.startsWith(".") && file !== ".github") continue;
+        if (SKIP_DIRS.has(file)) continue;
+        results = results.concat(walkRepoForEmbeddings(fullPath));
       } else {
-        const isValidFile =
-          file.endsWith(".md") ||
-          file.endsWith(".yaml") || file.endsWith(".yml") ||
-          file.endsWith(".ts") || file.endsWith(".py") ||
-          (dir.includes("conductor") && !file.endsWith(".json")) ||
-          (dir.includes("research") && file.endsWith(".md")) ||
-          (dir.includes("intake") && file.endsWith(".md")) ||
-          (dir.includes("scripts") && (file.endsWith(".py") || file.endsWith(".ts") || file.endsWith(".sh")));
+        if (stat.size > MAX_FILE_SIZE_BYTES) continue;
 
-        if (isValidFile) {
-          results.push(fullPath);
+        const ext = path.extname(file).toLowerCase();
+        const isValid =
+          EMBEDDABLE_EXTENSIONS.has(ext) ||
+          EMBEDDABLE_NAMED_FILES.has(file);
+
+        if (isValid) {
+          // Binary check: read first 512 bytes for null byte
+          try {
+            const buf = Buffer.alloc(Math.min(512, stat.size));
+            const fd = fs.openSync(fullPath, "r");
+            fs.readSync(fd, buf, 0, buf.length, 0);
+            fs.closeSync(fd);
+            if (!buf.includes(0)) {
+              results.push(fullPath);
+            }
+          } catch {
+            // Skip unreadable files
+          }
         }
       }
     }
@@ -449,6 +519,202 @@ function walkRepoForEmbeddings(dir: string): string[] {
     // Ignore
   }
   return results;
+}
+
+// ---------------------------------------------------------------------------
+// File Tree Indexing (Phase 1A)
+// ---------------------------------------------------------------------------
+
+async function indexFileTree(
+  repoName: string,
+  organ: string,
+  repoPath: string,
+  commitSha: string | null
+): Promise<number> {
+  const gitDir = path.join(repoPath, ".git");
+  if (!fs.existsSync(gitDir)) return 0;
+
+  try {
+    const result = execSync("git ls-files -z", {
+      cwd: repoPath,
+      stdio: "pipe",
+      timeout: 15000,
+      maxBuffer: 5 * 1024 * 1024,
+    }).toString();
+
+    const files = result.split("\0").filter(Boolean);
+    if (files.length === 0) return 0;
+
+    // Delete existing entries for this repo
+    await db.execute(sql`DELETE FROM repo_file_trees WHERE repo = ${repoName}`);
+
+    // Collect directory entries
+    const dirs = new Set<string>();
+    const rows: Array<{
+      id: string;
+      repo: string;
+      organ: string;
+      path: string;
+      fileType: "file" | "directory";
+      extension: string | null;
+      sizeBytes: number | null;
+      lastModified: Date | null;
+      commitSha: string | null;
+    }> = [];
+
+    for (const f of files) {
+      const ext = path.extname(f).toLowerCase() || null;
+      let sizeBytes: number | null = null;
+      let lastModified: Date | null = null;
+
+      const fullPath = path.join(repoPath, f);
+      try {
+        const stat = fs.statSync(fullPath);
+        sizeBytes = stat.size;
+        lastModified = stat.mtime;
+      } catch {
+        // File may not exist (e.g. submodule pointer)
+      }
+
+      rows.push({
+        id: `${repoName}:${f}`,
+        repo: repoName,
+        organ,
+        path: f,
+        fileType: "file",
+        extension: ext,
+        sizeBytes,
+        lastModified,
+        commitSha,
+      });
+
+      // Derive directory entries
+      const parts = f.split("/");
+      for (let i = 1; i < parts.length; i++) {
+        const dirPath = parts.slice(0, i).join("/") + "/";
+        if (!dirs.has(dirPath)) {
+          dirs.add(dirPath);
+          rows.push({
+            id: `${repoName}:${dirPath}`,
+            repo: repoName,
+            organ,
+            path: dirPath,
+            fileType: "directory",
+            extension: null,
+            sizeBytes: null,
+            lastModified: null,
+            commitSha,
+          });
+        }
+      }
+    }
+
+    // Batch insert in groups of 100
+    for (let i = 0; i < rows.length; i += 100) {
+      const batch = rows.slice(i, i + 100);
+      await db.insert(repoFileTrees).values(batch).onConflictDoUpdate({
+        target: repoFileTrees.id,
+        set: {
+          sizeBytes: sql`EXCLUDED.size_bytes`,
+          lastModified: sql`EXCLUDED.last_modified`,
+          commitSha: sql`EXCLUDED.commit_sha`,
+          ingestedAt: new Date(),
+        },
+      });
+    }
+
+    return rows.length;
+  } catch (err) {
+    console.warn(`[FileTree] Failed to index ${repoName}:`, (err as Error).message);
+    return 0;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Symbol Extraction + DB Write (Phase 2B)
+// ---------------------------------------------------------------------------
+
+async function indexSymbols(
+  repoName: string,
+  organ: string,
+  repoPath: string,
+  commitSha: string | null
+): Promise<number> {
+  // Delete existing symbols for this repo
+  await db.execute(sql`DELETE FROM code_symbols WHERE repo = ${repoName}`);
+
+  const codeExts = new Set([".ts", ".tsx", ".js", ".jsx", ".py"]);
+  const files = walkRepoForEmbeddings(repoPath).filter((f) => {
+    const ext = path.extname(f).toLowerCase();
+    return codeExts.has(ext);
+  });
+
+  const MAX_SYMBOLS_PER_REPO = 2000;
+  let totalSymbols = 0;
+
+  for (const f of files) {
+    if (totalSymbols >= MAX_SYMBOLS_PER_REPO) {
+      console.log(`[Symbols] Cap reached (${MAX_SYMBOLS_PER_REPO}) for ${repoName}, skipping remaining files`);
+      break;
+    }
+    const relativePath = path.relative(repoPath, f);
+    let content: string;
+    try {
+      content = fs.readFileSync(f, "utf-8");
+    } catch {
+      continue;
+    }
+
+    const symbols = extractSymbols(content, relativePath);
+    if (symbols.length === 0) continue;
+
+    // Dedup by ID within the file
+    const seenIds = new Set<string>();
+    const rows = symbols
+      .map((sym) => ({
+        id: `${repoName}:${relativePath}:${sym.symbolType}:${sym.name}:${sym.lineStart}`,
+        repo: repoName,
+        organ,
+        path: relativePath,
+        symbolType: sym.symbolType as "function" | "class" | "interface" | "type" | "const",
+        name: sym.name,
+        signature: sym.signature,
+        lineStart: sym.lineStart,
+        lineEnd: sym.lineEnd,
+        docComment: sym.docComment,
+        parentSymbol: sym.parentSymbol,
+        visibility: sym.visibility,
+        commitSha,
+      }))
+      .filter((r) => {
+        if (seenIds.has(r.id)) return false;
+        seenIds.add(r.id);
+        return true;
+      });
+
+    for (let i = 0; i < rows.length; i += 50) {
+      const batch = rows.slice(i, i + 50);
+      try {
+        await db.insert(codeSymbols).values(batch).onConflictDoUpdate({
+          target: codeSymbols.id,
+          set: {
+            signature: sql`EXCLUDED.signature`,
+            lineStart: sql`EXCLUDED.line_start`,
+            lineEnd: sql`EXCLUDED.line_end`,
+            docComment: sql`EXCLUDED.doc_comment`,
+            commitSha: sql`EXCLUDED.commit_sha`,
+            ingestedAt: new Date(),
+          },
+        });
+      } catch (err) {
+        console.warn(`[Symbols] Batch insert failed for ${relativePath}:`, (err as Error).message?.slice(0, 200));
+      }
+    }
+
+    totalSymbols += rows.length;
+  }
+
+  return totalSymbols;
 }
 
 // ---------------------------------------------------------------------------
@@ -662,21 +928,63 @@ export async function runIngestionWorker(allowStaleManifest = false, skipVector 
   console.log(`Generated manifest: ${manifestTotalProcessed} repos, ${depEdges.length} dep edges -> ${MANIFEST_OUTPUT}`);
 
   // ----------------------------------------------------------------------------
-  // Vector Embeddings Ingestion (shared embedChunks)
+  // Structural Indexing (file trees + symbols — no embedding API needed)
+  // ----------------------------------------------------------------------------
+
+  await db.execute(sql`CREATE EXTENSION IF NOT EXISTS vector`);
+  await db.execute(sql`CREATE EXTENSION IF NOT EXISTS pg_trgm`);
+
+  let totalFileTreeRows = 0;
+  let totalSymbols = 0;
+
+  for (const { repoInfo, repoPath, organKey } of manifestReposWithPaths) {
+    const headSha = getHeadSha(repoPath);
+
+    // Phase 1A: Index file tree
+    try {
+      console.log(`[FileTree] Indexing ${repoInfo.name}`);
+      const treeRows = await indexFileTree(repoInfo.name, organKey, repoPath, headSha);
+      totalFileTreeRows += treeRows;
+    } catch (err) {
+      console.warn(`[FileTree] Failed for ${repoInfo.name}:`, (err as Error).message?.slice(0, 200));
+    }
+
+    // Phase 2B: Extract and index symbols
+    try {
+      console.log(`[Symbols] Extracting from ${repoInfo.name}`);
+      const symCount = await indexSymbols(repoInfo.name, organKey, repoPath, headSha);
+      totalSymbols += symCount;
+    } catch (err) {
+      console.warn(`[Symbols] Failed for ${repoInfo.name}:`, (err as Error).message?.slice(0, 200));
+    }
+  }
+
+  console.log(`\nStructural indexing complete!`);
+  console.log(`  File tree: ${totalFileTreeRows} rows`);
+  console.log(`  Symbols: ${totalSymbols} extracted`);
+
+  // ----------------------------------------------------------------------------
+  // Vector Embeddings (requires embedding API)
   // ----------------------------------------------------------------------------
 
   if (skipVector) {
-    console.log("Skipping vector ingestion as requested.");
+    console.log("Skipping vector embedding as requested.");
+    await pool.end();
     return;
   }
-
-  await db.execute(sql`CREATE EXTENSION IF NOT EXISTS vector`);
 
   const incremental = process.argv.includes("--incremental");
   let totalChunksInserted = 0;
   let totalErrors = 0;
+  let consecutiveApiErrors = 0;
 
   for (const { repoInfo, repoPath, organKey } of manifestReposWithPaths) {
+    // Abort early if embedding API is down (e.g. credits exhausted)
+    if (consecutiveApiErrors >= 20) {
+      console.warn(`[Ingest] Aborting embedding: ${consecutiveApiErrors} consecutive API failures. Credits may be exhausted.`);
+      break;
+    }
+
     // For incremental mode, only process files changed since last cursor
     let changedFiles: Set<string> | null = null;
     if (incremental) {
@@ -692,11 +1000,14 @@ export async function runIngestionWorker(allowStaleManifest = false, skipVector 
       }
     }
 
-    console.log(`[Ingest] Chunking and embedding ${repoInfo.name} at ${repoPath}`);
     const headSha = getHeadSha(repoPath);
+
+    console.log(`[Ingest] Chunking and embedding ${repoInfo.name} at ${repoPath}`);
     const files = walkRepoForEmbeddings(repoPath);
 
     for (const f of files) {
+      if (consecutiveApiErrors >= 20) break;
+
       const relativePath = path.relative(repoPath, f);
 
       // In incremental mode, skip files not in the changed set (wildcard "*" means all changed)
@@ -716,6 +1027,13 @@ export async function runIngestionWorker(allowStaleManifest = false, skipVector 
 
       totalChunksInserted += result.inserted;
       totalErrors += result.errors;
+
+      // Track consecutive API errors for early abort
+      if (result.errors > 0 && result.inserted === 0) {
+        consecutiveApiErrors += result.errors;
+      } else {
+        consecutiveApiErrors = 0;
+      }
     }
 
     // Update cursor after processing repo
@@ -724,7 +1042,8 @@ export async function runIngestionWorker(allowStaleManifest = false, skipVector 
     }
   }
 
-  console.log(`\nIngestion complete! Inserted/Updated ${totalChunksInserted} chunks, ${totalErrors} errors.`);
+  console.log(`\nEmbedding complete!`);
+  console.log(`  Chunks: ${totalChunksInserted} inserted/updated, ${totalErrors} errors`);
   await pool.end();
 }
 

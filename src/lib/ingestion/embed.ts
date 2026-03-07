@@ -10,6 +10,7 @@ import { eq, and } from "drizzle-orm";
 import { db } from "../db";
 import { documentChunks } from "../db/schema";
 import { connectorCursors } from "../db/schema";
+import { splitFile } from "./code-splitter";
 
 // ---------------------------------------------------------------------------
 // Embedding API call (HuggingFace or OpenAI-compatible)
@@ -67,10 +68,17 @@ export interface EmbedChunksResult {
   errors: number;
 }
 
-const splitter = new RecursiveCharacterTextSplitter({
+const fallbackSplitter = new RecursiveCharacterTextSplitter({
   chunkSize: 1000,
   chunkOverlap: 200,
 });
+
+const CODE_EXTENSIONS = new Set([".ts", ".tsx", ".js", ".jsx", ".py"]);
+
+function isCodePath(filePath: string): boolean {
+  const ext = "." + (filePath.split(".").pop()?.toLowerCase() || "");
+  return CODE_EXTENSIONS.has(ext);
+}
 
 export async function embedChunks(opts: EmbedChunksOptions): Promise<EmbedChunksResult> {
   const { repo, organ, filePath, content, fileMtime, commitSha } = opts;
@@ -84,10 +92,18 @@ export async function embedChunks(opts: EmbedChunksOptions): Promise<EmbedChunks
     .delete(documentChunks)
     .where(and(eq(documentChunks.repo, repo), eq(documentChunks.path, filePath)));
 
-  const chunks = await splitter.createDocuments([content]);
+  // Use code-aware splitting for code files, fallback for others
+  let textChunks: string[];
+  if (isCodePath(filePath)) {
+    const codeChunks = await splitFile(content, filePath, repo);
+    textChunks = codeChunks.map((c) => c.content);
+  } else {
+    const docs = await fallbackSplitter.createDocuments([content]);
+    textChunks = docs.map((d) => d.pageContent);
+  }
 
-  for (let i = 0; i < chunks.length; i++) {
-    const textChunk = chunks[i].pageContent;
+  for (let i = 0; i < textChunks.length; i++) {
+    const textChunk = textChunks[i];
     if (textChunk.length < 50) continue;
 
     try {

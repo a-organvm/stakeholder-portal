@@ -12,10 +12,11 @@ import { getEntityRegistry } from "./entity-registry";
 import { buildTier1Context } from "./retrieval";
 import { incrementCounter, recordTiming } from "./observability";
 import { db } from "./db";
-import { documentChunks } from "./db/schema";
+import { documentChunks, repoFileTrees, codeSymbols } from "./db/schema";
 import { cosineDistance } from "drizzle-orm";
 import { desc, sql } from "drizzle-orm";
 import { fetchFederatedKnowledge } from "./knowledge-base-connector";
+import { readFile, listDirectory, isFileAccessAvailable } from "./file-reader";
 
 // ---------------------------------------------------------------------------
 // Retrieval result
@@ -23,7 +24,7 @@ import { fetchFederatedKnowledge } from "./knowledge-base-connector";
 
 export interface RetrievalSource {
   id: string;
-  type: "repo" | "entity" | "graph" | "manifest";
+  type: "repo" | "entity" | "graph" | "manifest" | "file_tree" | "symbol" | "file_content";
   name: string;
   display_name: string;
   relevance: number;       // 0.0 – 1.0
@@ -31,7 +32,7 @@ export interface RetrievalSource {
   confidence: number;      // 0.0 – 1.0
   snippet: string;         // relevant text excerpt
   url: string | null;      // link to source
-  source_type: string;     // "github" | "workspace" | "manifest"
+  source_type: string;     // "github" | "workspace" | "manifest" | "file_tree" | "symbol" | "on_demand"
   retrieved_at: string;
 }
 
@@ -222,6 +223,110 @@ export async function hybridRetrieve(
   }
 
   // -------------------------------------------------------------------------
+  // Strategy 2.5: File tree search (Phase 1D)
+  // -------------------------------------------------------------------------
+  const filePathPatterns = queryTokens.filter(
+    (t) => t.includes(".") || t.includes("/") || /^(src|lib|test|scripts|config|docker|ci|workflow)$/i.test(t)
+  );
+
+  if (filePathPatterns.length > 0) {
+    try {
+      strategies.push("file_tree");
+      const conditions = filePathPatterns.map((p) => sql`${repoFileTrees.path} ILIKE ${"%" + p + "%"}`);
+      const combinedCondition = conditions.length === 1
+        ? conditions[0]
+        : sql`(${sql.join(conditions, sql` OR `)})`;
+
+      const treeResults = await db
+        .select({
+          id: repoFileTrees.id,
+          repo: repoFileTrees.repo,
+          organ: repoFileTrees.organ,
+          path: repoFileTrees.path,
+          fileType: repoFileTrees.fileType,
+          extension: repoFileTrees.extension,
+          sizeBytes: repoFileTrees.sizeBytes,
+        })
+        .from(repoFileTrees)
+        .where(combinedCondition)
+        .limit(20);
+
+      for (const row of treeResults) {
+        const sizeInfo = row.sizeBytes ? ` (${(row.sizeBytes / 1024).toFixed(1)}KB)` : "";
+        sources.push({
+          id: row.id,
+          type: "file_tree",
+          name: `${row.repo}/${row.path}`,
+          display_name: `${row.repo}/${row.path}`,
+          relevance: 0.7,
+          freshness: 0.5,
+          confidence: 0.8,
+          snippet: `[${row.fileType}] ${row.repo}/${row.path}${sizeInfo}${row.extension ? ` (${row.extension})` : ""}`,
+          url: `/repos/${row.repo}`,
+          source_type: "file_tree",
+          retrieved_at: new Date().toISOString(),
+        });
+      }
+    } catch (err) {
+      console.warn("File tree search failed:", err);
+    }
+  }
+
+  // -------------------------------------------------------------------------
+  // Strategy 2.7: Symbol search (Phase 2D)
+  // -------------------------------------------------------------------------
+  const identifierPatterns = queryTokens.filter(
+    (t) => /[A-Z]/.test(t) || t.includes("_") || t.length > 4
+  );
+
+  if (identifierPatterns.length > 0) {
+    try {
+      strategies.push("symbol");
+      const symConditions = identifierPatterns.map((p) => sql`${codeSymbols.name} ILIKE ${"%" + p + "%"}`);
+      const symCombined = symConditions.length === 1
+        ? symConditions[0]
+        : sql`(${sql.join(symConditions, sql` OR `)})`;
+
+      const symbolResults = await db
+        .select({
+          id: codeSymbols.id,
+          repo: codeSymbols.repo,
+          path: codeSymbols.path,
+          symbolType: codeSymbols.symbolType,
+          name: codeSymbols.name,
+          signature: codeSymbols.signature,
+          lineStart: codeSymbols.lineStart,
+          lineEnd: codeSymbols.lineEnd,
+          docComment: codeSymbols.docComment,
+          visibility: codeSymbols.visibility,
+        })
+        .from(codeSymbols)
+        .where(symCombined)
+        .limit(15);
+
+      for (const sym of symbolResults) {
+        const lines = sym.lineEnd && sym.lineStart ? ` (L${sym.lineStart}–${sym.lineEnd})` : "";
+        const doc = sym.docComment ? `\n${sym.docComment.slice(0, 150)}` : "";
+        sources.push({
+          id: sym.id,
+          type: "symbol",
+          name: `${sym.repo}/${sym.path}:${sym.name}`,
+          display_name: `${sym.symbolType} ${sym.name} in ${sym.repo}/${sym.path}`,
+          relevance: 0.75,
+          freshness: 0.5,
+          confidence: 0.85,
+          snippet: `[${sym.visibility || ""}${sym.symbolType}] ${sym.signature || sym.name}${lines}${doc}`,
+          url: `/repos/${sym.repo}`,
+          source_type: "symbol",
+          retrieved_at: new Date().toISOString(),
+        });
+      }
+    } catch (err) {
+      console.warn("Symbol search failed:", err);
+    }
+  }
+
+  // -------------------------------------------------------------------------
   // Strategy 3: Knowledge graph traversal
   // -------------------------------------------------------------------------
   if (includeGraph) {
@@ -340,6 +445,96 @@ export async function hybridRetrieve(
   const federatedSources = await fetchFederatedKnowledge(rewrittenQuery);
   sources.push(...federatedSources);
 
+  // -------------------------------------------------------------------------
+  // Strategy 6: On-demand file read (Phase 3B)
+  // -------------------------------------------------------------------------
+  if (isFileAccessAvailable()) {
+    // Detect "show me / read / contents of <repo>/<path>" patterns
+    const fileAccessMatch = rewrittenQuery.match(
+      /(?:show|read|contents?\s*of|cat|display|view|open)\s+(?:(?:the\s+)?(?:file\s+)?)?(\S+\/\S+)/i
+    );
+    if (fileAccessMatch) {
+      strategies.push("on_demand");
+      const fullPath = fileAccessMatch[1];
+      // Try to split into repo/path
+      const slashIdx = fullPath.indexOf("/");
+      if (slashIdx > 0) {
+        const repoGuess = fullPath.slice(0, slashIdx);
+        const pathGuess = fullPath.slice(slashIdx + 1);
+
+        // Try exact repo name first, then fuzzy match
+        const manifest = getManifest();
+        const matchedRepo = manifest.repos.find(
+          (r) => r.name === repoGuess || r.slug === repoGuess ||
+                 r.name.includes(repoGuess) || repoGuess.includes(r.name)
+        );
+
+        if (matchedRepo) {
+          const fileResult = readFile(matchedRepo.name, pathGuess);
+          if (fileResult) {
+            sources.push({
+              id: `ondemand:${matchedRepo.name}:${pathGuess}`,
+              type: "file_content",
+              name: `${matchedRepo.name}/${pathGuess}`,
+              display_name: `${matchedRepo.name}/${pathGuess}`,
+              relevance: 0.95,
+              freshness: 1.0,
+              confidence: 1.0,
+              snippet: fileResult.content.slice(0, 3000),
+              url: `/repos/${matchedRepo.slug}`,
+              source_type: "on_demand",
+              retrieved_at: new Date().toISOString(),
+            });
+
+            // Phase 3D: Lazy embed into document_chunks (fire-and-forget)
+            lazyEmbed(matchedRepo.name, matchedRepo.organ, pathGuess, fileResult.content).catch(() => {});
+          }
+        }
+      }
+    }
+
+    // Also handle directory listing queries
+    const dirMatch = rewrittenQuery.match(
+      /(?:list|ls|files?\s+in|directory|what(?:'s| is)\s+in)\s+(?:(?:the\s+)?)?(\S+\/\S*)/i
+    );
+    if (dirMatch && !fileAccessMatch) {
+      strategies.push("on_demand");
+      const fullPath = dirMatch[1].replace(/\/$/, "");
+      const slashIdx = fullPath.indexOf("/");
+      const repoGuess = slashIdx > 0 ? fullPath.slice(0, slashIdx) : fullPath;
+      const pathGuess = slashIdx > 0 ? fullPath.slice(slashIdx + 1) : ".";
+
+      const manifest = getManifest();
+      const matchedRepo = manifest.repos.find(
+        (r) => r.name === repoGuess || r.slug === repoGuess ||
+               r.name.includes(repoGuess) || repoGuess.includes(r.name)
+      );
+
+      if (matchedRepo) {
+        const dirResult = listDirectory(matchedRepo.name, pathGuess);
+        if (dirResult) {
+          const listing = dirResult.entries
+            .map((e) => `${e.type === "directory" ? "📁" : "📄"} ${e.name}${e.sizeBytes ? ` (${(e.sizeBytes / 1024).toFixed(1)}KB)` : ""}`)
+            .join("\n");
+
+          sources.push({
+            id: `ondemand:dir:${matchedRepo.name}:${pathGuess}`,
+            type: "file_content",
+            name: `${matchedRepo.name}/${pathGuess}/`,
+            display_name: `Directory: ${matchedRepo.name}/${pathGuess}/`,
+            relevance: 0.9,
+            freshness: 1.0,
+            confidence: 1.0,
+            snippet: listing,
+            url: `/repos/${matchedRepo.slug}`,
+            source_type: "on_demand",
+            retrieved_at: new Date().toISOString(),
+          });
+        }
+      }
+    }
+  }
+
   // Sort all sources by combined relevance
   sources.sort((a, b) => b.relevance - a.relevance);
   const finalSources = sources.slice(0, maxSources);
@@ -439,6 +634,26 @@ function computeFreshness(dateStr: string | null | undefined): number {
   if (ageDays < 30) return 0.7;
   if (ageDays < 90) return 0.5;
   return 0.3;
+}
+
+// ---------------------------------------------------------------------------
+// Lazy embedding (Phase 3D)
+// ---------------------------------------------------------------------------
+
+async function lazyEmbed(repo: string, organ: string, filePath: string, content: string): Promise<void> {
+  try {
+    // Dynamically import to avoid circular deps in test
+    const { embedChunks } = await import("./ingestion/embed");
+    await embedChunks({
+      repo,
+      organ,
+      filePath,
+      content,
+      fileMtime: new Date(),
+    });
+  } catch {
+    // Fire-and-forget — silently fail
+  }
 }
 
 function buildRepoSnippet(repo: Repo, queryTokens: string[]): string {

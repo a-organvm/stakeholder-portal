@@ -21,6 +21,7 @@ export type QueryStrategy =
   | "graph_traversal"  // needs knowledge graph
   | "live_research"    // needs real-time external/tool info
   | "analytics"        // statistical or text analytics over corpus
+  | "file_access"      // needs file/directory read from workspace
   | "exploratory";     // open-ended, needs broad retrieval
 
 export interface QueryPlan {
@@ -127,6 +128,37 @@ const PATTERNS: QueryPattern[] = [
   {
     pattern: /(?:status|health|overview|summary|progress)/i,
     strategy: "system_wide",
+  },
+
+  // File access — reading specific files, directory listings, file contents
+  {
+    pattern: /(?:show|read|cat|display|view|open|contents?\s*of)\s+(?:(?:the\s+)?(?:file\s+)?)?(\S+\/\S+)/i,
+    strategy: "file_access",
+    extract: (match, manifest) => {
+      const fullPath = match[1];
+      const slashIdx = fullPath.indexOf("/");
+      const repoHint = slashIdx > 0 ? fullPath.slice(0, slashIdx) : fullPath;
+      const repo = manifest.repos.find(
+        (r) =>
+          r.slug.includes(repoHint) ||
+          r.name.toLowerCase().includes(repoHint.toLowerCase())
+      );
+      return {
+        target_repos: repo ? [repo.slug] : [],
+        answerability: repo ? "answerable" : "partial",
+        answerability_reason: repo
+          ? `File access for repo: ${repo.display_name}`
+          : `Could not match repo from "${repoHint}"`,
+      };
+    },
+  },
+  {
+    pattern: /(?:list|ls|what(?:'s| is)\s+in|files?\s+in|directory)\s+(\S+\/\S*)/i,
+    strategy: "file_access",
+  },
+  {
+    pattern: /(?:which repos?\s+have|repos?\s+with|repos?\s+containing)\s+(\S+)/i,
+    strategy: "file_access",
   },
 
   // Live research / External queries — last resort, requires genuinely external intent
@@ -252,6 +284,9 @@ export function planQuery(query: string): QueryPlan {
     case "organ_scope":
       plan.suggested_max_tokens = 1000;
       break;
+    case "file_access":
+      plan.suggested_max_tokens = 2000;
+      break;
     case "system_wide":
     case "cross_organ":
     case "graph_traversal":
@@ -310,6 +345,7 @@ function estimateCost(plan: QueryPlan): number {
   switch (plan.strategy) {
     case "deterministic": cost = 1; break;
     case "single_repo": cost = 2; break;
+    case "file_access": cost = 3; break;
     case "organ_scope": cost = 4; break;
     case "system_wide": cost = 5; break;
     case "cross_organ": cost = 6; break;
