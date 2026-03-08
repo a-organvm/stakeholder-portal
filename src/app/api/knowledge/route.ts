@@ -13,6 +13,7 @@ import { buildCitations } from "@/lib/citations";
 
 const ALLOWED_ORIGINS = [
   "https://4444j99.github.io",
+  "https://organvm-i-theoria.github.io",
   "http://localhost:4321",
   "http://localhost:3000",
   "http://127.0.0.1:4321",
@@ -47,7 +48,7 @@ export async function GET(request: NextRequest) {
         facets: [
           { id: "portfolio", name: "Portfolio", role: "face", url: "https://4444j99.github.io/portfolio", live: true },
           { id: "hermeneus", name: "Hermeneus", role: "intelligence", url: "https://stakeholder-portal-ten.vercel.app", live: true },
-          { id: "knowledge-base", name: "Knowledge Base", role: "memory", url: null, live: false },
+          { id: "knowledge-base", name: "Knowledge Base", role: "memory", url: "https://organvm-i-theoria.github.io/my-knowledge-base", live: true },
           { id: "nexus", name: "Nexus Babel Alexandria", role: "laboratory", url: null, live: false },
         ],
       },
