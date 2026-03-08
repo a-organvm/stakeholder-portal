@@ -168,6 +168,69 @@ export default function AboutPage() {
           codebase at each deployment.
         </p>
       </section>
+
+      <section className="space-y-4 text-sm leading-relaxed text-[var(--color-text-muted)]">
+        <h2 className="text-lg font-semibold text-[var(--color-text)]">
+          The Facets
+        </h2>
+        <p>
+          ORGANVM&apos;s web presence is not one site &mdash; it&apos;s a prism.
+          Four facets, each at a different depth, each answering a different
+          question. The journey between them is itself part of the work.
+        </p>
+        <dl className="space-y-4">
+          <div className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
+            <dt className="font-medium text-[var(--color-text)]">
+              Surface &mdash;{" "}
+              <a
+                href="https://4444j99.github.io/portfolio/?prism=hermeneus.about"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[var(--color-accent)] hover:underline"
+              >
+                Portfolio
+              </a>
+            </dt>
+            <dd className="mt-1">
+              &ldquo;Who is this?&rdquo; &mdash; The public face. Projects,
+              credentials, services. Where first impressions form.
+            </dd>
+          </div>
+          <div className="rounded-lg border border-blue-800/50 bg-blue-950/20 p-4">
+            <dt className="font-medium text-blue-400">
+              Intelligence &mdash; Hermeneus
+            </dt>
+            <dd className="mt-1">
+              &ldquo;What built it?&rdquo; &mdash; You are here. The technical
+              intelligence layer. Every repo, every organ, every dependency
+              visible and queryable.
+            </dd>
+          </div>
+          <div className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4 opacity-60">
+            <dt className="font-medium text-[var(--color-text)]">
+              Memory &mdash; Knowledge Base
+            </dt>
+            <dd className="mt-1">
+              &ldquo;What does he know?&rdquo; &mdash; The personal knowledge
+              graph. Books, papers, notes, connections. Not yet public.
+            </dd>
+          </div>
+          <div className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4 opacity-60">
+            <dt className="font-medium text-[var(--color-text)]">
+              Laboratory &mdash; Nexus Babel Alexandria
+            </dt>
+            <dd className="mt-1">
+              &ldquo;What are texts made of?&rdquo; &mdash; Linguistic
+              atomization engine. Breaking texts into their smallest meaningful
+              units. Not yet public.
+            </dd>
+          </div>
+        </dl>
+        <p className="text-xs opacity-60">
+          Each step inward is an invitation, not a redirect. The space between
+          facets is where the audience completes the work.
+        </p>
+      </section>
     </div>
   );
 }

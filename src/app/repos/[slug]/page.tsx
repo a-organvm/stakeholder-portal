@@ -3,6 +3,31 @@ import { StatusBadge } from "@/components/StatusBadge";
 import { ORGAN_COLORS } from "@/lib/organ-colors";
 import { notFound } from "next/navigation";
 
+/** Maps Hermeneus repo slugs to portfolio project page slugs where a match exists */
+const PORTFOLIO_SLUG_MAP: Record<string, string> = {
+  "orchestration-start-here": "orchestration-hub",
+  "my-knowledge-base": "knowledge-base",
+  "agentic-titan": "agentic-titan",
+  "organvm-engine": "eight-organ-system",
+  "sema-metra--alchemica-mundi": "recursive-engine",
+  "tool-interaction-design": "ai-conductor",
+  "generative-music-pipeline": "generative-music",
+  "nexus-babel-alexandria": "linguistic-atomization",
+  "organvm-corpvs-testamentvm": "metasystem-master",
+  "the-actual-news": "the-actual-news",
+  "ai-council--legislative-arena": "ai-council",
+  "block-warfare": "block-warfare",
+  "your-fit-tailored": "your-fit-tailored",
+  "public-record-data-scrapper": "public-record-data-scrapper",
+  "aetheria-rpg": "aetheria-rpg",
+  "community-council": "community-infrastructure",
+  "life-my-midst-in": "life-my-midst-in",
+  "narratological-lenses": "narratological-lenses",
+  "public-process-portfolio": "public-process",
+  "distribution-strategy": "distribution-strategy",
+  "org-architecture": "org-architecture",
+};
+
 export function generateStaticParams() {
   return getRepos().map((r) => ({ slug: r.slug }));
 }
@@ -102,6 +127,16 @@ export default async function RepoDetailPage({
                   {url}
                 </a>
               ))}
+              {PORTFOLIO_SLUG_MAP[slug] && (
+                <a
+                  href={`https://4444j99.github.io/portfolio/projects/${PORTFOLIO_SLUG_MAP[slug]}/?prism=hermeneus.repos.${slug}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block text-sm text-amber-400 hover:underline"
+                >
+                  Portfolio Case Study
+                </a>
+              )}
             </div>
           </div>
 
