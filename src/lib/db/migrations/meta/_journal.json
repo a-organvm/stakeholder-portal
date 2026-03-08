@@ -43,6 +43,13 @@
       "when": 1772836939487,
       "tag": "0005_fluffy_marten_broadcloak",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1772975910400,
+      "tag": "0006_wealthy_wiccan",
+      "breakpoints": true
     }
   ]
 }

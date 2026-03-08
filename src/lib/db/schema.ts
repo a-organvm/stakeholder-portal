@@ -200,6 +200,38 @@ export const symbolTypeEnum = pgEnum("symbol_type", [
   "const",
 ]);
 
+// ─────────────────────────────────────────────
+// Planning Kanban (Styx operations calendar)
+// ─────────────────────────────────────────────
+
+export const planningStatusEnum = pgEnum("planning_status", [
+  "not_started",
+  "in_progress",
+  "blocked",
+  "done",
+]);
+
+export const planningItems = pgTable("planning_items", {
+  id: text("id").primaryKey(), // e.g. "mar-eng-001"
+  title: text("title").notNull(),
+  description: text("description"),
+  dept: text("dept").notNull(), // ENG, LEG, PRD, OPS, GRO, FIN, CXS, B2B
+  owner: text("owner").notNull(), // AI, H:MN, H:LC, H:BD, H:RO, H:CR, H:FO
+  month: text("month").notNull(), // "2026-03", "2026-04", etc.
+  phase: text("phase").notNull(), // Beta, Gamma, Delta, Omega
+  status: planningStatusEnum("status").notNull().default("not_started"),
+  position: integer("position").notNull().default(0),
+  issueUrl: text("issue_url"),
+  blockedBy: text("blocked_by"),
+  notes: text("notes"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+// ─────────────────────────────────────────────
+// Code symbols (Phase 2A)
+// ─────────────────────────────────────────────
+
 export const codeSymbols = pgTable(
   "code_symbols",
   {
