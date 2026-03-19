@@ -42,6 +42,9 @@ export default function RootLayout({
               <Link href="/dashboard" className="hover:text-blue-400 transition-colors">
                 Dashboard
               </Link>
+              <Link href="/constitution" className="hover:text-blue-400 transition-colors">
+                Constitution
+              </Link>
               <Link href="/ask" className="hover:text-blue-400 transition-colors">
                 Ask
               </Link>
