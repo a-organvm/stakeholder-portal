@@ -43,7 +43,7 @@
     "yaml": "2.8.2"
   },
   "overrides": {
-    "flatted": "github:WebReflection/flatted#v3.4.2",
+    "flatted": "https://github.com/WebReflection/flatted/archive/refs/tags/v3.4.2.tar.gz",
     "esbuild": "^0.25.12"
   },
   "devDependencies": {
