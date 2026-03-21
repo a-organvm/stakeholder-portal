@@ -849,7 +849,8 @@ export async function POST(request: Request) {
       const metaChunk = JSON.stringify({
         citations: citations.map((c) => ({
           id: c.id, source_name: c.source_name, source_type: c.source_type,
-          url: c.url, relevance: c.relevance, freshness_label: c.freshness_label, snippet: c.snippet,
+          url: c.url, relevance: c.relevance, confidence: c.confidence, freshness: c.freshness,
+          freshness_label: c.freshness_label, snippet: c.snippet,
         })),
         confidence_score: citations.length > 0 ? citations.reduce((s, c) => s + c.relevance, 0) / citations.length : 0,
         citation_coverage: hasStrongSources ? 0.7 : 0.3,

@@ -4,9 +4,9 @@ import "./globals.css";
 import { PrismBreadcrumb } from "@/components/PrismBreadcrumb";
 
 export const metadata: Metadata = {
-  title: "ORGANVM — Stakeholder Intelligence Portal",
+  title: "ORGANVM — Hermeneus",
   description:
-    "Real-time intelligence on the ORGANVM eight-organ creative-institutional system. 111 repos, 8 organs, one vision.",
+    "The interpreter of the ORGANVM eight-organ creative-institutional system. Live intelligence across 95+ repos, 8 organs, one vision.",
 };
 
 import manifest from "@/data/manifest.json";

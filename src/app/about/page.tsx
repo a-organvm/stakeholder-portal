@@ -158,10 +158,10 @@ export default function AboutPage() {
 
       <section className="text-sm text-[var(--color-text-muted)]">
         <h2 className="mb-2 text-lg font-semibold text-[var(--color-text)]">
-          This Portal
+          Hermeneus
         </h2>
         <p>
-          The Stakeholder Intelligence Portal (codename: Hermeneus) provides
+          Hermeneus — the interpreter — provides
           real-time intelligence about the entire ORGANVM system. Browse
           repositories, explore organ architecture, and ask natural language
           questions via AI-powered chat. Data is regenerated from the live

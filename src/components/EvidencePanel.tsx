@@ -20,6 +20,19 @@ interface EvidencePanelProps {
   citation_coverage: number;
 }
 
+function stripMarkdown(text: string): string {
+  return text
+    .replace(/\*\*(.+?)\*\*/g, "$1")      // bold
+    .replace(/\*(.+?)\*/g, "$1")           // italic
+    .replace(/`{1,3}[^`]*`{1,3}/g, "")    // inline/block code
+    .replace(/^\|.*\|$/gm, "")             // table rows
+    .replace(/^[-|: ]+$/gm, "")            // table separators
+    .replace(/^#{1,6}\s+/gm, "")           // headings
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1") // links → text
+    .replace(/\n{2,}/g, " ")               // collapse newlines
+    .trim();
+}
+
 const FRESHNESS_COLORS: Record<string, string> = {
   live: "text-green-400",
   fresh: "text-green-300",
@@ -95,7 +108,7 @@ export function EvidencePanel({
             </div>
             {expanded && c.snippet && (
               <p className="mt-1 text-[var(--color-text-secondary)] line-clamp-2">
-                {c.snippet}
+                {stripMarkdown(c.snippet)}
               </p>
             )}
           </div>
