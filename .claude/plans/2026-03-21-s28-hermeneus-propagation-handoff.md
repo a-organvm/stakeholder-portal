@@ -2,7 +2,7 @@
 
 **Session:** S28 (Hermeneus remediation + features)
 **Date:** 2026-03-21
-**Status:** ALL EXECUTED — 0 remaining. Companion indices deferred (blocked on IRF-IDX-001/002/003).
+**Status:** ALL EXECUTED — 0 remaining. Companion indices: construction plan written at `organvm-corpvs-testamentvm/.claude/plans/2026-03-21-companion-indices-construction-plan.md` with full data source audit, proposed structure, generation approach, and S28 seed data. No blockers — ready to build.
 
 ---
 
