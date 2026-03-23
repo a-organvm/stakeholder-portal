@@ -4,25 +4,48 @@ organ_name: Meta
 repo: stakeholder-portal
 org: meta-organvm
 name: stakeholder-portal
+display_name: Hermeneus
 tier: standard
 implementation_status: ACTIVE
-promotion_status: LOCAL
+promotion_status: PUBLIC_PROCESS
 
 metadata:
-  description: "Hermeneus — Public intelligence portal for ORGANVM stakeholders. Natural language queries over 111 repos via Groq + OSS/free LLM API."
+  description: "Hermeneus (ἑρμηνεύς) — ORGANVM intelligence layer. Live system awareness with AI chat, hybrid retrieval (lexical+vector+graph+federated), provider cascade (Groq→OSS), SSE streaming, operational control plane."
   tags:
     - next.js
     - typescript
     - groq
-    - oss-llm
+    - pgvector
+    - sse-streaming
     - intelligence
-    - stakeholder-portal
+    - hermeneus
+
+capabilities:
+  - id: ai-chat
+    description: "Natural language queries with hybrid retrieval and LLM synthesis"
+  - id: provider-cascade
+    description: "Groq primary → OSS fallback with error isolation and ad-injection stripping"
+  - id: sse-streaming
+    description: "True SSE streaming from LLM providers with pull-based composition"
+  - id: health-monitoring
+    description: "/api/health/llm probes all providers, reports latency and status"
+  - id: ingestion-health
+    description: "/api/cron/ingest reports staleness analysis and cursor drift"
+  - id: stale-context-detection
+    description: "Chat responses flag when >50% sources are aged"
 
 produces:
-  - artifact: stakeholder-intelligence-ui
+  - artifact: hermeneus-intelligence-ui
     type: web-application
     consumers:
       - external-stakeholders
+      - internal-operators
+  - artifact: llm-health-api
+    type: api-endpoint
+    path: /api/health/llm
+  - artifact: ingestion-health-api
+    type: api-endpoint
+    path: /api/cron/ingest
 
 consumes:
   - artifact: registry-v2.json
