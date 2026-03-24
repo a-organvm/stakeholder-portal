@@ -145,9 +145,17 @@ Copy `.env.example` → `.env`. Key variable groups:
 - **Federation**: `MY_KNOWLEDGE_BASE_API_URL`, `MY_KNOWLEDGE_BASE_ENABLED`
 - **CI thresholds**: `ALERT_MIN_CITATION_COVERAGE`, `ALERT_MAX_HALLUCINATION_RATE`, etc.
 
+## CI/CD Configuration
+
+- CI job MUST be named `test` — branch protection requires this exact check name
+- Release Drafter runs on push to main ONLY — pull_request trigger causes invalid targetCommitish
+- Branch protection: requires `test` check (non-strict, doesn't require up-to-date branch)
+- Vercel deploys automatically on push via GitHub integration
+- Gemini CLI may trigger duplicate Vercel deployments alongside the GitHub integration
+
 ## Conventions
 
-- Node 20+, npm
+- Node 22+, npm
 - TypeScript strict mode
 - Tailwind v4 (PostCSS plugin)
 - Dark theme with CSS custom properties
