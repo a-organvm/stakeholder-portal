@@ -88,14 +88,14 @@ export const SYSTEM_ARTIFACTS: TestamentArtifact[] = [
 
 /** Per-organ identity cards. */
 export const ORGAN_CARDS: TestamentArtifact[] = [
-  { id: "card-meta", title: "Organ META — Meta", modality: "visual", format: "svg", organ: "META", description: "Identity card for the constitutional substrate", filename: "organ-meta-card.svg", timestamp: "2026-03-20" },
-  { id: "card-i", title: "Organ I — Theoria", modality: "visual", format: "svg", organ: "I", description: "Identity card for foundational theory", filename: "organ-i-card.svg", timestamp: "2026-03-20" },
-  { id: "card-ii", title: "Organ II — Poiesis", modality: "visual", format: "svg", organ: "II", description: "Identity card for generative art", filename: "organ-ii-card.svg", timestamp: "2026-03-20" },
-  { id: "card-iii", title: "Organ III — Ergon", modality: "visual", format: "svg", organ: "III", description: "Identity card for commerce", filename: "organ-iii-card.svg", timestamp: "2026-03-20" },
-  { id: "card-iv", title: "Organ IV — Taxis", modality: "visual", format: "svg", organ: "IV", description: "Identity card for orchestration", filename: "organ-iv-card.svg", timestamp: "2026-03-20" },
-  { id: "card-v", title: "Organ V — Logos", modality: "visual", format: "svg", organ: "V", description: "Identity card for discourse", filename: "organ-v-card.svg", timestamp: "2026-03-20" },
-  { id: "card-vi", title: "Organ VI — Koinonia", modality: "visual", format: "svg", organ: "VI", description: "Identity card for community", filename: "organ-vi-card.svg", timestamp: "2026-03-20" },
-  { id: "card-vii", title: "Organ VII — Kerygma", modality: "visual", format: "svg", organ: "VII", description: "Identity card for distribution", filename: "organ-vii-card.svg", timestamp: "2026-03-20" },
+  { id: "card-meta", title: "Organ META — Meta", modality: "visual", format: "svg", organ: "META-ORGANVM", description: "Identity card for the constitutional substrate", filename: "organ-meta-card.svg", timestamp: "2026-03-20" },
+  { id: "card-i", title: "Organ I — Theoria", modality: "visual", format: "svg", organ: "ORGAN-I", description: "Identity card for foundational theory", filename: "organ-i-card.svg", timestamp: "2026-03-20" },
+  { id: "card-ii", title: "Organ II — Poiesis", modality: "visual", format: "svg", organ: "ORGAN-II", description: "Identity card for generative art", filename: "organ-ii-card.svg", timestamp: "2026-03-20" },
+  { id: "card-iii", title: "Organ III — Ergon", modality: "visual", format: "svg", organ: "ORGAN-III", description: "Identity card for commerce", filename: "organ-iii-card.svg", timestamp: "2026-03-20" },
+  { id: "card-iv", title: "Organ IV — Taxis", modality: "visual", format: "svg", organ: "ORGAN-IV", description: "Identity card for orchestration", filename: "organ-iv-card.svg", timestamp: "2026-03-20" },
+  { id: "card-v", title: "Organ V — Logos", modality: "visual", format: "svg", organ: "ORGAN-V", description: "Identity card for discourse", filename: "organ-v-card.svg", timestamp: "2026-03-20" },
+  { id: "card-vi", title: "Organ VI — Koinonia", modality: "visual", format: "svg", organ: "ORGAN-VI", description: "Identity card for community", filename: "organ-vi-card.svg", timestamp: "2026-03-20" },
+  { id: "card-vii", title: "Organ VII — Kerygma", modality: "visual", format: "svg", organ: "ORGAN-VII", description: "Identity card for distribution", filename: "organ-vii-card.svg", timestamp: "2026-03-20" },
 ];
 
 /** All modalities the system renders in. */

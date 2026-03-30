@@ -1,27 +1,34 @@
 import { describe, it, expect, vi } from "vitest";
 
-// Mock manifest
+const mockOrgans = [
+  { key: "META-ORGANVM", name: "Meta", greek: "Meta", domain: "Meta", org: "meta-organvm", description: "Meta", repo_count: 1, status: "OPERATIONAL", aesthetic: {} },
+  { key: "ORGAN-I", name: "Theory", greek: "Theoria", domain: "Theory", org: "organvm-i-theoria", description: "Theory", repo_count: 1, status: "OPERATIONAL", aesthetic: {} },
+];
+
+const mockRepos = [
+  {
+    name: "organvm-engine",
+    slug: "organvm-engine",
+    organ: "META-ORGANVM",
+    display_name: "ORGANVM Engine",
+  },
+  {
+    name: "test-repo",
+    slug: "test-repo",
+    organ: "ORGAN-I",
+    display_name: "Test Repo",
+  },
+];
+
 vi.mock("@/lib/manifest", () => ({
   getManifest: () => ({
     system: { name: "Test", total_repos: 1 },
-    organs: [],
-    repos: [
-      {
-        name: "organvm-engine",
-        slug: "organvm-engine",
-        organ: "META-ORGANVM",
-        display_name: "ORGANVM Engine",
-      },
-      {
-        name: "test-repo",
-        slug: "test-repo",
-        organ: "ORGAN-I",
-        display_name: "Test Repo",
-      },
-    ],
+    organs: mockOrgans,
+    repos: mockRepos,
     deployments: [],
     dependency_graph: { nodes: [], edges: [] },
   }),
+  getOrgans: () => mockOrgans,
 }));
 
 import { readFile, listDirectory, isFileAccessAvailable } from "@/lib/file-reader";
