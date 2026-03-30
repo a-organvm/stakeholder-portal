@@ -9,19 +9,9 @@
 import * as fs from "fs";
 import * as path from "path";
 import { getManifest } from "./manifest";
+import { getOrganOrgDir as getOrganDir } from "./organs";
 
 const WORKSPACE = process.env.ORGANVM_WORKSPACE_DIR || path.join(process.env.HOME || "", "Workspace");
-
-const ORGAN_DIR_MAP: Record<string, string> = {
-  "ORGAN-I": "organvm-i-theoria",
-  "ORGAN-II": "organvm-ii-poiesis",
-  "ORGAN-III": "organvm-iii-ergon",
-  "ORGAN-IV": "organvm-iv-taxis",
-  "ORGAN-V": "organvm-v-logos",
-  "ORGAN-VI": "organvm-vi-koinonia",
-  "ORGAN-VII": "organvm-vii-kerygma",
-  "META-ORGANVM": "meta-organvm",
-};
 
 const BLOCKED_DIRS = [".git", "node_modules", "__pycache__", ".venv", "venv", ".tox"];
 const BLOCKED_FILES = [".env", ".env.local", ".env.production"];
@@ -64,7 +54,7 @@ function resolveRepoPath(repoName: string): string | null {
   );
   if (!repo) return null;
 
-  const organDir = ORGAN_DIR_MAP[repo.organ];
+  const organDir = getOrganDir(repo.organ);
   if (!organDir) return null;
 
   const repoPath = path.join(WORKSPACE, organDir, repo.name);
