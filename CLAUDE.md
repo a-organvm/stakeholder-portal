@@ -352,37 +352,9 @@ Nature demands a documentation counterpart. This formation maintains its narrati
 - **[Source & Transmutation](../docs/logos/alchemical-io.md)** — Narrative of inputs, process, and returns.
 
 
-
 *Compliance: Implementation exists without record.*
 
 <!-- ORGANVM:AUTO:END -->
-
-## Active Handoff Protocol
-
-If `.conductor/active-handoff.md` exists, **READ IT FIRST** before doing any work.
-It contains constraints, locked files, conventions, and completed work from the
-originating agent. You MUST honor all constraints listed there.
-
-If the handoff says "CROSS-VERIFICATION REQUIRED", your self-assessment will
-NOT be trusted. A different agent will verify your output against these constraints.
-
-## Active Handoff Protocol
-
-If `.conductor/active-handoff.md` exists, **READ IT FIRST** before doing any work.
-It contains constraints, locked files, conventions, and completed work from the
-originating agent. You MUST honor all constraints listed there.
-
-If the handoff says "CROSS-VERIFICATION REQUIRED", your self-assessment will
-NOT be trusted. A different agent will verify your output against these constraints.
-
-## Active Handoff Protocol
-
-If `.conductor/active-handoff.md` exists, **READ IT FIRST** before doing any work.
-It contains constraints, locked files, conventions, and completed work from the
-originating agent. You MUST honor all constraints listed there.
-
-If the handoff says "CROSS-VERIFICATION REQUIRED", your self-assessment will
-NOT be trusted. A different agent will verify your output against these constraints.
 
 ## Active Handoff Protocol
 
